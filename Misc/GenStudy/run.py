@@ -37,7 +37,7 @@ gSystem.SetBuildDir('tmpdir', kTRUE)
 gROOT.ProcessLine('.L RecoLevel.C++')
 
 if runHDalitz or runAll:
-    RecoLevel("/data4/cmkuo/ggtree_mc_fall17_Dalitz_EEG.root", "test_EEG.root", "2017", "HDalitz", "ggF", 125, 11)
+    RecoLevel("/data6/ggNtuples/V10_02_10_08/job_fall17_Dalitz_eeg_m125/*.root", "test_EEG.root", "2017", "HDalitz", "ggF", 125, 11)
     # RecoLevel("/data6/ggNtuples/V10_02_10_07/job_fall17_Dalitz_eeg_m125/ggtree_mc_*.root", "./minitree/2017/Minitree_HDalitz_ggF_eeg_m125_2017_RECO.root", "2017", "HDalitz", "ggF", 125, 11)
     # RecoLevel("/data6/ggNtuples/V10_02_10_07/job_fall17_Dalitz_eeg_VBF_m125/ggtree_mc_*.root", "./minitree/2017/Minitree_HDalitz_VBF_eeg_m125_2017_RECO.root", "2017", "HDalitz", "VBF", 125, 11)
     # RecoLevel("/data6/ggNtuples/V10_02_10_07/job_fall17_Dalitz_eeg_ZH_m125/ggtree_mc_*.root", "./minitree/2017/Minitree_HDalitz_ZH_eeg_m125_2017_RECO.root", "2017", "HDalitz", "ZH", 125, 11)
