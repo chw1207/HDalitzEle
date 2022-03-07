@@ -40,11 +40,12 @@ class Minitree
     Float_t circularity_lep1, circularity_lep2;
 
     // Conv information
-    Bool_t convMatched_lep1, convMatched_lep2;
-    Float_t convVtxRadius_lep1, convVtxRadius_lep2;
-    Float_t convP_lep1, convP_lep2;
-    Int_t convNTrks_lep1, convNTrks_lep2;
-    Float_t convD0_lep1, convD0_lep2, convDz_lep1, convDz_lep2, convL0_lep1, convL0_lep2, convLz_lep1, convLz_lep2;
+    Int_t nConv_ = 0;
+    Bool_t convMatched_lep1 = 0, convMatched_lep2 = 0;
+    Float_t convVtxRadius_lep1 = 0, convVtxRadius_lep2 = 0;
+    Float_t convP_lep1 = 0, convP_lep2 = 0;
+    Int_t convNTrks_lep1 = 0, convNTrks_lep2 = 0;
+    Float_t convD0_lep1 = 0, convD0_lep2 = 0, convDz_lep1 = 0, convDz_lep2 = 0, convL0_lep1 = 0, convL0_lep2 = 0, convLz_lep1 = 0, convLz_lep2 = 0;
 
     // preshower variables
     float eleESEnToRawE_lep1, eleESEnToRawE_lep2;
@@ -612,6 +613,7 @@ void Minitree::SetMinitree(TString treename)
     _tree->Branch("circularity_lep2", &circularity_lep2);
 
     // Conv information
+    _tree->Branch("nConv", &nConv_);
     _tree->Branch("convMatched_lep1", &convMatched_lep1);
     _tree->Branch("convMatched_lep2", &convMatched_lep2);
     _tree->Branch("convVtxRadius_lep1", &convVtxRadius_lep1);
@@ -712,7 +714,8 @@ void Minitree::FillMinitree(TreeReader &data, Event &event)
     float *bcR15 = data.GetPtrFloat("bcR15");
 
     // Conv information
-    float *convVtxRadius = data.GetPtrFloat("convVtxRadius");
+    Int_t nConv             = data.GetInt("nConv");
+    float *convVtxRadius    = data.GetPtrFloat("convVtxRadius");
     Int_t* convNTrks        = data.GetPtrInt("convNTrks");
     float* convTrksPin0X    = data.GetPtrFloat("convTrksPin0X");
     float* convTrksPin0Y    = data.GetPtrFloat("convTrksPin0Y");
@@ -1115,30 +1118,34 @@ void Minitree::FillMinitree(TreeReader &data, Event &event)
     circularity_lep2 = 1 - bcR15[event.BCIdxLep2[0]];
 
     // Conv information
-    convMatched_lep1 = (event.ConvIdxLep1 != -1);
-    convMatched_lep2 = (event.ConvIdxLep2 != -1);
-    convVtxRadius_lep1 = convVtxRadius[event.ConvIdxLep1];
-    convVtxRadius_lep2 = convVtxRadius[event.ConvIdxLep2];
-    convNTrks_lep1 = convNTrks[event.ConvIdxLep1];
-    convNTrks_lep2 = convNTrks[event.ConvIdxLep2];
-    convD0_lep1 = convD0[event.ConvIdxLep1];
-    convD0_lep2 = convD0[event.ConvIdxLep2];
-    convDz_lep1 = convDz[event.ConvIdxLep1];
-    convDz_lep2 = convDz[event.ConvIdxLep2];
-    convL0_lep1 = convL0[event.ConvIdxLep1];
-    convL0_lep2 = convL0[event.ConvIdxLep2];
-    convLz_lep1 = convLz[event.ConvIdxLep1];
-    convLz_lep2 = convLz[event.ConvIdxLep2];
+    nConv_ = nConv;
+    if (nConv > 0){
+        convMatched_lep1 = (event.ConvIdxLep1 != -1);
+        convMatched_lep2 = (event.ConvIdxLep2 != -1);
+        convVtxRadius_lep1 = convVtxRadius[event.ConvIdxLep1];
+        convVtxRadius_lep2 = convVtxRadius[event.ConvIdxLep2];
+        convNTrks_lep1 = convNTrks[event.ConvIdxLep1];
+        convNTrks_lep2 = convNTrks[event.ConvIdxLep2];
+        convD0_lep1 = convD0[event.ConvIdxLep1];
+        convD0_lep2 = convD0[event.ConvIdxLep2];
+        convDz_lep1 = convDz[event.ConvIdxLep1];
+        convDz_lep2 = convDz[event.ConvIdxLep2];
+        convL0_lep1 = convL0[event.ConvIdxLep1];
+        convL0_lep2 = convL0[event.ConvIdxLep2];
+        convLz_lep1 = convLz[event.ConvIdxLep1];
+        convLz_lep2 = convLz[event.ConvIdxLep2];
 
-    if (convNTrks[event.ConvIdxLep1] == 2)
-        convP_lep1 = sqrt(pow(convFitPairPX[event.ConvIdxLep1], 2) + pow(convFitPairPY[event.ConvIdxLep1], 2) + pow(convFitPairPZ[event.ConvIdxLep1], 2));
-    else
-        convP_lep1 = sqrt(pow(convTrksPin0X[event.ConvIdxLep1], 2) + pow(convTrksPin0Y[event.ConvIdxLep1], 2) + pow(convTrksPin0Z[event.ConvIdxLep1], 2));
+        if (convNTrks[event.ConvIdxLep1] == 2)
+            convP_lep1 = sqrt(pow(convFitPairPX[event.ConvIdxLep1], 2) + pow(convFitPairPY[event.ConvIdxLep1], 2) + pow(convFitPairPZ[event.ConvIdxLep1], 2));
+        else
+            convP_lep1 = sqrt(pow(convTrksPin0X[event.ConvIdxLep1], 2) + pow(convTrksPin0Y[event.ConvIdxLep1], 2) + pow(convTrksPin0Z[event.ConvIdxLep1], 2));
 
-    if (convNTrks[event.ConvIdxLep2] == 2)
-        convP_lep2 = sqrt(pow(convFitPairPX[event.ConvIdxLep2], 2) + pow(convFitPairPY[event.ConvIdxLep2], 2) + pow(convFitPairPZ[event.ConvIdxLep2], 2));
-    else
-        convP_lep2 = sqrt(pow(convTrksPin0X[event.ConvIdxLep2], 2) + pow(convTrksPin0Y[event.ConvIdxLep2], 2) + pow(convTrksPin0Z[event.ConvIdxLep2], 2));
+        if (convNTrks[event.ConvIdxLep2] == 2)
+            convP_lep2 = sqrt(pow(convFitPairPX[event.ConvIdxLep2], 2) + pow(convFitPairPY[event.ConvIdxLep2], 2) + pow(convFitPairPZ[event.ConvIdxLep2], 2));
+        else
+            convP_lep2 = sqrt(pow(convTrksPin0X[event.ConvIdxLep2], 2) + pow(convTrksPin0Y[event.ConvIdxLep2], 2) + pow(convTrksPin0Z[event.ConvIdxLep2], 2));
+    }
+    
     
 
     Fill1DHist(v_hM_Mll, event.category, (GenLep1 + GenLep2).M(), event.mcwei * event.genwei);
