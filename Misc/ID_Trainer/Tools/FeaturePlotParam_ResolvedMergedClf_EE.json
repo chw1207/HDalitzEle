@@ -1,0 +1,366 @@
+{
+    "rho": {
+        "bininfo": [
+            50,
+            0,
+            100
+        ],
+        "xAxisLabel": "$\\rho$",
+        "yAxisUnit": "",
+        "xoverflow": "false",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.2
+    },
+    "eleEn": {
+        "bininfo": [
+            50,
+            0,
+            200
+        ],
+        "xAxisLabel": "E [GeV]",
+        "yAxisUnit": "GeV",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 5
+    },
+    "elePt": {
+        "bininfo": [
+            50,
+            0,
+            200
+        ],
+        "xAxisLabel": "$P^{e}_T$ [GeV]",
+        "yAxisUnit": "GeV",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 5
+    },
+    "eleSCEta": {
+        "bininfo": [
+            50,
+            -2.5,
+            2.5
+        ],
+        "xAxisLabel": "$\\eta_{SC}$",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 1.6
+    },
+    "eleD0": {
+        "bininfo": [
+            60,
+            0,
+            3
+        ],
+        "xAxisLabel": "$d_{0}$ [cm]",
+        "yAxisUnit": "cm",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 2.0
+    },
+    "eleDz": {
+        "bininfo": [
+            50,
+            0,
+            5
+        ],
+        "xAxisLabel": "$d_{z}$ [cm]",
+        "yAxisUnit": "cm",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 2.0
+    },
+    "eleSIP": {
+        "bininfo": [
+            50,
+            0,
+            10
+        ],
+        "xAxisLabel": "Significance of IP",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 5
+    },
+    "elePtError": {
+        "bininfo": [
+            50,
+            0,
+            20
+        ],
+        "xAxisLabel": "$p_{T}$ error [GeV]",
+        "yAxisUnit": "GeV",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 2
+    },
+    "eleSCEtaWidth": {
+        "bininfo": [
+            50,
+            0,
+            0.1
+        ],
+        "xAxisLabel": "$\\eta_{SC}$ width",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 3
+    },
+    "eleSCPhiWidth": {
+        "bininfo": [
+            50,
+            0,
+            0.5
+        ],
+        "xAxisLabel": "$\\phi_{SC}$ width",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 3
+    },
+    "eleHoverE": {
+        "bininfo": [
+            50,
+            0,
+            5
+        ],
+        "xAxisLabel": "H/E",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 2.0
+    },
+    "eleEoverP": {
+        "bininfo": [
+            50,
+            0,
+            5
+        ],
+        "xAxisLabel": "E/P",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 2
+    },
+    "eleEoverPout": {
+        "bininfo": [
+            100,
+            0,
+            5
+        ],
+        "xAxisLabel": "$E/P_{out}$",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 2.0
+    },
+    "eleEoverPInv": {
+        "bininfo": [
+            50,
+            -1,
+            1
+        ],
+        "xAxisLabel": "$1/E - 1/P [GeV^{-1}]$",
+        "yAxisUnit": "GeV^{-1}",
+        "xoverflow": "true",
+        "xunderflow": "true",
+        "logy": "true",
+        "y_axisscale": 3
+    },
+    "eleBrem": {
+        "bininfo": [
+            50,
+            0,
+            1
+        ],
+        "xAxisLabel": "$f_{brem}$",
+        "yAxisUnit": "",
+        "xoverflow": "false",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 2.0
+    },
+    "eledEtaAtVtx": {
+        "bininfo": [
+            80,
+            -0.2,
+            0.2
+        ],
+        "xAxisLabel": "$\\Delta\\eta\\ at\\ Vtx.$",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 3
+    },
+    "eledPhiAtVtx": {
+        "bininfo": [
+            120,
+            -0.3,
+            0.3
+        ],
+        "xAxisLabel": "$\\Delta\\phi\\ at\\ Vtx.$",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 3
+    },
+    "eleSigmaIEtaIEtaFull5x5": {
+        "bininfo": [
+            40,
+            0,
+            0.04
+        ],
+        "xAxisLabel": "$\\sigma_{i \\eta i \\eta}$",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 2.5
+    },
+    "eleSigmaIPhiIPhiFull5x5": {
+        "bininfo": [
+            40,
+            0,
+            0.04
+        ],
+        "xAxisLabel": "$\\sigma_{i \\phi i \\phi}$",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 2.5
+    },
+    "elePFChIso": {
+        "bininfo": [
+            40,
+            0,
+            20
+        ],
+        "xAxisLabel": "$Iso._{PF\\ charged\\ hadron}$ [GeV]",
+        "yAxisUnit": "GeV",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 2.0
+    },
+    "elePFPhoIso": {
+        "bininfo": [
+            40,
+            0,
+            20
+        ],
+        "xAxisLabel": "$Iso._{PF\\ photon}$ [GeV]",
+        "yAxisUnit": "GeV",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 2.0
+    },
+    "elePFNeuIso": {
+        "bininfo": [
+            40,
+            0,
+            20
+        ],
+        "xAxisLabel": "$Iso._{PF\\ neutral\\ hadron}$ [GeV]",
+        "yAxisUnit": "GeV",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 2.0
+    },
+    "elePFPUIso": {
+        "bininfo": [
+            40,
+            0,
+            20
+        ],
+        "xAxisLabel": "$Iso._{PF\\ pile-up}$ [GeV]",
+        "yAxisUnit": "GeV",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 2.0
+    },
+    "eleIDMVAIso": {
+        "bininfo": [
+            50,
+            -1,
+            1
+        ],
+        "xAxisLabel": "MVA score",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 1.7
+    },
+    "eleIDMVANoIso": {
+        "bininfo": [
+            50,
+            -1,
+            1
+        ],
+        "xAxisLabel": "MVA score",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 1.7
+    },
+    "eleR9Full5x5": {
+        "bininfo": [
+            50,
+            0,
+            1
+        ],
+        "xAxisLabel": "$R_{9}^{full\\ 5 \\times 5}$",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.5
+    },
+    "eleTrkdxy": {
+        "bininfo": [
+            50,
+            0,
+            1
+        ],
+        "xAxisLabel": "$d_{xy}^{Trk.}$ [cm]",
+        "yAxisUnit": "cm",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 2.0
+    },
+    "eleMissHits": {
+        "bininfo": [
+            10,
+            0,
+            10
+        ],
+        "xAxisLabel": "Number of missing hits",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 2.0
+    }
+}

@@ -1,0 +1,116 @@
+cat = [Merged2Gsf_HVBF, 0]
+truth = Bernstein:1:pol1
+truth = Exponential:1:exp1
+truth = PowerLaw:1:pow1
+paul = Bernstein:1:pol1
+paul = Exponential:1:exp1
+paul = PowerLaw:1:pow1
+
+cat = [Merged2Gsf_LVBF, 1]
+truth = Bernstein:1:pol1
+truth = Exponential:1:exp1
+truth = PowerLaw:1:pow1
+paul = Bernstein:1:pol1
+paul = Exponential:1:exp1
+paul = PowerLaw:1:pow1
+
+cat = [Merged2Gsf_BST, 2]
+truth = Bernstein:2:pol2
+truth = Exponential:3:exp3
+truth = PowerLaw:1:pow1
+paul = Bernstein:1:pol1
+paul = Bernstein:2:pol2
+paul = Exponential:1:exp1
+paul = Exponential:3:exp3
+paul = PowerLaw:1:pow1
+
+cat = [Merged2Gsf_EBHR9, 3]
+truth = Bernstein:3:pol3
+truth = Exponential:1:exp1
+truth = PowerLaw:1:pow1
+paul = Bernstein:1:pol1
+paul = Bernstein:2:pol2
+paul = Bernstein:3:pol3
+paul = Exponential:1:exp1
+paul = PowerLaw:1:pow1
+
+cat = [Merged2Gsf_EBLR9, 4]
+truth = Bernstein:2:pol2
+truth = Exponential:1:exp1
+truth = PowerLaw:1:pow1
+paul = Bernstein:2:pol2
+paul = Exponential:1:exp1
+paul = PowerLaw:1:pow1
+
+cat = [Merged2Gsf_EE, 5]
+truth = Bernstein:3:pol3
+truth = Exponential:1:exp1
+truth = PowerLaw:1:pow1
+paul = Bernstein:2:pol2
+paul = Bernstein:3:pol3
+paul = Exponential:1:exp1
+paul = PowerLaw:1:pow1
+
+cat = [Merged1Gsf_HVBF, 6]
+truth = Bernstein:2:pol2
+truth = Exponential:1:exp1
+truth = PowerLaw:1:pow1
+paul = Bernstein:2:pol2
+paul = Exponential:1:exp1
+paul = PowerLaw:1:pow1
+
+cat = [Merged1Gsf_LVBF, 7]
+truth = Bernstein:2:pol2
+truth = Exponential:1:exp1
+truth = PowerLaw:1:pow1
+paul = Bernstein:2:pol2
+paul = Bernstein:3:pol3
+paul = Exponential:1:exp1
+paul = PowerLaw:1:pow1
+
+cat = [Merged1Gsf_BST, 8]
+truth = Bernstein:4:pol4
+truth = Exponential:3:exp3
+truth = PowerLaw:1:pow1
+paul = Bernstein:3:pol3
+paul = Bernstein:4:pol4
+paul = Exponential:1:exp1
+paul = Exponential:3:exp3
+paul = PowerLaw:1:pow1
+
+cat = [Merged1Gsf_EBHR9, 9]
+truth = Bernstein:4:pol4
+truth = Exponential:3:exp3
+truth = PowerLaw:1:pow1
+paul = Bernstein:3:pol3
+paul = Bernstein:4:pol4
+paul = Exponential:3:exp3
+paul = PowerLaw:1:pow1
+
+cat = [Merged1Gsf_EBLR9, 10]
+truth = Bernstein:4:pol4
+truth = Exponential:3:exp3
+truth = PowerLaw:1:pow1
+paul = Bernstein:3:pol3
+paul = Bernstein:4:pol4
+paul = Exponential:3:exp3
+paul = PowerLaw:1:pow1
+
+cat = [Merged1Gsf_EE, 11]
+truth = Bernstein:3:pol3
+truth = Exponential:3:exp3
+truth = PowerLaw:1:pow1
+paul = Bernstein:3:pol3
+paul = Bernstein:4:pol4
+paul = Exponential:3:exp3
+paul = PowerLaw:1:pow1
+
+cat = [Resolved, 12]
+truth = Bernstein:2:pol2
+truth = Exponential:1:exp1
+truth = PowerLaw:1:pow1
+paul = Bernstein:1:pol1
+paul = Bernstein:2:pol2
+paul = Exponential:1:exp1
+paul = PowerLaw:1:pow1
+
