@@ -1,4 +1,5 @@
-# include "ROOT/RVec.hxx"
+#include "ROOT/RVec.hxx"
+#include "TLorentzVector.h"
 using namespace ROOT::VecOps;
 using namespace std;
 
@@ -41,47 +42,71 @@ float phoIntConv(vector<string> fileVec){
     return wei;
 }
 
-
-// Function to match the gsf tracks to electron
+// Function to find the main gsf track to electron
 //* Description:
-//*     1) eleTrkIdx = GetTrkIdx(int nEle, eleCalibEn, eleEta, elePhi, nGSFTrk, gsfPt, gsfEta, gsfPhi)[0]
-//*     2) eleSubTrkIdx = GetTrkIdx(int nEle, eleCalibEn, eleEta, elePhi, nGSFTrk, gsfPt, gsfEta, gsfPhi)[1]
-//*     3) nGsfMatchToReco = GetTrkIdx(int nEle, eleCalibEn, eleEta, elePhi, nGSFTrk, gsfPt, gsfEta, gsfPhi)[2][0]
-//*     4) Matching criteria: https://github.com/cms-sw/cmssw/blob/6d2f66057131baacc2fcbdd203588c41c885b42c/RecoEgamma/EgammaElectronProducers/plugins/GsfElectronProducer.cc#L188-L191
-ROOT::RVec<ROOT::RVec<int>> GetTrkIdx(int nEle, ROOT::RVec<float>& eleCalibEn, ROOT::RVec<float>& eleEta, ROOT::RVec<float>& elePhi, int nGSFTrk, ROOT::RVec<float>& gsfPt, ROOT::RVec<float>& gsfEta, ROOT::RVec<float>& gsfPhi){
-    ROOT::RVec<int> LeadTrk; // leading track
-    LeadTrk.clear();
-    
-    ROOT::RVec<int> SubLeadTrk; // trailing track
-    SubLeadTrk.clear();
+//*     1) pt, eta, phi of main gsf of electron are not stored in the ggNtuple
+//*     2) match eleD0 (main gsf track dxy) and gsfD0 to find the main gsf index 
+ROOT::RVec<int> FindMainGSF(ROOT::RVec<float>& eleD0, ROOT::RVec<float>& gsfD0){
+    ROOT::RVec<int> maingsfIdx;
+    maingsfIdx.clear();
 
-    ROOT::RVec<int> vngsf; // nTrks
+    for (int i = 0; i < eleD0.size(); i++){
+        int match = -1;
+        
+        for (int j = 0; j < gsfD0.size(); j++){
+            if (fabs(eleD0[i] - gsfD0[j]) < 0.0001){
+                match = j;
+                break;
+            }
+        }
+        
+        if (match == -1) {
+            cout << "[ERROR]: No matched main gsf track!!!!!!" << endl;
+            exit(-1);
+        }
+
+        maingsfIdx.push_back(match);
+    }
+
+    return maingsfIdx;
+}
+
+
+// Function to find the sub gsf track to electron
+//* Description:
+//*     1) find the gsf trck near the main gsf track
+//*     2) within cone size 0.1
+ROOT::RVec<ROOT::RVec<int>> FindSubGSF(ROOT::RVec<int>& eleTrkIdx, ROOT::RVec<float>& gsfPt, ROOT::RVec<float>& gsfEta, ROOT::RVec<float>& gsfPhi){
+    ROOT::RVec<int> subLeadTrk; // trailing track
+    subLeadTrk.clear();
+    
+    ROOT::RVec<int> vngsf; // nGsfMatchToReco
     vngsf.clear();
 
-    for (int iele = 0; iele < nEle; iele++){
-        TLorentzVector Ele;
-        Ele.SetPtEtaPhiE(eleCalibEn[iele]/cosh(eleEta[iele]), eleEta[iele], elePhi[iele], eleCalibEn[iele]);
+    for (int i = 0; i < eleTrkIdx.size(); i++){
+
+        TLorentzVector mainGSF;
+        mainGSF.SetPtEtaPhiM(gsfPt[eleTrkIdx[i]], gsfEta[eleTrkIdx[i]], gsfPhi[eleTrkIdx[i]], 0.000511);
 
         ROOT::RVec<int> idx;
         idx.clear();
-        
         ROOT::RVec<float> pt;
         pt.clear();
-        for (int igsf = 0; igsf < nGSFTrk; igsf++){
-            TLorentzVector Gsf;
-            Gsf.SetPtEtaPhiM(gsfPt[igsf], gsfEta[igsf], gsfPhi[igsf], 0.000511);
+        for (int j = 0; j < gsfPt.size(); j++){
+            if (j == eleTrkIdx[i]) continue; // cannot be main gsf track
+            if (gsfPt[j] > gsfPt[eleTrkIdx[i]]) continue; // pt < main gsf track pt
 
-            // why some gsf trcks have very high pT?
-            if (Gsf.Pt()/Ele.Pt() > 5.) continue; // remove gsf track with unreasonable high pT
-            if (fabs(Ele.Eta() - Gsf.Eta()) > 0.02) continue;
-            if (Ele.DeltaPhi(Gsf) > 0.15) continue;
+            TLorentzVector subGSF;
+            subGSF.SetPtEtaPhiM(gsfPt[j], gsfEta[j], gsfPhi[j], 0.000511);
+
+            if (mainGSF.DeltaR(subGSF) > 0.1) continue;
             
-            idx.push_back(igsf);
-            pt.push_back(gsfPt[igsf]);
+            idx.push_back(j);
+            pt.push_back(gsfPt[j]);
         }
 
         const int ngsf = idx.size();
-        vngsf.push_back(ngsf);
+        vngsf.push_back(ngsf+1); // number of matched sub gsf tracks + 1 main gsf track = total number of gsf track matched to electron
 
         // sort the idx via pT
         ROOT::RVec<int> sort_idx = idx;
@@ -89,15 +114,13 @@ ROOT::RVec<ROOT::RVec<int>> GetTrkIdx(int nEle, ROOT::RVec<float>& eleCalibEn, R
             auto sortIndices = Reverse(Argsort(pt)); // descending sorting
             sort_idx = Take(idx, sortIndices);
         }
-        
-        if (ngsf != 0) LeadTrk.push_back(sort_idx[0]);
-        else LeadTrk.push_back(-1);
-        
-        if (ngsf > 1) SubLeadTrk.push_back(sort_idx[1]);
-        else SubLeadTrk.push_back(-1);
+
+        if (ngsf > 0) subLeadTrk.push_back(sort_idx[0]); // most energenic one among all trailing gsf tracks
+        else subLeadTrk.push_back(-1);
+
     }
 
-    ROOT::RVec<ROOT::RVec<int>> TrkIdx = {LeadTrk, SubLeadTrk, vngsf};
+    ROOT::RVec<ROOT::RVec<int>> TrkIdx = {subLeadTrk, vngsf};
 
     return TrkIdx;
 }
@@ -160,13 +183,13 @@ ROOT::RVec<float> GetTrkdR(int nEle, ROOT::RVec<int>& nGsfMatchToReco, ROOT::RVe
 
 
 // Function to get the deltaR between electron trak and sub-track (if nGsfMatchToReco > 1)
-ROOT::RVec<float> GetTrkRelPtRatio(int nEle, ROOT::RVec<float>& eleCalibEn, ROOT::RVec<float>& eleEta, ROOT::RVec<int>& nGsfMatchToReco, ROOT::RVec<TLorentzVector>& eleTrk1, ROOT::RVec<TLorentzVector>& eleTrk2){
+ROOT::RVec<float> GetTrkRelPtRatio(int nEle, ROOT::RVec<float>& eleCalibPt, ROOT::RVec<int>& nGsfMatchToReco, ROOT::RVec<TLorentzVector>& eleTrk1, ROOT::RVec<TLorentzVector>& eleTrk2){
     ROOT::RVec<float> v;
     v.clear();
     for (int iele = 0; iele < nEle; iele++){
         if (nGsfMatchToReco[iele] == 0) v.push_back(-999.);
-        else if (nGsfMatchToReco[iele] == 1) v.push_back(eleTrk1[iele].Pt()/(eleCalibEn[iele]/cosh(eleEta[iele])));
-        else v.push_back((eleTrk1[iele] + eleTrk2[iele]).Pt()/(eleCalibEn[iele]/cosh(eleEta[iele])));
+        else if (nGsfMatchToReco[iele] == 1) v.push_back(eleTrk1[iele].Pt()/eleCalibPt[iele]);
+        else v.push_back((eleTrk1[iele] + eleTrk2[iele]).Pt()/eleCalibPt[iele]);
     }
 
     return v;
@@ -174,91 +197,148 @@ ROOT::RVec<float> GetTrkRelPtRatio(int nEle, ROOT::RVec<float>& eleCalibEn, ROOT
 
 
 
-
-
-
-/*
-// Function to generat the Gsf track informations (old version)
-// Reference:
-// [1] Matching criteria: https://github.com/cms-sw/cmssw/blob/6d2f66057131baacc2fcbdd203588c41c885b42c/RecoEgamma/EgammaElectronProducers/plugins/GsfElectronProducer.cc#L188-L191
-auto Gsf_fun(int nEle, int nGSFTrk, ROOT::RVec<float>& eleCalibEn, ROOT::RVec<float>& eleEta, ROOT::RVec<float>& elePhi, ROOT::RVec<float>& gsfPt, ROOT::RVec<float>& gsfEta, ROOT::RVec<float>& gsfPhi){
-
-    ROOT::RVec<float> vnGsfmatchToReco;
-    vnGsfmatchToReco.clear();
-
-    ROOT::RVec<float> vGsfPtRatio;
-    vGsfPtRatio.clear();
-
-    ROOT::RVec<float> vGsfDeltaR;
-    vGsfDeltaR.clear();
-
-    ROOT::RVec<float> vGsfRelPtRatio;
-    vGsfRelPtRatio.clear();
-
-    for(int i = 0; i < nEle; i++){
-        vector<int> accInd;
-        accInd.clear();
-        
-        TLorentzVector Ele;
-        Ele.SetPtEtaPhiE(eleCalibEn[i]/cosh(eleEta[i]), eleEta[i], elePhi[i], eleCalibEn[i]);
-
-        for (int j = 0; j < nGSFTrk; j++){
-            TLorentzVector Gsf;
-            Gsf.SetPtEtaPhiM(gsfPt[j], gsfEta[j], gsfPhi[j], 0.000511);
-
-            // if (Gsf.Pt()/Ele.Pt() > 5.) continue; // remove gsf track with unreasonable high pT
-            if (fabs(Ele.Eta() - Gsf.Eta()) > 0.02) continue;
-            if (Ele.DeltaPhi(Gsf) > 0.15) continue;
-
-            accInd.push_back(j);
-        }
-
-        float ngsf = accInd.size();
-        vnGsfmatchToReco.push_back(ngsf);
-
-        float ratio = -1., dR = -999.; // ngsf = 0 || 1 (should be the same as the value put into training)
-        float Relratio = -999; // ngsf = 0
-        if (ngsf > 1){
-
-            // argsort the index 
-            for (int j = 0; j < (accInd.size() - 1); j++) {
-                for (int x = 0; x < (accInd.size() - j - 1); x++) {
-                    if (gsfPt[accInd[x]] < gsfPt[accInd[x + 1]]) {
-                        int temp = accInd[x];
-                        accInd[x] = accInd[x + 1];
-                        accInd[x + 1] = temp;
-                    }
-                }
-            }
-
-            ratio = gsfPt[accInd[1]]/gsfPt[accInd[0]];
-            
-            TLorentzVector Gsf1, Gsf2, digsf;
-            Gsf1.SetPtEtaPhiM(gsfPt[accInd[0]], gsfEta[accInd[0]], gsfPhi[accInd[0]], 0.000511);
-            Gsf2.SetPtEtaPhiM(gsfPt[accInd[1]], gsfEta[accInd[1]], gsfPhi[accInd[1]], 0.000511);
-
-            digsf = Gsf1 + Gsf2;
-            dR = Gsf1.DeltaR(Gsf2);
-            Relratio = digsf.Pt()/Ele.Pt();
-        }
-
-        if (ngsf == 1){
-            TLorentzVector digsf;
-            Relratio = gsfPt[accInd[0]]/Ele.Pt();
-        }
-
-        vGsfPtRatio.push_back(ratio);
-        vGsfDeltaR.push_back(dR);
-        vGsfRelPtRatio.push_back(Relratio);
-    }
-
-    vector<ROOT::RVec<float>> gsf_vec;
-    gsf_vec.clear();
-    gsf_vec.push_back(vnGsfmatchToReco);
-    gsf_vec.push_back(vGsfPtRatio);
-    gsf_vec.push_back(vGsfDeltaR);
-    gsf_vec.push_back(vGsfRelPtRatio);
+// Function to match the gsf tracks to electron (old version)
+//* Description:
+//*     1) eleTrkIdx = GetTrkIdx(int nEle, eleCalibEn, eleEta, elePhi, nGSFTrk, gsfPt, gsfEta, gsfPhi)[0]
+//*     2) eleSubTrkIdx = GetTrkIdx(int nEle, eleCalibEn, eleEta, elePhi, nGSFTrk, gsfPt, gsfEta, gsfPhi)[1]
+//*     3) nGsfMatchToReco = GetTrkIdx(int nEle, eleCalibEn, eleEta, elePhi, nGSFTrk, gsfPt, gsfEta, gsfPhi)[2][0]
+//*     4) Matching criteria: https://github.com/cms-sw/cmssw/blob/6d2f66057131baacc2fcbdd203588c41c885b42c/RecoEgamma/EgammaElectronProducers/plugins/GsfElectronProducer.cc#L188-L191
+// ROOT::RVec<ROOT::RVec<int>> GetTrkIdx(int nEle, ROOT::RVec<float>& eleCalibEn, ROOT::RVec<float>& eleEta, ROOT::RVec<float>& elePhi, int nGSFTrk, ROOT::RVec<float>& gsfPt, ROOT::RVec<float>& gsfEta, ROOT::RVec<float>& gsfPhi){
+//     ROOT::RVec<int> LeadTrk; // leading track
+//     LeadTrk.clear();
     
-    return gsf_vec;
-}
-*/
+//     ROOT::RVec<int> SubLeadTrk; // trailing track
+//     SubLeadTrk.clear();
+
+//     ROOT::RVec<int> vngsf; // nTrks
+//     vngsf.clear();
+
+//     for (int iele = 0; iele < nEle; iele++){
+//         TLorentzVector Ele;
+//         Ele.SetPtEtaPhiE(eleCalibEn[iele]/cosh(eleEta[iele]), eleEta[iele], elePhi[iele], eleCalibEn[iele]);
+
+//         ROOT::RVec<int> idx;
+//         idx.clear();
+        
+//         ROOT::RVec<float> pt;
+//         pt.clear();
+//         for (int igsf = 0; igsf < nGSFTrk; igsf++){
+//             TLorentzVector Gsf;
+//             Gsf.SetPtEtaPhiM(gsfPt[igsf], gsfEta[igsf], gsfPhi[igsf], 0.000511);
+
+//             // why some gsf trcks have very high pT?
+//             if (Gsf.Pt()/Ele.Pt() > 5.) continue; // remove gsf track with unreasonable high pT
+//             if (fabs(Ele.Eta() - Gsf.Eta()) > 0.02) continue;
+//             if (Ele.DeltaPhi(Gsf) > 0.15) continue;
+            
+//             idx.push_back(igsf);
+//             pt.push_back(gsfPt[igsf]);
+//         }
+
+//         const int ngsf = idx.size();
+//         vngsf.push_back(ngsf);
+
+//         // sort the idx via pT
+//         ROOT::RVec<int> sort_idx = idx;
+//         if (ngsf > 1){
+//             auto sortIndices = Reverse(Argsort(pt)); // descending sorting
+//             sort_idx = Take(idx, sortIndices);
+//         }
+        
+//         if (ngsf != 0) LeadTrk.push_back(sort_idx[0]);
+//         else LeadTrk.push_back(-1);
+        
+//         if (ngsf > 1) SubLeadTrk.push_back(sort_idx[1]);
+//         else SubLeadTrk.push_back(-1);
+//     }
+
+//     ROOT::RVec<ROOT::RVec<int>> TrkIdx = {LeadTrk, SubLeadTrk, vngsf};
+
+//     return TrkIdx;
+// }
+
+
+
+// // Function to generat the Gsf track informations (old version)
+// // Reference:
+// // [1] Matching criteria: https://github.com/cms-sw/cmssw/blob/6d2f66057131baacc2fcbdd203588c41c885b42c/RecoEgamma/EgammaElectronProducers/plugins/GsfElectronProducer.cc#L188-L191
+// auto Gsf_fun(int nEle, int nGSFTrk, ROOT::RVec<float>& eleCalibEn, ROOT::RVec<float>& eleEta, ROOT::RVec<float>& elePhi, ROOT::RVec<float>& gsfPt, ROOT::RVec<float>& gsfEta, ROOT::RVec<float>& gsfPhi){
+
+//     ROOT::RVec<float> vnGsfmatchToReco;
+//     vnGsfmatchToReco.clear();
+
+//     ROOT::RVec<float> vGsfPtRatio;
+//     vGsfPtRatio.clear();
+
+//     ROOT::RVec<float> vGsfDeltaR;
+//     vGsfDeltaR.clear();
+
+//     ROOT::RVec<float> vGsfRelPtRatio;
+//     vGsfRelPtRatio.clear();
+
+//     for(int i = 0; i < nEle; i++){
+//         vector<int> accInd;
+//         accInd.clear();
+        
+//         TLorentzVector Ele;
+//         Ele.SetPtEtaPhiE(eleCalibEn[i]/cosh(eleEta[i]), eleEta[i], elePhi[i], eleCalibEn[i]);
+
+//         for (int j = 0; j < nGSFTrk; j++){
+//             TLorentzVector Gsf;
+//             Gsf.SetPtEtaPhiM(gsfPt[j], gsfEta[j], gsfPhi[j], 0.000511);
+
+//             // if (Gsf.Pt()/Ele.Pt() > 5.) continue; // remove gsf track with unreasonable high pT
+//             if (fabs(Ele.Eta() - Gsf.Eta()) > 0.02) continue;
+//             if (Ele.DeltaPhi(Gsf) > 0.15) continue;
+
+//             accInd.push_back(j);
+//         }
+
+//         float ngsf = accInd.size();
+//         vnGsfmatchToReco.push_back(ngsf);
+
+//         float ratio = -1., dR = -999.; // ngsf = 0 || 1 (should be the same as the value put into training)
+//         float Relratio = -999; // ngsf = 0
+//         if (ngsf > 1){
+
+//             // argsort the index 
+//             for (int j = 0; j < (accInd.size() - 1); j++) {
+//                 for (int x = 0; x < (accInd.size() - j - 1); x++) {
+//                     if (gsfPt[accInd[x]] < gsfPt[accInd[x + 1]]) {
+//                         int temp = accInd[x];
+//                         accInd[x] = accInd[x + 1];
+//                         accInd[x + 1] = temp;
+//                     }
+//                 }
+//             }
+
+//             ratio = gsfPt[accInd[1]]/gsfPt[accInd[0]];
+            
+//             TLorentzVector Gsf1, Gsf2, digsf;
+//             Gsf1.SetPtEtaPhiM(gsfPt[accInd[0]], gsfEta[accInd[0]], gsfPhi[accInd[0]], 0.000511);
+//             Gsf2.SetPtEtaPhiM(gsfPt[accInd[1]], gsfEta[accInd[1]], gsfPhi[accInd[1]], 0.000511);
+
+//             digsf = Gsf1 + Gsf2;
+//             dR = Gsf1.DeltaR(Gsf2);
+//             Relratio = digsf.Pt()/Ele.Pt();
+//         }
+
+//         if (ngsf == 1){
+//             TLorentzVector digsf;
+//             Relratio = gsfPt[accInd[0]]/Ele.Pt();
+//         }
+
+//         vGsfPtRatio.push_back(ratio);
+//         vGsfDeltaR.push_back(dR);
+//         vGsfRelPtRatio.push_back(Relratio);
+//     }
+
+//     vector<ROOT::RVec<float>> gsf_vec;
+//     gsf_vec.clear();
+//     gsf_vec.push_back(vnGsfmatchToReco);
+//     gsf_vec.push_back(vGsfPtRatio);
+//     gsf_vec.push_back(vGsfDeltaR);
+//     gsf_vec.push_back(vGsfRelPtRatio);
+    
+//     return gsf_vec;
+// }

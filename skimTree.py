@@ -109,10 +109,10 @@ class PreProcess():
             .Filter("isPVGood == 1", "Good Vtx")
             .Filter("(nEle > 0) && (nPho > 0) && (nGSFTrk > 0)", "Nonzero")
             
-            .Define("TrkIdxVec",         "GetTrkIdx(nEle, eleCalibEn, eleEta, elePhi, nGSFTrk, gsfPt, gsfEta, gsfPhi)")
-            .Define("eleTrkIdx",         "TrkIdxVec[0]")
-            .Define("eleSubTrkIdx",      "TrkIdxVec[1]")
-            .Define("nGsfMatchToReco",   "TrkIdxVec[2]")
+            .Define("eleTrkIdx",         "FindMainGSF(eleD0, gsfD0)")
+            .Define("eleTrkVec",         "FindSubGSF(eleTrkIdx, gsfPt, gsfEta, gsfPhi)")
+            .Define("eleSubTrkIdx",      "eleTrkVec[0]")
+            .Define("nGsfMatchToReco",   "eleTrkVec[1]")
 
             .Define("eleTrkPt",          "MatchIdex(eleTrkIdx, gsfPt)")
             .Define("eleTrkEta",         "MatchIdex(eleTrkIdx, gsfEta)")
@@ -136,7 +136,7 @@ class PreProcess():
             .Define("eleTrk2",           "P4Vector(eleSubTrkPt, eleSubTrkEta, eleSubTrkPhi, 0.000511)")
             .Define("gsfPtRatio",        "GetTrkPtRatio(nEle, nGsfMatchToReco, eleTrk1, eleTrk2)")
             .Define("gsfDeltaR",         "GetTrkdR(nEle, nGsfMatchToReco, eleTrk1, eleTrk2)")
-            .Define("gsfRelPtRatio",     "GetTrkRelPtRatio(nEle, eleCalibEn, eleEta, nGsfMatchToReco, eleTrk1, eleTrk2)")
+            .Define("gsfRelPtRatio",     "GetTrkRelPtRatio(nEle, eleCalibPt, nGsfMatchToReco, eleTrk1, eleTrk2)")
         )
         df2.Report().Print()
 
@@ -147,7 +147,7 @@ class PreProcess():
             if ((str(i)[:2] == "mu") or (str(i)[:2] == "pf") or (str(i)[:2] == "bc")):
                 continue
             # special branch type (not allowed by Snapshot)
-            if (str(i) == "TrkIdxVec") or (str(i) == "eleTrk1") or (str(i) == "eleTrk2"):
+            if (str(i) == "eleTrkVec") or (str(i) == "eleTrk1") or (str(i) == "eleTrk2"):
                 continue 
             branches_remain.push_back(i)
         
