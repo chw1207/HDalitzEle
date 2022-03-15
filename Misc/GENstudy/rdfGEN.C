@@ -417,7 +417,8 @@ void rdfGEN(string infile = "/data6/ggNtuples/V10_02_10_08/job_fall17_Dalitz_eeg
                 .Define("mcwei",    [&]{return mcwei;})
                 .Define("procXS",   [&]{return procXS;})
                 .Define("instwei",  [&]{return XSmap[Form("ggF_%dGeV", HiggsMass)];})
-                .Define("genwei",   "if (genWeight > 0) return (float) 1.; else return (float) -1.;");
+                .Define("genwei",   "if (genWeight > 0) return (float) 1.; else return (float) -1.;")
+                .Define("wei"       "mcwei * genwei * puwei");
 
     //=======================================================//
     // Do the selections on the RDataFrame                   //
