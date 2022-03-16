@@ -1,22 +1,24 @@
 import numpy as np
+from numba import jit
 
+@jit
 def sigmaEff(v, threshold = 0.683):
 	v = np.sort(v)
 
-	total = np.size(v)
+	total = len(v)
 	Max = int(threshold * total)
 
 	start, stop, width = [], [], []
 
 	i = 0 
-	while (i != np.size(v)-1):
+	while (i != len(v)-1):
 		count = 0
 		j = i
-		while (j != np.size(v)-1 and count < Max):
+		while (j != len(v)-1 and count < Max):
 			count +=1
 			j += 1
 
-		if (j != np.size(v)-1):
+		if (j != len(v)-1):
 			start.append(v[i])
 			stop.append(v[j])
 			width.append(v[j] - v[i])
