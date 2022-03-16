@@ -16,45 +16,6 @@
 using namespace std;
 using namespace ROOT::VecOps;
 
-float luminosity(int year){
-    float lumi = 1.;
-
-    if (year == 2016)
-        lumi = 35.917;
-    else if (year == 2017)
-        lumi = 41.525;
-    else if (year == 2018)
-        lumi = 59.725;
-    else{
-        cout << "[ERROR] No supported luminosity value of year: " << year << endl;
-        exit(-1);
-    }
-
-    return lumi;
-}
-
-
-map<string, float> XS_HDalitz() {
-    map<string, float> XSmap; // fb
-
-    XSmap["ggF_125GeV"] = 48.58 * 1000 * 8.10E-5;
-    XSmap["VBF_125GeV"] = 3.782 * 1000 * 8.10E-5;
-    XSmap["WH_125GeV"] = 1.373 * 1000 * 8.10E-5;
-    XSmap["ZH_125GeV"] = 0.8839 * 1000 * 8.10E-5;
-
-    XSmap["ggF_120GeV"] = 52.22 * 1000 * 7.88E-5;
-    XSmap["VBF_120GeV"] = 3.935 * 1000 * 7.88E-5;
-    XSmap["WH_120GeV"] = 1.565 * 1000 * 7.88E-5;
-    XSmap["ZH_120GeV"] = 0.9939 * 1000 * 7.88E-5;
-
-    XSmap["ggF_130GeV"] = 45.31 * 1000 * 8.02E-5;
-    XSmap["VBF_130GeV"] = 3.637 * 1000 * 8.02E-5;
-    XSmap["WH_130GeV"] = 1.209 * 1000 * 8.02E-5;
-    XSmap["ZH_130GeV"] = 0.4539 * 1000 * 8.02E-5;
-
-    return XSmap;
-}
-
 
 template <typename T>
 auto FindGen(T &df){
