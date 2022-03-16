@@ -16,28 +16,6 @@
 using namespace std;
 using namespace ROOT::VecOps;
 
-// fb
-map<string, float> XS_HDalitz(){
-    map<string, float> XSmap;
-    XSmap["ggF_125GeV"] = 48.58 * 1000 * 8.10E-5;
-    XSmap["VBF_125GeV"] = 3.782 * 1000 * 8.10E-5;
-    XSmap["WH_125GeV"] = 1.373 * 1000 * 8.10E-5;
-    XSmap["ZH_125GeV"] = 0.8839 * 1000 * 8.10E-5;
-
-    XSmap["ggF_120GeV"] = 52.22 * 1000 * 7.88E-5;
-    XSmap["VBF_120GeV"] = 3.935 * 1000 * 7.88E-5;
-    XSmap["WH_120GeV"] = 1.565 * 1000 * 7.88E-5;
-    XSmap["ZH_120GeV"] = 0.9939 * 1000 * 7.88E-5;
-
-    XSmap["ggF_130GeV"] = 45.31 * 1000 * 8.02E-5;
-    XSmap["VBF_130GeV"] = 3.637 * 1000 * 8.02E-5;
-    XSmap["WH_130GeV"] = 1.209 * 1000 * 8.02E-5;
-    XSmap["ZH_130GeV"] = 0.4539 * 1000 * 8.02E-5;
-    
-    return XSmap;
-}
-
-
 float luminosity(int year){
     float lumi = 1.;
 
@@ -53,6 +31,28 @@ float luminosity(int year){
     }
 
     return lumi;
+}
+
+
+map<string, float> XS_HDalitz() {
+    map<string, float> XSmap; // fb
+
+    XSmap["ggF_125GeV"] = 48.58 * 1000 * 8.10E-5;
+    XSmap["VBF_125GeV"] = 3.782 * 1000 * 8.10E-5;
+    XSmap["WH_125GeV"] = 1.373 * 1000 * 8.10E-5;
+    XSmap["ZH_125GeV"] = 0.8839 * 1000 * 8.10E-5;
+
+    XSmap["ggF_120GeV"] = 52.22 * 1000 * 7.88E-5;
+    XSmap["VBF_120GeV"] = 3.935 * 1000 * 7.88E-5;
+    XSmap["WH_120GeV"] = 1.565 * 1000 * 7.88E-5;
+    XSmap["ZH_120GeV"] = 0.9939 * 1000 * 7.88E-5;
+
+    XSmap["ggF_130GeV"] = 45.31 * 1000 * 8.02E-5;
+    XSmap["VBF_130GeV"] = 3.637 * 1000 * 8.02E-5;
+    XSmap["WH_130GeV"] = 1.209 * 1000 * 8.02E-5;
+    XSmap["ZH_130GeV"] = 0.4539 * 1000 * 8.02E-5;
+
+    return XSmap;
 }
 
 
@@ -376,7 +376,7 @@ auto DefineFinalVars(T &df){
 }
 
 
-void rdfGEN(string infile = "/data6/ggNtuples/V10_02_10_08/job_fall17_Dalitz_eeg_m125/*.root", string outfile = "testGen.root", int year = 2017, string era = "2017", string proc = "HDalitz", string prod = "ggF", int HiggsMass = 125){
+void rdfGEN(string infile, string outfile, int year, string era, string proc, string prod, int HiggsMass){
     TStopwatch time;
     time.Start();
 
@@ -398,9 +398,39 @@ void rdfGEN(string infile = "/data6/ggNtuples/V10_02_10_08/job_fall17_Dalitz_eeg
     auto neg = df.Filter("genWeight <= 0",  "negative event").Count();
     const int totalev = pos.GetValue() - neg.GetValue();
 
-    map<string, float> XSmap = XS_HDalitz();
+    // XS x Br
+    map<string, float> XSmap; // fb
+    XSmap["ggF_125GeV"] = 48.58 * 1000 * 8.10E-5;
+    XSmap["VBF_125GeV"] = 3.782 * 1000 * 8.10E-5;
+    XSmap["WH_125GeV"] = 1.373 * 1000 * 8.10E-5;
+    XSmap["ZH_125GeV"] = 0.8839 * 1000 * 8.10E-5;
+    
+    XSmap["ggF_120GeV"] = 52.22 * 1000 * 7.88E-5;
+    XSmap["VBF_120GeV"] = 3.935 * 1000 * 7.88E-5;
+    XSmap["WH_120GeV"] = 1.565 * 1000 * 7.88E-5;
+    XSmap["ZH_120GeV"] = 0.9939 * 1000 * 7.88E-5;
+    
+    XSmap["ggF_130GeV"] = 45.31 * 1000 * 8.02E-5;
+    XSmap["VBF_130GeV"] = 3.637 * 1000 * 8.02E-5;
+    XSmap["WH_130GeV"] = 1.209 * 1000 * 8.02E-5;
+    XSmap["ZH_130GeV"] = 0.4539 * 1000 * 8.02E-5;
+
+    // luminosity 
+    float luminosity = 1;
+    if (year == 2016)
+        luminosity = 35.917;
+    else if (year == 2017)
+        luminosity = 41.525;
+    else if (year == 2018)
+        luminosity = 59.725;
+    else{
+        cout << "[ERROR] No supported luminosity value of year: " << year << endl;
+        exit(-1);
+    }
+
     const float procXS = XSmap[Form("%s_%dGeV", prod.c_str(), HiggsMass)];
-    const float mcwei = ((procXS * luminosity(year)) / totalev);
+    const float mcwei = ((procXS * luminosity) / totalev);
+    cout << scientific;
     cout << "[INFO] Number of events with genwei = " << totalev << endl;
     cout << "[INFO] MC weight = " << mcwei << endl;
 
@@ -413,10 +443,12 @@ void rdfGEN(string infile = "/data6/ggNtuples/V10_02_10_08/job_fall17_Dalitz_eeg
         return puwei;
     };
 
+    float instwei = procXS/XSmap[Form("ggF_%dGeV", HiggsMass)];
+
     auto wf = df.Define("puwei",    get_pu,     {"run", "puTrue"})
-                .Define("mcwei",    [&]{return mcwei;})
-                .Define("procXS",   [&]{return procXS;})
-                .Define("instwei",  [&]{return XSmap[Form("ggF_%dGeV", HiggsMass)];})
+                .Define("mcwei",    [&, mcwei]{return mcwei;})
+                .Define("procXS",   [&, procXS]{return procXS;})
+                .Define("instwei",  [&, instwei]{return instwei;})
                 .Define("genwei",   "if (genWeight > 0) return (float) 1.; else return (float) -1.;")
                 .Define("wei",      "mcwei * genwei * puwei");
 
@@ -468,4 +500,6 @@ void rdfGEN(string infile = "/data6/ggNtuples/V10_02_10_08/job_fall17_Dalitz_eeg
     cout << "[INFO] Time taken: " << endl;
     time.Stop();
     time.Print();
+
+    cout << endl;
 }
