@@ -451,7 +451,7 @@ void rdfGEN(string infile, string outfile, int year, string era, string proc, st
             Vars.push_back(defColNames[i]);
     }
     vector<string> extralVars = {
-        "mcwei", "puwei", "genwei", "procXS", "instwei",
+        "mcwei", "puwei", "genwei", "procXS", "instwei", "wei",
         "diTrk", "diTrkPtMax", "meeRatio", "meeRatioPtMax", "category"
     };
     Vars.insert(Vars.end(), extralVars.begin(), extralVars.end());
