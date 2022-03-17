@@ -1,7 +1,7 @@
 import numpy as np
 from numba import jit
 
-@jit
+@jit(nopython = True, parallel = True)
 def sigmaEff(v, threshold = 0.683):
 	v = np.sort(v)
 
