@@ -45,15 +45,15 @@ namespace Helper{
 
 template <typename T>
 auto FindGoodMus(T &df) {
-    auto nf = df.Define("isMediumID",   "PassMuonID(muIDbit, 2)")
-                .Define("isGoodMuon",   "abs(muEta) < 2.4 && muPt > 10. && isMediumID")
+    auto nf = df.Define("isMediumID",           "PassMuonID(muIDbit, 2)")
+                .Define("isGoodMuon",           "abs(muEta) < 2.4 && muPt > 10. && isMediumID")
 
                 .Filter("Sum(isGoodMuon) > 1", "good muon")
 
-                .Define("mu1Idx",       "Helper::getIdx(isGoodMuon, muPt)[0]")
-                .Define("mu2Idx",       "Helper::getIdx(isGoodMuon, muPt)[1]")
-                .Define("mu1",          "TLorentzVector v; v.SetPtEtaPhiM(muPt[mu1Idx], muEta[mu1Idx], muPhi[mu1Idx], 105.658*0.001); return v;")
-                .Define("mu2",          "TLorentzVector v; v.SetPtEtaPhiM(muPt[mu2Idx], muEta[mu2Idx], muPhi[mu2Idx], 105.658*0.001); return v;")
+                .Define("mu1Idx",               "Helper::getIdx(isGoodMuon, muPt)[0]")
+                .Define("mu2Idx",               "Helper::getIdx(isGoodMuon, muPt)[1]")
+                .Define("mu1",                  "TLorentzVector v; v.SetPtEtaPhiM(muPt[mu1Idx], muEta[mu1Idx], muPhi[mu1Idx], 105.658*0.001); return v;")
+                .Define("mu2",                  "TLorentzVector v; v.SetPtEtaPhiM(muPt[mu2Idx], muEta[mu2Idx], muPhi[mu2Idx], 105.658*0.001); return v;")
 
                 .Filter("muPt[mu1Idx] > 20 && muPt[mu2Idx] > 10", "HLT pTCut")
                 .Filter("(muCharge[mu1Idx] * muCharge[mu2Idx]) < 0", "+/- charge");
@@ -63,29 +63,29 @@ auto FindGoodMus(T &df) {
 
 template <typename T>
 auto FindGoodPho(T &df) {
-    auto nf = df.Define("phoP4",        "Helper::P4Vector(phoCalibEt, phoEta, phoPhi, 0.)")
-                .Define("isEBPho",      "abs(phoSCEta) < 1.4442")
-                .Define("isEEPho",      "abs(phoSCEta) > 1.566 && abs(phoSCEta) < 2.5")
-                .Define("isFSR",        "FSRSelec(mu1, mu2, phoP4)")
-                .Define("isGoodPho",    "(isEBPho || isEEPho) && isFSR && phoCalibEt > 15.")
-                .Define("isHggPho",     "HggPreSelection(rhoAll, nPho, phoSCEta, phoPFChIso, phoPFPhoIso, phoTrkIsoHollowConeDR03, phoR9Full5x5, phoCalibEt, phoSigmaIEtaIEtaFull5x5, phoHoverE)")
-            
+    auto nf = df.Define("phoP4",                "Helper::P4Vector(phoCalibEt, phoEta, phoPhi, 0.)")
+                .Define("isEBPho",              "abs(phoSCEta) < 1.4442")
+                .Define("isEEPho",              "abs(phoSCEta) > 1.566 && abs(phoSCEta) < 2.5")
+                .Define("isFSR",                "FSRSelec(mu1, mu2, phoP4)")
+                .Define("isGoodPho",            "(isEBPho || isEEPho) && isFSR && phoCalibEt > 15.")
+                .Define("isHggPho",             "HggPreSelection(rhoAll, nPho, phoSCEta, phoPFChIso, phoPFPhoIso, phoTrkIsoHollowConeDR03, phoR9Full5x5, phoCalibEt, phoSigmaIEtaIEtaFull5x5, phoHoverE)")
+
                 .Filter("Sum(isGoodPho) > 0", "good phon")
 
-                .Define("phoIdx",       "GetZPho(mu1, mu2, phoP4, isGoodPho)")
-                .Define("pho",          "phoP4[phoIdx]")
-                .Define("convIdx",      "ConvMatch(phoSCEta[phoIdx], phoSCPhi[phoIdx], phoSCE[phoIdx], nConv, convNTrks, convVtxX, convVtxY, convVtxZ, convFitPairPX, convFitPairPY, convFitPairPZ, convFitProb)")
-                
-                .Filter("convIdx != -1 && convVtxRadius[convIdx] < 16", "rconv < 16");
+                .Define("phoIdx",               "GetZPho(mu1, mu2, phoP4, isGoodPho)")
+                .Define("pho",                  "phoP4[phoIdx]")
+                .Define("convIdx",              "ConvMatch(phoSCEta[phoIdx], phoSCPhi[phoIdx], phoSCE[phoIdx], nConv, convNTrks, convVtxX, convVtxY, convVtxZ, convFitPairPX, convFitPairPY, convFitPairPZ, convFitProb)")
+
+                .Filter("convIdx != -1", "match conv");
     return nf;
 }
 
 
 template <typename T>
 auto FindFSRMu(T &df) {
-    auto nf = df.Define("fsrmu",        "if (mu1.DeltaR(pho) > mu2.DeltaR(pho)) return mu2; else return mu1")
-                .Define("nfsrmu",       "if (mu1.DeltaR(pho) > mu2.DeltaR(pho)) return mu1; else return mu2")
-            
+    auto nf = df.Define("fsrmu",                "if (mu1.DeltaR(pho) > mu2.DeltaR(pho)) return mu2; else return mu1")
+                .Define("nfsrmu",               "if (mu1.DeltaR(pho) > mu2.DeltaR(pho)) return mu1; else return mu2")
+
                 .Filter("nfsrmu.Pt() > 20", "non-fsr mu");
     return nf;
 }
@@ -93,42 +93,71 @@ auto FindFSRMu(T &df) {
 
 template <typename T>
 auto FindMatchEle(T &df) {
-    auto nf = df.Define("eleIdx",       "GetMatchEle(phoSCEta[phoIdx], eleSCEta)")
-                
+    auto nf = df.Define("eleIdx",               "GetMatchEle(phoSCEta[phoIdx], eleSCEta)")
+
                 .Filter("eleIdx != -1", "match ele")
-                .Filter("nGsfMatchToReco[eleIdx] > 0", "match gsf")
-                
-                .Define("ele",          "TLorentzVector v; v.SetPtEtaPhiM(eleCalibPt[eleIdx], eleEta[eleIdx], elePhi[eleIdx], 0.511*0.001); return v;");
+
+                .Define("ele",                  "TLorentzVector v; v.SetPtEtaPhiM(eleCalibPt[eleIdx], eleEta[eleIdx], elePhi[eleIdx], 0.511*0.001); return v;");
     return nf;
 }
 
 
 template <typename T>
 auto DefineFinalVars(T &df){
-    auto nf = df.Define("Z",                "mu1 + mu2 + pho")
-                .Define("dimu",             "mu1 + mu2")
-                .Define("phoEleVeto1",      "phoEleVeto[phoIdx]")
-                .Define("phoSCEta1",        "phoSCEta[phoIdx]")
-                .Define("phoSCPhi1",        "phoSCPhi[phoIdx]")
-                .Define("phoSCE1",          "phoSCE[phoIdx]")
-                .Define("isHggPho1",        "isHggPho[phoIdx]")
-                .Define("phoCalibE1",       "phoCalibE[phoIdx]")
-                .Define("isEBPho1",         "isEBPho[phoIdx]")
-                .Define("isEEPho1",         "isEEPho[phoIdx]")
+    auto nf = df.Define("Z",                    "mu1 + mu2 + pho")
+                .Define("dimu",                 "mu1 + mu2")
+                .Define("zMass",                "Z.M()")
+                .Define("phoEleVeto_lep1",      "phoEleVeto[phoIdx]")
+                .Define("phoSCEta_lep1",        "phoSCEta[phoIdx]")
+                .Define("phoSCPhi_lep1",        "phoSCPhi[phoIdx]")
+                .Define("phoSCE_lep1",          "phoSCE[phoIdx]")
+                .Define("isHggPho_lep1",        "isHggPho[phoIdx]")
+                .Define("phoCalibE_lep1",       "phoCalibE[phoIdx]")
+                .Define("phoCalibEt_lep1",      "phoCalibEt[phoIdx]")
+                .Define("isEBPho_lep1",         "isEBPho[phoIdx]")
+                .Define("isEEPho_lep1",         "isEEPho[phoIdx]")
 
-                .Define("eleConvVeto1",     "eleConvVeto[eleIdx]")
-                .Define("eleClass1",        "eleClass[eleIdx]")
-                .Define("eleSCEta1",        "eleSCEta[eleIdx]")
-                .Define("eleSCPhi1",        "eleSCPhi[eleIdx]")
-                .Define("eleSCEn1",         "eleSCEn[eleIdx]")
-                .Define("eleCalibEn1",      "eleCalibEn[eleIdx]")
+                .Define("phoSCEtaWidth_lep1",   "phoSCEtaWidth[phoIdx]")
+                .Define("phoSCPhiWidth_lep1",   "phoSCPhiWidth[phoIdx]")
+                .Define("phoSCBrem_lep1",       "phoSCBrem[phoIdx]")
+                .Define("phoHoverE_lep1",       "phoHoverE[phoIdx]")
+                .Define("phoR9Full5x5_lep1",    "phoR9Full5x5[phoIdx]")
 
-                .Define("convVtxRadius1",   "convVtxRadius[convIdx]")
-                .Define("convFitPairP1",    "sqrt(pow(convFitPairPX[convIdx], 2) + pow(convFitPairPY[convIdx], 2) + pow(convFitPairPZ[convIdx], 2))")
-                .Define("convD01",          "convD0[convIdx]")
-                .Define("convDz1",          "convDz[convIdx]")
-                .Define("convL01",          "convL0[convIdx]")
-                .Define("convLz1",          "convLz[convIdx]");        
+                .Define("eleConvVeto_lep1",     "eleConvVeto[eleIdx]")
+                .Define("eleClass_lep1",        "eleClass[eleIdx]")
+                .Define("eleSCEta_lep1",        "eleSCEta[eleIdx]")
+                .Define("eleSCPhi_lep1",        "eleSCPhi[eleIdx]")
+                .Define("eleSCEn_lep1",         "eleSCEn[eleIdx]")
+                .Define("eleCalibEn_lep1",      "eleCalibEn[eleIdx]")
+
+                .Define("convVtxRadius_lep1",   "convVtxRadius[convIdx]")
+                .Define("convFitPairP_lep1",    "sqrt(pow(convFitPairPX[convIdx], 2) + pow(convFitPairPY[convIdx], 2) + pow(convFitPairPZ[convIdx], 2))")
+                .Define("convD0_lep1",          "convD0[convIdx]")
+                .Define("convDz_lep1",          "convDz[convIdx]")
+                .Define("convL0_lep1",          "convL0[convIdx]")
+                .Define("convLz_lep1",          "convLz[convIdx]")
+
+                .Define("eleCalibPt_lep1",      "eleCalibPt[eleIdx]")
+                .Define("eleSCRawEn_lep1",      "eleSCRawEn[eleIdx]")
+                .Define("elePtError_lep1",      "elePtError[eleIdx]")
+                .Define("eleSCPhiWidth_lep1",   "eleSCPhiWidth[eleIdx]")
+                .Define("eleSCEtaWidth_lep1",   "eleSCEtaWidth[eleIdx]")
+                .Define("eleHoverE_lep1",       "eleHoverE[eleIdx]")
+                .Define("eleEoverP_lep1",       "eleEoverP[eleIdx]")
+                .Define("eleEoverPout_lep1",    "eleEoverPout[eleIdx]")
+                .Define("eleEoverPInv_lep1",    "eleEoverPInv[eleIdx]")
+                .Define("eleBrem_lep1",         "eleBrem[eleIdx]")
+                .Define("eledEtaAtVtx_lep1",    "eledEtaAtVtx[eleIdx]")
+                .Define("eledPhiAtVtx_lep1",    "eledPhiAtVtx[eleIdx]")
+                .Define("eleSigmaIEtaIEtaFull5x5_lep1",      "eleSigmaIEtaIEtaFull5x5[eleIdx]")
+                .Define("elePFChIso_lep1",      "elePFChIso[eleIdx]")
+                .Define("elePFPhoIso_lep1",     "elePFPhoIso[eleIdx]")
+                .Define("elePFNeuIso_lep1",     "elePFNeuIso[eleIdx]")
+                .Define("elePFPUIso_lep1",      "elePFPUIso[eleIdx]")
+                .Define("eleR9Full5x5_lep1",    "eleR9Full5x5[eleIdx]")
+                .Define("gsfPtRatio_lep1",      "gsfPtRatio[eleIdx]")
+                .Define("gsfDeltaR_lep1",       "gsfDeltaR[eleIdx]")
+                .Define("gsfRelPtRatio_lep1",   "gsfRelPtRatio[eleIdx]");
     return nf;
 }
 
@@ -137,12 +166,12 @@ template <typename T>
 auto AddWeights(T &df, string era, int year, bool isMC){
     if (!isMC) return df;
 
-    // set up the puwei calculator 
+    // set up the puwei calculator
     PUWeightCalculator* puCalc[3] = {NULL, NULL, NULL};
     for (int i = 0; i < 3; i++){
         puCalc[i] = new PUWeightCalculator();
     }
-    puCalc[0]->Init(PUfile(year, "nominal").c_str()); 
+    puCalc[0]->Init(PUfile(year, "nominal").c_str());
     puCalc[1]->Init(PUfile(year, "up").c_str());
     puCalc[2]->Init(PUfile(year, "down").c_str());
 
@@ -162,13 +191,15 @@ auto AddWeights(T &df, string era, int year, bool isMC){
     auto nf = df.Define("puwei",            get_pu,             {"run", "puTrue"})
                 .Define("puwei_up",         get_pu_up,          {"run", "puTrue"})
                 .Define("puwei_down",       get_pu_do,          {"run", "puTrue"})
-                .Define("genwei",           "if (genWeight > 0) return 1.; else return -1.;");
+                .Define("genwei",           "if (genWeight > 0) return 1.; else return -1.;")
+                .Define("wei1",             "puwei * mcwei")
+                .Define("wei2",             "puwei * mcwei * genwei");
 
     return nf;
 }
 
 
-void rdfZmumug(string infile = "testSkimZg.root", string outfile = "test.root", int year = 2017, string era = "2017", bool isMC = true){
+void rdfZmumug(string infile, string outfile, int year, string era, bool isMC){
     TStopwatch time;
     time.Start();
 
@@ -204,17 +235,23 @@ void rdfZmumug(string infile = "testSkimZg.root", string outfile = "test.root", 
     //====================================================//
     // Define the final variables to save to the miniTree //
     //====================================================//
-    vector<string> Vars = {
-        "mu1", "mu2", "fsrmu", "nfsrmu", "Z", "dimu", "pho", "ele",
-        "phoEleVeto1", "phoSCEta1", "phoSCPhi1", "phoSCE1", "isHggPho1", "phoCalibE1", "isEBPho1",
-        "eleConvVeto1", "eleClass1", "eleSCEta1", "eleSCPhi1", "eleSCEn1", "eleCalibEn1",
-        "convVtxRadius1", "convFitPairP1", "convD01", "convDz1", "convL01", "convLz1"
-    };
+    vector<string> defColNames = dfFin.GetDefinedColumnNames();
+    vector<string> Vars;
+    for (int i = 0; i < defColNames.size(); i++){
+        size_t foundLep1 = defColNames[i].find("_lep1");
+        size_t foundLep2 = defColNames[i].find("_lep2");
+
+        if (foundLep1 != string::npos || foundLep2 != string::npos)
+            Vars.push_back(defColNames[i]);
+        if (dfFin.GetColumnType(defColNames[i]) == "TLorentzVector")
+            Vars.push_back(defColNames[i]);
+    }
+
     if (isMC){
         // concatenate Vars and weiVars
         vector<string> weiVars = {
-            "puwei", "puwei_up", "puwei_down",  
-            "genwei","mcwei"
+            "puwei", "puwei_up", "puwei_down",
+            "genwei","mcwei", "wei1", "wei2"
         };
         Vars.insert(Vars.end(), weiVars.begin(), weiVars.end());
     }
@@ -225,4 +262,6 @@ void rdfZmumug(string infile = "testSkimZg.root", string outfile = "test.root", 
     cout << "[INFO] Time taken: " << endl;
     time.Stop();
     time.Print();
+
+    cout << endl;
 }

@@ -1,4 +1,3 @@
-
 #===============================================#
 #              Merged ID features               #
 #              Merged ID models                 #
@@ -7,7 +6,6 @@ features_m1 = [
     "rho",
     "eleSCEta",
     "eleSCRawEn",
-    
     "eleD0",
     "eleDz",
     "eleSIP",
@@ -59,91 +57,54 @@ models = {
     "M2EE": "../ID_Trainer/Results/Output_Merged2GsfID_EE_2017_daskNoGJets/XGB/XGB_modelXGB.pkl"
 }
 
-
 #===============================================#
 #                MC samples list                #
 #            Signal: ggF, VBF, WH, ZH           #
 #            background: DYJets, GJets, QCD     #
 #===============================================#
-# Luminosity informaation can be found in: /data3/ggNtuples/V10_06_20_00/LumiInfo
-# [unit]: luminosity(invfb), xs(fb)
+# [unit]: luminosity(fb), xs(invfb)
+# Luminosity information can be found in: /data3/ggNtuples/V10_06_20_00/LumiInfo
+# xs information:
+#*      1) Zg: https://cms-gen-dev.cern.ch/xsdb/?searchQuery=DAS=ZGToLLG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8
+#*      2) TT: https://cms-gen-dev.cern.ch/xsdb/?searchQuery=DAS=TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8
 
-#! [FixedME]: xs, lumi and path need to modify once have UL signal sample!
 MCSample = {
-    # reference: https://cms.cern.ch/iCMS/jsp/db_notes/noteInfo.jsp?cmsnoteid=CMS%20AN-2019/139
-    "ZZ_2017": {
-        "production": ["ZZ"],
-        "lumi": [41.525],
-        "xs": [1.212 * 1000.],
-        "path": [
-            "/data6/ggNtuples/V10_02_10_07/job_fall17_ZZ/",
-        ],
-        "outpath": [
-            "/data4/chenghan/mc/V10_02_10_07/job_fall17_ZZ/",
-        ]
+    "ZGToLLG_2016_preVFP": {
+        "production": ["ZGToLLG"],
+        "lumi": [19.28],
+        "xs": [55.48 * 1000.],
+        "path": ["/data6/ggNtuples/V10_02_10_08/job_UL16_Zg_aMCatNLO_preVFP",],
+        "outpath": ["/data4/chenghan/mc/V10_02_10_08/job_UL16_Zg_aMCatNLO_preVFP",]
     },
-
-    "ZZ_2018": {
-        "production": ["ZZ"],
-        "lumi": [59.7],
-        "xs": [1.212 * 1000.],
-        "path": [
-            "/data6/ggNtuples/V10_02_10_07/job_autumn18_ZZ/",
-        ],
-        "outpath": [
-            "/data4/chenghan/mc/V10_02_10_07/job_autumn18_ZZ/",
-        ]
+    "ZGToLLG_2016_postVFP": {
+        "production": ["ZGToLLG"],
+        "lumi": [16.64],
+        "xs": [55.48 * 1000.],
+        "path": ["/data6/ggNtuples/V10_02_10_08/job_UL16_Zg_aMCatNLO_postVFP",],
+        "outpath": ["/data4/chenghan/mc/V10_02_10_08/job_UL16_Zg_aMCatNLO_postVFP",]
     },
-
-    "ZZ_2016": {
-        "production": ["ZZ"],
-        "lumi": [35.9],
-        "xs": [1.212 * 1000.],
-        "path": [
-            "/data6/ggNtuples/V10_02_10_07/job_summer16_ZZ/",
-        ],
-        "outpath": [
-            "/data4/chenghan/mc/V10_02_10_07/job_summer16_ZZ/",
-        ]
+    "ZGToLLG_2017": {
+        "production": ["ZGToLLG"],
+        "lumi": [41.48],
+        "xs": [55.48 * 1000.],
+        "path": ["/data6/ggNtuples/V10_02_10_08/job_UL17_Zg_aMCatNLO",],
+        "outpath": ["/data4/chenghan/mc/V10_02_10_08/job_UL17_Zg_aMCatNLO",]
     },
-
-    "Zg_2017": {
-        "production": ["Zg"],
-        "lumi": [41.525],
-        "xs": [106.17*1000.],
-        "path": [
-            "/data6/ggNtuples/V10_02_10_07/job_fall17_Zg_lowMll_lowGPt_aMCatNLO/",
-        ],
-        "outpath": [
-            "/data4/chenghan/mc/V10_02_10_07/job_fall17_Zg_lowMll_lowGPt_aMCatNLO/",
-        ]
+    "ZGToLLG_2018": {
+        "production": ["ZGToLLG"],
+        "lumi": [59.82],
+        "xs": [55.48 * 1000.],
+        "path": ["/data6/ggNtuples/V10_02_10_08/job_UL18_Zg_aMCatNLO",],
+        "outpath": ["/data4/chenghan/mc/V10_02_10_08/job_UL18_Zg_aMCatNLO",]
     },
-
-    "Zg_2016": {
-        "production": ["Zg"],
-        "lumi": [35.9],
-        "xs": [106.17*1000.],
-        "path": [
-            "/data6/ggNtuples/V10_02_10_07/job_summer16_Zg_lowMll_lowGPt_aMCatNLO/",
-        ],
-        "outpath": [
-            "/data4/chenghan/mc/V10_02_10_07/job_summer16_Zg_lowMll_lowGPt_aMCatNLO/",
-        ]
-    },
-
-    "Zg_2018": {
-        "production": ["Zg"],
-        "lumi": [59.7],
-        "xs": [106.17*1000.],
-        "path": [
-            "/data6/ggNtuples/V10_02_10_07/job_autumn18_Zg_lowMll_lowGPt_aMCatNLO/",
-        ],
-        "outpath": [
-            "/data4/chenghan/mc/V10_02_10_07/job_autumn18_Zg_lowMll_lowGPt_aMCatNLO/",
-        ]
+    "TTJets_2017": {
+        "production": ["TTJets"],
+        "lumi": [41.48],
+        "xs": [831.76 * 1000.],
+        "path": ["/data6/ggNtuples/V10_02_10_08/job_UL17_TT_aMCatNLO",],
+        "outpath": ["/data4/chenghan/mc/V10_02_10_08/job_UL17_TT_aMCatNLO",]
     },
 }
-
 
 #===============================================#
 #              Data samples list                #
@@ -151,30 +112,74 @@ MCSample = {
 #          Run: 2017BCDEF, 2018ABCD             #
 #===============================================#
 DataSample = {
-
-    "Data_2017": {
-        "run": ["2017B", "2017C", "2017D", "2017E", "2017F"],
-        "lumi": [
-            4.803363110, 
-            9.572498264, 
-            4.247682053, 
-            9.313642402, 
-            13.539221759
-        ],
+    "Data_2016_preVFP": {
+        "run": ["2016B", "2016C", "2016D", "2016E", "2016F1"],
+        "lumi": [4.671835672, 2.621295973, 4.285851496, 4.065974560, 2.717344923],
         "xs": [1.],
         "path": [
-            "/data3/ggNtuples/V10_06_20_00/job_DoubleEG_Run2017B_UL/",
-            "/data3/ggNtuples/V10_06_20_00/job_DoubleEG_Run2017C_UL/",
-            "/data3/ggNtuples/V10_06_20_00/job_DoubleEG_Run2017D_UL/",
-            "/data3/ggNtuples/V10_06_20_00/job_DoubleEG_Run2017E_UL/",
-            "/data3/ggNtuples/V10_06_20_00/job_DoubleEG_Run2017F_UL/"
+            "/data3/ggNtuples/V10_06_30_00/job_DoubleMu_Run2016B_UL/",
+            "/data3/ggNtuples/V10_06_30_00/job_DoubleMu_Run2016C_UL/",
+            "/data3/ggNtuples/V10_06_30_00/job_DoubleMu_Run2016D_UL/",
+            "/data3/ggNtuples/V10_06_30_00/job_DoubleMu_Run2016E_UL/",
+            "/data3/ggNtuples/V10_06_30_00/job_DoubleMu_Run2016F1_UL/"
         ],
         "outpath": [
-            "/data4/chenghan/data/V10_06_20_00/job_DoubleEG_Run2017B_UL/",
-            "/data4/chenghan/data/V10_06_20_00/job_DoubleEG_Run2017C_UL/",
-            "/data4/chenghan/data/V10_06_20_00/job_DoubleEG_Run2017D_UL/",
-            "/data4/chenghan/data/V10_06_20_00/job_DoubleEG_Run2017E_UL/",
-            "/data4/chenghan/data/V10_06_20_00/job_DoubleEG_Run2017F_UL/"
+            "/data4/chenghan/data/V10_06_30_00/job_DoubleMu_Run2016B_UL/",
+            "/data4/chenghan/data/V10_06_30_00/job_DoubleMu_Run2016C_UL/",
+            "/data4/chenghan/data/V10_06_30_00/job_DoubleMu_Run2016D_UL/",
+            "/data4/chenghan/data/V10_06_30_00/job_DoubleMu_Run2016E_UL/",
+            "/data4/chenghan/data/V10_06_30_00/job_DoubleMu_Run2016F1_UL/"
         ]
     },
+    "Data_2016_postVFP": {
+        "run": ["2016F2", "2016G", "2016H"],
+        "lumi": [0.418120616, 7.652808345, 8.739883563],
+        "xs": [1.],
+        "path": [
+            "/data3/ggNtuples/V10_06_30_00/job_DoubleMu_Run2016F2_UL/",
+            "/data3/ggNtuples/V10_06_30_00/job_DoubleMu_Run2016G_UL/",
+            "/data3/ggNtuples/V10_06_30_00/job_DoubleMu_Run2016H_UL/"
+        ],
+        "outpath": [
+            "/data4/chenghan/data/V10_06_30_00/job_DoubleMu_Run2016F2_UL/",
+            "/data4/chenghan/data/V10_06_30_00/job_DoubleMu_Run2016G_UL/",
+            "/data4/chenghan/data/V10_06_30_00/job_DoubleMu_Run2016H_UL/"
+        ]
+    },
+    "Data_2017": {
+        "run": ["2017B", "2017C", "2017D", "2017E", "2017F"],
+        "lumi": [4.803363110, 9.572498264, 4.247682053, 9.313642402, 13.539221759],
+        "xs": [1.],
+        "path": [
+            "/data3/ggNtuples/V10_06_30_00/job_DoubleMu_Run2017B_UL/",
+            "/data3/ggNtuples/V10_06_30_00/job_DoubleMu_Run2017C_UL/",
+            "/data3/ggNtuples/V10_06_30_00/job_DoubleMu_Run2017D_UL/",
+            "/data3/ggNtuples/V10_06_30_00/job_DoubleMu_Run2017E_UL/",
+            "/data3/ggNtuples/V10_06_30_00/job_DoubleMu_Run2017F_UL/"
+        ],
+        "outpath": [
+            "/data4/chenghan/data/V10_06_30_00/job_DoubleMu_Run2017B_UL/",
+            "/data4/chenghan/data/V10_06_30_00/job_DoubleMu_Run2017C_UL/",
+            "/data4/chenghan/data/V10_06_30_00/job_DoubleMu_Run2017D_UL/",
+            "/data4/chenghan/data/V10_06_30_00/job_DoubleMu_Run2017E_UL/",
+            "/data4/chenghan/data/V10_06_30_00/job_DoubleMu_Run2017F_UL/"
+        ]
+    },
+    "Data_2018": {
+        "run": ["2018A", "2018B", "2018C", "2018D"],
+        "lumi": [14.026724850, 7.060617355, 6.894770971, 31.834115905],
+        "xs": [1.],
+        "path": [
+            "/data3/ggNtuples/V10_06_30_00/job_DoubleMu_Run2018A_UL/",
+            "/data3/ggNtuples/V10_06_30_00/job_DoubleMu_Run2018B_UL/",
+            "/data3/ggNtuples/V10_06_30_00/job_DoubleMu_Run2018C_UL/",
+            "/data3/ggNtuples/V10_06_30_00/job_DoubleMu_Run2018D_UL/"
+        ],
+        "outpath": [
+            "/data4/chenghan/data/V10_06_30_00/job_DoubleMu_Run2018A_UL/",
+            "/data4/chenghan/data/V10_06_30_00/job_DoubleMu_Run2018B_UL/",
+            "/data4/chenghan/data/V10_06_30_00/job_DoubleMu_Run2018C_UL/",
+            "/data4/chenghan/data/V10_06_30_00/job_DoubleMu_Run2018D_UL/"
+        ]
+    }
 }

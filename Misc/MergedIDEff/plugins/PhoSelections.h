@@ -47,7 +47,7 @@ ROOT::RVec<int> HggPreSelection(float rhoAll, int nPho, ROOT::RVec<float>& phoSC
     for (int i = 0; i < nPho; i++){
         int isHgg = 0;
 
-        float corr = 0; 
+        float corr = 0;
         if (phoSCEta[i] > 0. && phoSCEta[i] <= 1.5) corr = 0.16544;
         else if (phoSCEta[i] > 1.5 && phoSCEta[i] <= 3.) corr = 0.13212;
 
@@ -96,12 +96,12 @@ int GetMatchEle(float phoSCEta, ROOT::RVec<float>& eleSCEta){
     int eleidx = -1;
 
     for (size_t i = 0; i < eleSCEta.size(); i++){
-        if (fabs(phoSCEta - eleSCEta[i]) < 0.0001){
+        if (fabs(phoSCEta - eleSCEta[i]) < 0.00001){
             eleidx = i;
             break;
         }
     }
-    
+
     return eleidx;
 }
 
@@ -134,6 +134,6 @@ int ConvMatch(float phoSCEta, float phoSCPhi, float phoSCE, int nConv, ROOT::RVe
 
     if (mindR < 0.1)
         return selected_conversion_index;
-    
+
     return -1;
 }
