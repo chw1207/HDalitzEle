@@ -14,7 +14,7 @@ namespace Helper{
         vec.clear();
 
         for (int i = 0; i < mcStatusFlag.size(); i++){
-            if ((mcStatusFlag[i] >> num & 1) == 1) 
+            if ((mcStatusFlag[i] >> num & 1) == 1)
                 vec.push_back(1);
             else
                 vec.push_back(0);
@@ -35,7 +35,7 @@ namespace Helper{
     }
 
 
-    // Function to match gen to reco electron 
+    // Function to match reco to gen electron
     int RecoIdx(TLorentzVector gen, ROOT::RVec<float>& pt, ROOT::RVec<float>& eta, ROOT::RVec<float>& phi, float m){
         float min = 999.;
         int idx = -1;
@@ -52,6 +52,36 @@ namespace Helper{
         }
 
         return idx;
+    }
+
+
+    // only used for rdfGENQCD.C
+    ROOT::RVec<int> GenIdxVec(ROOT::RVec<TLorentzVector> reco, ROOT::RVec<float>& mcPt, ROOT::RVec<float>& mcEta, ROOT::RVec<float>& mcPhi, ROOT::RVec<float>& mcMass, ROOT::RVec<int>& mcPID, ROOT::RVec<int>& mcMomPID){
+        ROOT::RVec<int> idxVec;
+        idxVec.clear();
+
+        for (int i = 0; i < reco.size(); i++){
+            float min = 999.;
+            int idx = -1;
+            for (int j = 0; j < mcPt.size(); j++){
+                TLorentzVector gen;
+                gen.SetPtEtaPhiM(mcPt[j], mcEta[j], mcPhi[j], mcMass[j]);
+
+                if (gen.DeltaR(reco[i]) > 0.1) continue;
+
+                bool isgoodgen = (abs(mcPID[j]) == 11) && (mcMomPID[j] != 22) && (fabs(mcEta[j]) < 2.5);
+                if (!isgoodgen) continue;
+
+                if (fabs((gen.Pt() / reco[i].Pt()) - 1.) < min){
+                    min = fabs((gen.Pt() / reco[i].Pt()) - 1.);
+                    idx = j;
+                }
+            }
+
+            idxVec.push_back(idx);
+        }
+
+        return idxVec;
     }
 
 
@@ -87,14 +117,14 @@ namespace Helper{
 
         if (mindR < 0.1)
             return selected_conversion_index;
-        
+
         return -1;
     }
 
 
     int make_cat(bool Gen2Reco2, bool Gen2Reco1, float nGsfMatchToReco_lep1){
         int cat = 0;
-        if (Gen2Reco2) 
+        if (Gen2Reco2)
             cat = 1;
         else if (Gen2Reco1 && nGsfMatchToReco_lep1 > 1)
             cat = 2;

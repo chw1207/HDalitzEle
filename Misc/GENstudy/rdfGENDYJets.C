@@ -13,34 +13,25 @@
 #include "../../pluginsV2/skim_utilities.h" // add gsf information to electron
 #include "../../pluginsV2/EleSelections.h" // HggPreSelection
 
-using namespace std;
-using namespace ROOT::VecOps;
-
-
 template <typename T>
 auto FindGen(T &df){
     auto nf = df.Define("hardProc",                         "Helper::GenType(mcStatusFlag, 0)")
                 .Define("isPrompt",                         "Helper::GenType(mcStatusFlag, 1)")
 
-                .Define("isDALEle",                         "abs(mcPID) == 11 && mcMomPID == 25") // higgs dalitz electron
-                .Define("isHZGEle",                         "abs(mcPID) == 11 && mcMomPID == 23 && mcGMomPID == 25") // higgs to zg electron
-                .Define("isGenEle",                         "(isDALEle || isHZGEle) && hardProc && isPrompt && mcEta < 2.5")
+                // single electron from Z
+                .Define("isZEle",                           "abs(mcPID) == 11 && mcMomPID == 23")
+                .Define("isGenEle",                         "isZEle && hardProc && isPrompt && mcEta < 2.5")
 
-                .Define("isGenPho",                         "abs(mcPID) == 22 && mcMomPID == 25 && hardProc && isPrompt && mcEta < 2.5")
-
-                // kick out the events without 2 gen electrons and 1 gen photon
+                // kick out the events without 2 gen electrons
                 .Filter("Sum(isGenEle) == 2", "2 gen ele")
-                .Filter("Sum(isGenPho) == 1", "1 gen pho")
 
                 // gen particle index
                 .Define("genEleIdx1",                       "Helper::getIdx(isGenEle, mcPt)[0]")
                 .Define("genEleIdx2",                       "Helper::getIdx(isGenEle, mcPt)[1]")
-                .Define("genPhoIdx1",                       "Helper::getIdx(isGenPho, mcPt)[0]")
 
                 // P4 of gen particle
                 .Define("GenEle_lep1",                      "TLorentzVector v; v.SetPtEtaPhiM(mcPt[genEleIdx1], mcEta[genEleIdx1], mcPhi[genEleIdx1], 0.000511); return v;")
                 .Define("GenEle_lep2",                      "TLorentzVector v; v.SetPtEtaPhiM(mcPt[genEleIdx2], mcEta[genEleIdx2], mcPhi[genEleIdx2], 0.000511); return v;")
-                .Define("GenPho_lep1",                      "TLorentzVector v; v.SetPtEtaPhiM(mcPt[genPhoIdx1], mcEta[genPhoIdx1], mcPhi[genPhoIdx1], 0.000511); return v;")
                 .Define("diGenEle",                         "GenEle_lep1 + GenEle_lep2")
 
                 .Define("GenElePtRatio",                    "GenEle_lep2.Pt() / GenEle_lep1.Pt()")
@@ -55,19 +46,17 @@ template <typename T>
 auto GentoReco(T &df){
     auto nf = df.Define("recoEleIdx1",                      "Helper::RecoIdx(GenEle_lep1, eleCalibPt, eleEta, elePhi, 0.000511)")
                 .Define("recoEleIdx2",                      "Helper::RecoIdx(GenEle_lep2, eleCalibPt, eleEta, elePhi, 0.000511)")
-                .Define("recoPhoIdx1",                      "Helper::RecoIdx(GenPho_lep1, phoCalibEt, phoEta, phoPhi, 0.0)")
 
                 // matching condition
                 .Define("Gen2Reco2",                        "recoEleIdx1 != recoEleIdx2 && recoEleIdx1 != -1 && recoEleIdx2 != -1") // resolved
                 .Define("Gen2Reco1",                        "recoEleIdx1 == recoEleIdx2 && recoEleIdx1 != -1 && recoEleIdx2 != -1") // merged
 
                 // only event with proper reco particles left
-                .Filter("(Gen2Reco2 || Gen2Reco1) && recoPhoIdx1 != -1", "good reco")
+                .Filter("(Gen2Reco2 || Gen2Reco1)", "good reco")
 
                 // P4 of reco particle
                 .Define("RecoEle_lep1",                     "TLorentzVector v; v.SetPtEtaPhiM(eleCalibPt[recoEleIdx1], eleEta[recoEleIdx1], elePhi[recoEleIdx1], 0.000511); return v;")
-                .Define("RecoEle_lep2",                     "TLorentzVector v; v.SetPtEtaPhiM(eleCalibPt[recoEleIdx2], eleEta[recoEleIdx2], elePhi[recoEleIdx2], 0.000511); return v;")
-                .Define("RecoPho_lep1",                     "TLorentzVector v; v.SetPtEtaPhiM(phoCalibEt[recoPhoIdx1], phoEta[recoPhoIdx1], phoPhi[recoPhoIdx1], 0.0); return v;");
+                .Define("RecoEle_lep2",                     "TLorentzVector v; v.SetPtEtaPhiM(eleCalibPt[recoEleIdx2], eleEta[recoEleIdx2], elePhi[recoEleIdx2], 0.000511); return v;");
 
     return nf;
 }
@@ -331,28 +320,25 @@ auto DefineFinalVars(T &df){
 
                 // event categorization
                 // cat == 1 -> Resolved, cat == 2 -> M2, cat == 3 -> M1
-                .Define("category",                         "Helper::make_cat(Gen2Reco2, Gen2Reco1, nGsfMatchToReco_lep1)")
-
-                // reco 3-body mass
-                .Define("higgsMass",                        "if (category != 1) return (RecoEle_lep1 + RecoPho_lep1).M(); else return (RecoEle_lep1 + RecoEle_lep2 + RecoPho_lep1).M();");
+                .Define("category",                         "Helper::make_cat(Gen2Reco2, Gen2Reco1, nGsfMatchToReco_lep1)");
 
     return nf;
 }
 
 
-void rdfGEN(string infile, string outfile, int year, string era, string proc, string prod, int HiggsMass){
+void rdfGENDYJets(vector<string> infile, string outfile, int year, string era, string proc){
     TStopwatch time;
     time.Start();
 
-    cout << "[INFO] Read_File(): " << infile.c_str() << endl;
+    cout << "[INFO]" << infile.size() << " are found!" << endl;
     cout << "[INFO] Save_File(): " << outfile.c_str() << endl;
 
     //=======================================================//
     // Load TTree into RDataFrame                            //
     //=======================================================//
     ROOT::EnableImplicitMT();
-    ROOT::RDataFrame df("ggNtuplizer/EventTree", infile.c_str());
-    cout << "[INFO] Process: " << proc << " " << prod << "_" << HiggsMass << "GeV" << endl;
+    ROOT::RDataFrame df("ggNtuplizer/EventTree", infile);
+    cout << "[INFO] Process: " << proc << " in " << era << endl;
 
     //========================================================//
     // Calculate the seral weight (add into the RDataFrame)   //
@@ -362,38 +348,21 @@ void rdfGEN(string infile, string outfile, int year, string era, string proc, st
     auto neg = df.Filter("genWeight <= 0",  "negative event").Count();
     const int totalev = pos.GetValue() - neg.GetValue();
 
-    // XS x Br
-    map<string, float> XSmap; // fb
-    XSmap["ggF_125GeV"] = 48.58 * 1000 * 8.10E-5;
-    XSmap["VBF_125GeV"] = 3.782 * 1000 * 8.10E-5;
-    XSmap["WH_125GeV"] = 1.373 * 1000 * 8.10E-5;
-    XSmap["ZH_125GeV"] = 0.8839 * 1000 * 8.10E-5;
-
-    XSmap["ggF_120GeV"] = 52.22 * 1000 * 7.88E-5;
-    XSmap["VBF_120GeV"] = 3.935 * 1000 * 7.88E-5;
-    XSmap["WH_120GeV"] = 1.565 * 1000 * 7.88E-5;
-    XSmap["ZH_120GeV"] = 0.9939 * 1000 * 7.88E-5;
-
-    XSmap["ggF_130GeV"] = 45.31 * 1000 * 8.02E-5;
-    XSmap["VBF_130GeV"] = 3.637 * 1000 * 8.02E-5;
-    XSmap["WH_130GeV"] = 1.209 * 1000 * 8.02E-5;
-    XSmap["ZH_130GeV"] = 0.4539 * 1000 * 8.02E-5;
+    // XS
+    map<string, float> xsMap; // fb
+    xsMap["2016_preVFP"] = 6404. * 1000;
+    xsMap["2016_postVFP"] = 6404. * 1000;
+    xsMap["2017"] = 6435. * 1000;
+    xsMap["2018"] = 6529. * 1000;
 
     // luminosity
-    float luminosity = 1;
-    if (year == 2016)
-        luminosity = 35.917;
-    else if (year == 2017)
-        luminosity = 41.525;
-    else if (year == 2018)
-        luminosity = 59.725;
-    else{
-        cout << "[ERROR] No supported luminosity value of year: " << year << endl;
-        exit(-1);
-    }
+    map<int, float> lumiMap;
+    lumiMap[2016] = 35.917;
+    lumiMap[2017] = 41.525;
+    lumiMap[2018] = 59.725;
 
-    const float procXS = XSmap[Form("%s_%dGeV", prod.c_str(), HiggsMass)];
-    const float mcwei = ((procXS * luminosity) / totalev);
+    const float procXS = xsMap[era.c_str()];
+    const float mcwei = ((procXS * lumiMap[year]) / totalev);
     cout << scientific;
     cout << "[INFO] Number of events with genwei = " << totalev << endl;
     cout << "[INFO] MC weight = " << mcwei << endl;
@@ -407,14 +376,13 @@ void rdfGEN(string infile, string outfile, int year, string era, string proc, st
         return puwei;
     };
 
-    float instwei = procXS/XSmap[Form("ggF_%dGeV", HiggsMass)];
-
     auto wf = df.Define("puwei",    get_pu,     {"run", "puTrue"})
                 .Define("mcwei",    [&, mcwei]{return mcwei;})
                 .Define("procXS",   [&, procXS]{return procXS;})
-                .Define("instwei",  [&, instwei]{return instwei;})
+                .Define("instwei",  "(float) 1.")
                 .Define("genwei",   "if (genWeight > 0) return (float) 1.; else return (float) -1.;")
                 .Define("wei",      "mcwei * genwei * puwei");
+
 
     //=======================================================//
     // Do the selections on the RDataFrame                   //
@@ -455,7 +423,7 @@ void rdfGEN(string infile, string outfile, int year, string era, string proc, st
     }
     vector<string> extralVars = {
         "mcwei", "puwei", "genwei", "procXS", "instwei", "wei", "rho", "rhoAll", "nVtx", "nGoodVtx", "isPVGood",
-        "diTrk", "diTrkPtMax", "meeRatio", "meeRatioPtMax", "category", "higgsMass"
+        "diTrk", "diTrkPtMax", "meeRatio", "meeRatioPtMax", "category"
     };
     Vars.insert(Vars.end(), extralVars.begin(), extralVars.end());
 
