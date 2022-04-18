@@ -34,24 +34,24 @@ def Make1DEff(binArray, eff_Da, eff_MC, SFerr, option, outName):
     pad1.cd()
 
     # ("global title; x-axis title; y-axis title")
-    eff_Da.SetTitle(";;Efficiency")
-    eff_Da.SetMarkerColor(ROOT.TColor.GetColor("#202020"))
-    eff_Da.SetMarkerSize(1.4)
-    eff_Da.SetMarkerStyle(20)
-    eff_Da.SetLineColor(ROOT.TColor.GetColor("#202020"))
-    eff_Da.SetLineWidth(2)
-    eff_Da.Draw("AP")
-
+    eff_MC.SetTitle(";;Efficiency")
     eff_MC.SetMarkerColor(ROOT.kRed - 4)
     eff_MC.SetMarkerSize(1.4)
     eff_MC.SetMarkerStyle(20)
     eff_MC.SetLineColor(ROOT.kRed - 4)
     eff_MC.SetLineWidth(2)
-    eff_MC.Draw("P SAME")
+    eff_MC.Draw("AP")
+
+    # eff_Da.SetTitle(";;Efficiency")
+    eff_Da.SetMarkerColor(ROOT.TColor.GetColor("#202020"))
+    eff_Da.SetMarkerSize(1.4)
+    eff_Da.SetMarkerStyle(20)
+    eff_Da.SetLineColor(ROOT.TColor.GetColor("#202020"))
+    eff_Da.SetLineWidth(2)
     eff_Da.Draw("P SAME")
 
     pad1.Update()
-    efferr = eff_Da.GetPaintedGraph()
+    efferr = eff_MC.GetPaintedGraph()
     efferr.GetYaxis().SetRangeUser(0., 1.2)
     efferr.GetYaxis().SetTickSize(0.03)
     efferr.GetYaxis().SetTitleSize(0.06)
@@ -196,6 +196,7 @@ def main(option):
         for i in range(len(binArray) - 1):
             efferr_Da_up.append(eff_Da.GetEfficiencyErrorUp(i + 1))
             efferr_Da_do.append(eff_Da.GetEfficiencyErrorLow(i + 1))
+
         print("[INFO] Efficiency: {}".format([round(eff_Da.GetEfficiency(i + 1), 2) for i in range(len(binArray) - 1)]))
         print("[INFO] Efficiency err up: {}".format(np.round(efferr_Da_up, 2)))
         print("[INFO] Efficiency err do: {}".format(np.round(efferr_Da_do, 2)))
