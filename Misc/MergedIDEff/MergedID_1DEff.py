@@ -52,7 +52,7 @@ def Make1DEff(binArray, eff_Da, eff_MC, SFerr, option, outName):
 
     pad1.Update()
     efferr = eff_Da.GetPaintedGraph()
-    efferr.GetYaxis().SetRangeUser(0, 1.2)
+    efferr.GetYaxis().SetRangeUser(0., 1.2)
     efferr.GetYaxis().SetTickSize(0.03)
     efferr.GetYaxis().SetTitleSize(0.06)
     efferr.GetYaxis().SetLabelSize(0.06)
@@ -69,12 +69,12 @@ def Make1DEff(binArray, eff_Da, eff_MC, SFerr, option, outName):
     ltx.SetNDC()
     ltx.SetTextFont(42)
     ltx.SetTextSize(0.065)
-    ltx.DrawLatex(0.17, 0.81, "Z #rightarrow #mu#mu#gamma, {}".format(option))
+    ltx.DrawLatex(0.65, 0.28, "Z #rightarrow #mu#mu#gamma, {}".format(option))
 
-    leg = ROOT.TLegend(0.17, 0.62, 0.5, 0.78)
+    leg = ROOT.TLegend(0.65, 0.08, 0.85, 0.24)
     leg.SetTextSize(0.06)
+    leg.AddEntry(eff_MC, "Simulation", "lep")
     leg.AddEntry(eff_Da, "Data", "lep")
-    leg.AddEntry(eff_MC, "Z#gamma", "lep")
     leg.SetFillColor(0)
     leg.SetLineColor(0)
     leg.Draw()
@@ -97,9 +97,9 @@ def Make1DEff(binArray, eff_Da, eff_MC, SFerr, option, outName):
 
     SFerr.SetName("")
     SFerr.SetTitle("")
-    SFerr.GetXaxis().SetTitle("P^{#gamma}_{T} [GeV]")
+    SFerr.GetXaxis().SetTitle("p^{#gamma}_{T} [GeV]")
     SFerr.GetYaxis().SetTitle("Scale Factor")
-    SFerr.GetYaxis().SetRangeUser(0.6, 1.4)
+    SFerr.GetYaxis().SetRangeUser(0.8, 1.2)
 
     SFerr.SetMarkerColor(ROOT.TColor.GetColor("#202020"))
     SFerr.SetMarkerSize(1.4)
@@ -140,15 +140,16 @@ def ErrProp(f, sigmaA, A, sigmaB, B):
 def main(option):
     # selections
     region = "isEBPho_lep1 == 1" if option == "EB" else "isEEPho_lep1 == 1"
-    rconv = 16
+    rconv = 40
     sel_den = "&&".join([
         "convVtxRadius_lep1 < {}".format(rconv),
         "isHggPho_lep1 == 1",
+        "nGsfMatchToReco_lep1 > 1",
         region
     ])
     sel_num = sel_den + "&& eleClass_lep1 == 0"
 
-    binArray = np.array([15., 25., 35., 65., 150.])
+    binArray = np.array([25., 31., 55, 150.])
     print("Bin width used in efficiency calculation: {}".format(binArray))
     print("photon with radius < {}cm are used.".format(rconv))
 
@@ -173,8 +174,8 @@ def main(option):
             efferr_MC_up.append(eff_MC.GetEfficiencyErrorUp(i + 1))
             efferr_MC_do.append(eff_MC.GetEfficiencyErrorLow(i + 1))
         print("[INFO] Efficiency: {}".format([round(eff_MC.GetEfficiency(i + 1), 2) for i in range(len(binArray) - 1)]))
-        print("[INFO] Efficiency err up: {}".format([round(i, 2) for i in efferr_MC_up]))
-        print("[INFO] Efficiency err do: {}".format([round(i, 2) for i in efferr_MC_do]))
+        print("[INFO] Efficiency err up: {}".format(np.round(efferr_MC_up, 2)))
+        print("[INFO] Efficiency err do: {}".format(np.round(efferr_MC_do, 2)))
 
     #===============================================#
     #             Efficiency for Data               #
@@ -196,14 +197,16 @@ def main(option):
             efferr_Da_up.append(eff_Da.GetEfficiencyErrorUp(i + 1))
             efferr_Da_do.append(eff_Da.GetEfficiencyErrorLow(i + 1))
         print("[INFO] Efficiency: {}".format([round(eff_Da.GetEfficiency(i + 1), 2) for i in range(len(binArray) - 1)]))
-        print("[INFO] Efficiency err up: {}".format([round(i, 2) for i in efferr_Da_up]))
-        print("[INFO] Efficiency err do: {}".format([round(i, 2) for i in efferr_Da_do]))
+        print("[INFO] Efficiency err up: {}".format(np.round(efferr_Da_up, 2)))
+        print("[INFO] Efficiency err do: {}".format(np.round(efferr_Da_do, 2)))
 
     #===============================================#
     #                  SF calculation               #
     #===============================================#
     # https://root.cern.ch/doc/master/TGraphAsymmErrors_8cxx_source.html#l01129
     # get efficiency histogram of data
+
+    print(color.GREEN + "Scale factors calculation in {}".format(option) + color.END)
     heff_Da = eff_Da.GetCopyPassedHisto()
     heff_Da.Divide(eff_Da.GetCopyTotalHisto())
 
@@ -226,6 +229,8 @@ def main(option):
         yerr.append(ErrProp(hSF.GetBinContent(i + 1), Da_error, heff_Da.GetBinContent(i + 1), MC_error, heff_MC.GetBinContent(i + 1)))
 
     SFerr = ROOT.TGraphErrors(SFNbins, np.array(x), np.array(y), np.array(xerr), np.array(yerr))
+    print("[INFO] Scale factors: {}".format(np.round(y, 2)))
+    print("[INFO] Scale factors err: {}".format(np.round(yerr, 2)))
 
     # Draw the results
     directory = "./plots/1DEff"
@@ -241,6 +246,10 @@ if __name__ == "__main__":
     fData = {
         "2016_preVFP": "./miniTree/2016_preVFP/miniTree_Data_2016_preVFP.root",
         "2016_postVFP": "./miniTree/2016_postVFP/miniTree_Data_2016_postVFP.root",
+        "2016":[
+            "./miniTree/2016_preVFP/miniTree_Data_2016_preVFP.root",
+            "./miniTree/2016_postVFP/miniTree_Data_2016_postVFP.root"
+        ],
         "2017": "./miniTree/2017/miniTree_Data_2017.root",
         "2018": "./miniTree/2018/miniTree_Data_2018.root"
     }
@@ -248,6 +257,10 @@ if __name__ == "__main__":
     fMC = {
         "2016_preVFP": "./miniTree/2016_preVFP/miniTree_ZGToLLG_2016_preVFP.root",
         "2016_postVFP": "./miniTree/2016_postVFP/miniTree_ZGToLLG_2016_postVFP.root",
+        "2016": [
+            "./miniTree/2016_preVFP/miniTree_ZGToLLG_2016_preVFP.root",
+            "./miniTree/2016_postVFP/miniTree_ZGToLLG_2016_postVFP.root"
+        ],
         "2017": "./miniTree/2017/miniTree_ZGToLLG_2017.root",
         "2018": "./miniTree/2018/miniTree_ZGToLLG_2018.root"
     }
@@ -255,6 +268,7 @@ if __name__ == "__main__":
     Luminosity = {
         "2016_preVFP": 19.3,
         "2016_postVFP": 16.6,
+        "2016": 35.9,
         "2017": 41.5,
         "2018": 59.8,
         "combined": 137.2
@@ -265,6 +279,7 @@ if __name__ == "__main__":
         rdf_MC = ROOT.RDataFrame("outTree", fMC[args.era])
         rdf_Da = ROOT.RDataFrame("outTree", fData[args.era])
     else:
+        del fMC["2016"], fData["2016"]
         rdf_MC = ROOT.RDataFrame("outTree", list(fMC.values()))
         rdf_Da = ROOT.RDataFrame("outTree", list(fData.values()))
 

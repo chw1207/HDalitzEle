@@ -11,13 +11,13 @@ import plugins.SampleConfig as cfg
 def get_parser():
     parser = ArgumentParser(description = "python script to produce mini trees")
     parser.add_argument(
-        "-r", "--run", 
-        help = "samples to run [ Data | ZGToLLG | TTJets ]", 
+        "-r", "--run",
+        help = "samples to run [ Data | ZGToLLG | TTJets | DYJets]",
         type = str
     )
     parser.add_argument(
-        "-e", "--era", 
-        help = "era to run [ 2016_preVFP | 2016_postVFP | 2017 | 2018 ], (default = 2017)", 
+        "-e", "--era",
+        help = "era to run [ 2016_preVFP | 2016_postVFP | 2017 | 2018 ], (default = 2017)",
         default = "2017",
         type = str
     )
@@ -31,7 +31,7 @@ class Analysis():
         self.era = _era
 
         # make sure the input arguments are correct
-        sample_list = ["Data", "ZGToLLG", "TTJets"]
+        sample_list = ["Data", "ZGToLLG", "TTJets", "DYJets"]
         era_list = ["2016_preVFP", "2016_postVFP", "2017", "2018"]
         if (self.sample not in sample_list) or (self.era not in era_list):
             print("[ERROR] Please specify the correct sample or era list!")
@@ -44,7 +44,7 @@ class Analysis():
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
-        # hadd target file 
+        # hadd target file
         self.haddfileName = " "
 
     #____________________________________________________________________________________
@@ -52,7 +52,7 @@ class Analysis():
         isMC = False if self.sample == "Data" else True
         Era = "{}_{}".format(self.sample, self.era)
         inpath = cfg.MCSample[Era]["outpath"] if isMC else cfg.DataSample[Era]["outpath"]
-        
+
         for i in range(len(inpath)):
             Run = ""
             if (isMC == True):
@@ -62,9 +62,9 @@ class Analysis():
                     Run = cfg.MCSample[Era]["production"][i]
             else:
                 Run = cfg.DataSample[Era]["run"][i]
-            
+
             ROOT.rdfZmumug("{}/skim.root".format(inpath[i]), "{}/miniTree_{}_{}.root".format(self.outdir, self.sample, Run), self.year, self.era, isMC)
-    
+
     #____________________________________________________________________________________
     # merge the files of data of each run to one single file
     def haddFiles(self):
@@ -82,7 +82,7 @@ class Analysis():
         for f in Filelist:
             filestr += " {}".format(f)
 
-        os.system("hadd -f {}{}".format(self.haddfileName, filestr)) 
+        os.system("hadd -f {}{}".format(self.haddfileName, filestr))
 
 
 def main():
@@ -90,26 +90,25 @@ def main():
     ana.runAna()
     if args.run == "Data":
         ana.haddFiles()
-    
+
 
 if __name__ == "__main__":
     parser = get_parser()
     args = parser.parse_args()
-    
+
     ROOT.gROOT.SetBatch()
     ROOT.gSystem.AddIncludePath("-Iexternal")
     ROOT.gSystem.SetBuildDir("tmpdir", ROOT.kTRUE)
     ROOT.gROOT.ProcessLine(".L rdfZmumug.C+")
-    
-    start_time = time.time()  
+
+    start_time = time.time()
     now = datetime.now()
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
     print(color.RED+"Execution date and time = {}".format(dt_string)+color.END, flush = True)
     print(color.BLUE + "---Start to produce mini trees!---" + color.END, flush = True)
-    
+
     main()
-    
+
     print(color.BLUE + "---All done!---" + color.END, flush = True)
     seconds = time.time() - start_time
     print("Total Time Taken: {}".format(time.strftime("%H:%M:%S",time.gmtime(seconds))))
-    

@@ -1,18 +1,22 @@
-import ROOT  # version: 6.24/02
-import os
-import sys
+import ROOT
+import os, sys
 import time
 import pickle
-import uproot  # version: 4.1.9
-import numpy as np  # version: 1.21.4
-import pandas as pd  # version: 1.3.2
+import uproot
+import numpy as np
+
+# https://stackoverflow.com/a/15778297
+import warnings
+if not sys.warnoptions:
+    warnings.simplefilter("ignore")
+
+import pandas as pd
 from glob import glob
 from datetime import datetime
 from argparse import ArgumentParser
 from plugins.colorPrint import *
-# get the sample information and Merged ID information
 import plugins.SampleConfig as cfg
-import xgboost as xgb  # version: 1.4.2
+import xgboost as xgb
 
 
 # This is the python script to skim the ggNtuple and add the XGBoost prediction results
@@ -20,7 +24,7 @@ def get_parser():
     parser = ArgumentParser(description="python script to skim the ggNtuple")
     parser.add_argument(
         "-r", "--run",
-        help="sample to run [ Data | ZGToLLG | TTJets ]",
+        help="sample to run [ Data | ZGToLLG | TTJets | DYJets]",
         type=str
     )
     parser.add_argument(
@@ -72,8 +76,7 @@ class PreProcess():
         df1 = ROOT.RDataFrame("ggNtuplizer/EventTree", self.inputlist)
 
         if (isMC == True):
-            print(color.GREEN + "Add weights to the branches(takes time to calculate...): " +
-                  color.END, flush=True)
+            print(color.GREEN + "Add weights to the branches(takes time to calculate...): " + color.END, flush=True)
             pos = df1.Filter("genWeight > 0", "positive event").Count()
             neg = df1.Filter("genWeight <= 0", "negative event").Count()
             totalev = pos.GetValue() - neg.GetValue()
@@ -99,7 +102,7 @@ class PreProcess():
             .Define("ambiguousGSF",      "TrackElectronMatching(eleD0, gsfD0, isMainGSF)")
             .Define("nGsfMatchToReco",   "CalcNGsfMatchToReco(nEle, ambiguousGSF)")
             .Define("eleTrkIdx",         "FindMainGSF(nEle, ambiguousGSF)")
-            .Define("eleSubTrkIdx",      "FindSubGSF_PtMax(nEle, ambiguousGSF, gsfPt)")
+            .Define("eleSubTrkIdx",      "FindSubGSF_dRMin(nEle, ambiguousGSF, gsfEta, gsfPhi)")
 
             .Define("eleTrkPt",          "MatchIdex(eleTrkIdx, gsfPt)")
             .Define("eleTrkEta",         "MatchIdex(eleTrkIdx, gsfEta)")
@@ -163,60 +166,71 @@ class PreProcess():
     def addPred(self, features, models):
         # features is a dict containing {"M1": feature list for M1 ID, "M2": feature list for M2 ID}
         # models is a dict containing {"M1EB": xgb model M1EB, "M2EB": xgb model M2EB, "M1EE": xgb model M1EE, "M2EB": xgb model M2EE}
-        print(color.GREEN + "Predict the classes of electrons by xgboost(takes time)..." +
-              color.END, flush=True)
+        print(color.GREEN + "Predict the classes of electrons by xgboost(takes time)..." + color.END, flush=True)
         print("Large dataframe(memory > 500 MB) will be split to small chunks to process", flush=True)
 
         # open the skimmed tree
         fout = ROOT.TFile(self.outname, "UPDATE")
         tout = fout.Get("ggNtuplizer/EventTree")
         eleClass = ROOT.std.vector("float")()
+        eleXGBID = ROOT.std.vector("float")()
         TB1 = tout.Branch("eleClass", eleClass)
+        TB2 = tout.Branch("eleXGBID", eleXGBID)
 
-        branches = list(
-            set(features["M1"] + features["M2"] + ["nGsfMatchToReco"]))
+        branches = list(set(features["M1"] + features["M2"] + ["nGsfMatchToReco"]))
         with uproot.open("{}:ggNtuplizer/EventTree".format(self.outname)) as tree:
             # split the dataframe based on the memory
-            for df_flat, report in tree.iterate(branches, step_size="500 MB", library="pd", report=True):
-                print(report, flush=True)
+            for df_flat, report in tree.iterate(branches, step_size = "500 MB", library = "pd", report = True):
+                print(report, flush = True)
 
                 df_flat_0gsf = df_flat.query("nGsfMatchToReco == 0")
-                df_flat_0gsf.insert(loc=0, column="eleClass", value=-1)
+                df_flat_0gsf.insert(loc = 0, column = "eleClass", value = -1)
+                df_flat_0gsf.insert(loc = 0, column = "eleXGBID", value = -1)
 
                 # EB 1gsf prediction
                 df_flat_EB_1gsf = df_flat.query("(abs(eleSCEta) < 1.479) and (nGsfMatchToReco == 1)")
                 x_EB_1gsf = xgb.DMatrix(df_flat_EB_1gsf.loc[:, features["M1"]].values)
-                df_flat_EB_1gsf.insert(loc=0, column="eleClass", value=self.convert_class(models["M1EB"].predict(x_EB_1gsf).argmax(axis=1), "Merged-1Gsf"))
+                df_flat_EB_1gsf.insert(loc = 0, column = "eleClass", value = self.convert_class(models["M1EB"].predict(x_EB_1gsf).argmax(axis=1), "Merged-1Gsf"))
+                df_flat_EB_1gsf.insert(loc = 0, column = "eleXGBID", value = models_b["M1EB"].predict(x_EB_1gsf))
 
                 # EB 2gsf prediction
                 df_flat_EB_2gsf = df_flat.query("(abs(eleSCEta) < 1.479) and (nGsfMatchToReco >= 2)")
                 x_EB_2gsf = xgb.DMatrix(df_flat_EB_2gsf.loc[:, features["M2"]].values)
-                df_flat_EB_2gsf.insert(loc=0, column="eleClass", value=self.convert_class(models["M2EB"].predict(x_EB_2gsf).argmax(axis=1), "Merged-2Gsf"))
+                df_flat_EB_2gsf.insert(loc = 0, column = "eleClass", value = self.convert_class(models["M2EB"].predict(x_EB_2gsf).argmax(axis=1), "Merged-2Gsf"))
+                df_flat_EB_2gsf.insert(loc = 0, column = "eleXGBID", value = models_b["M2EB"].predict(x_EB_2gsf))
 
                 # EE 1gsf prediction
                 df_flat_EE_1gsf = df_flat.query("(abs(eleSCEta) >= 1.479) and (nGsfMatchToReco == 1)")
                 x_EE_1gsf = xgb.DMatrix(df_flat_EE_1gsf.loc[:, features["M1"]].values)
-                df_flat_EE_1gsf.insert(loc=0, column="eleClass", value=self.convert_class(models["M1EE"].predict(x_EE_1gsf).argmax(axis=1), "Merged-1Gsf"))
+                df_flat_EE_1gsf.insert(loc = 0, column = "eleClass", value = self.convert_class(models["M1EE"].predict(x_EE_1gsf).argmax(axis=1), "Merged-1Gsf"))
+                df_flat_EE_1gsf.insert(loc = 0, column = "eleXGBID", value = models_b["M1EE"].predict(x_EE_1gsf))
 
                 # EE 2gsf prediction
                 df_flat_EE_2gsf = df_flat.query("(abs(eleSCEta) >= 1.479) and (nGsfMatchToReco >= 2)")
                 x_EE_2gsf = xgb.DMatrix(df_flat_EE_2gsf.loc[:, features["M2"]].values)
-                df_flat_EE_2gsf.insert(loc=0, column="eleClass", value=self.convert_class(models["M2EE"].predict(x_EE_2gsf).argmax(axis=1), "Merged-2Gsf"))
+                df_flat_EE_2gsf.insert(loc = 0, column = "eleClass", value = self.convert_class(models["M2EE"].predict(x_EE_2gsf).argmax(axis=1), "Merged-2Gsf"))
+                df_flat_EE_2gsf.insert(loc = 0, column = "eleXGBID", value = models_b["M2EE"].predict(x_EE_2gsf))
 
                 df_new_EBEE = pd.concat([df_flat_0gsf, df_flat_EB_1gsf, df_flat_EB_2gsf, df_flat_EE_1gsf, df_flat_EE_2gsf], sort=False).sort_index()
 
                 # fill the branch ("entry" is the index name which uproot creates)
-                df_new = df_new_EBEE.groupby("entry").agg({"eleClass": lambda x: x.to_list()})
+                Pred = ["eleClass", "eleXGBID"]
+                df_new = df_new_EBEE.groupby("entry")[Pred].agg(list)
+
                 # loop numpy array is much faster than loop the pandas series
                 arr_eleClass = df_new["eleClass"].to_numpy()
+                arr_eleXGBID = df_new["eleXGBID"].to_numpy()
 
                 for i in range(len(arr_eleClass)):  # loop entry
                     eleClass.clear()
+                    eleXGBID.clear()
 
                     for j in range(len(arr_eleClass[i])):  # loop subentry
                         eleClass.push_back(arr_eleClass[i][j])
+                        eleXGBID.push_back(arr_eleXGBID[i][j])
 
                     TB1.Fill()
+                    TB2.Fill()
 
         fout.Write()
         fout.Close()
@@ -242,7 +256,7 @@ def main():
             pre.addPred(features, models)
             print("", flush=True)
 
-    elif (sample == "ZGToLLG" or sample == "TTJets"):
+    elif (sample == "ZGToLLG" or sample == "TTJets" or sample == "DYJets"):
         isMC = True
         Era = "{}_{}".format(sample, era)
         path, outpath = cfg.MCSample[Era]["path"], cfg.MCSample[Era]["outpath"]
@@ -269,8 +283,7 @@ def main():
 if __name__ == "__main__":
     now = datetime.now()
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-    print(color.RED+"Execution date and time = {}".format(dt_string) +
-          color.END, flush=True)
+    print(color.RED + "Execution date and time = {}".format(dt_string) + color.END, flush=True)
 
     start_time = time.time()
 
@@ -278,7 +291,7 @@ if __name__ == "__main__":
     parser = get_parser()
     args = parser.parse_args()
     sample, era = args.run, args.era
-    sample_list = ["Data", "ZGToLLG", "TTJets"]
+    sample_list = ["Data", "ZGToLLG", "TTJets", "DYJets"]
     era_list = ["2016_preVFP", "2016_postVFP", "2017", "2018"]
     if (sample not in sample_list) or (era not in era_list):
         parser.print_help()
@@ -288,7 +301,7 @@ if __name__ == "__main__":
           color.END, flush=True)
     print("", flush=True)
 
-    ncpus = -1
+    ncpus = 20
     features = cfg.features
     models = {
         "M1EB": pickle.load(open(cfg.models["M1EB"], "rb")),
@@ -296,10 +309,15 @@ if __name__ == "__main__":
         "M1EE": pickle.load(open(cfg.models["M1EE"], "rb")),
         "M2EE": pickle.load(open(cfg.models["M2EE"], "rb"))
     }
+    models_b = {
+        "M1EB": pickle.load(open(cfg.models_b["M1EB"], "rb")),
+        "M2EB": pickle.load(open(cfg.models_b["M2EB"], "rb")),
+        "M1EE": pickle.load(open(cfg.models_b["M1EE"], "rb")),
+        "M2EE": pickle.load(open(cfg.models_b["M2EE"], "rb"))
+    }
 
     main()
 
     print(color.BLUE + "---All done!---" + color.END, flush=True)
     seconds = time.time() - start_time
-    print("Time Taken:", time.strftime(
-        "%H:%M:%S", time.gmtime(seconds)), flush=True)
+    print("Time Taken:", time.strftime("%H:%M:%S", time.gmtime(seconds)), flush=True)

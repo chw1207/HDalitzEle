@@ -4,7 +4,7 @@ import json
 import numpy as np
 from plugins.CMS_lumi import CMS_lumi
 
-# script to check the signal and zg have similar distributions among the training features
+# script to check if signal and zg have similar distributions among the training features
 
 
 def Draw1DHist(c, vh, vc=[None, None], vcl=["#E69D45", "#0061a8"], xaxis="x-axis", yaxis="x-axis", option="hist", y_axisscale=1.3, Log=False):

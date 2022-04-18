@@ -123,8 +123,10 @@ auto DefineFinalVars(T &df){
                 .Define("phoHoverE_lep1",       "phoHoverE[phoIdx]")
                 .Define("phoR9Full5x5_lep1",    "phoR9Full5x5[phoIdx]")
 
+                .Define("nGsfMatchToReco_lep1", "nGsfMatchToReco[eleIdx]")
                 .Define("eleConvVeto_lep1",     "eleConvVeto[eleIdx]")
                 .Define("eleClass_lep1",        "eleClass[eleIdx]")
+                .Define("eleXGBID_lep1",        "eleXGBID[eleIdx]")
                 .Define("eleSCEta_lep1",        "eleSCEta[eleIdx]")
                 .Define("eleSCPhi_lep1",        "eleSCPhi[eleIdx]")
                 .Define("eleSCEn_lep1",         "eleSCEn[eleIdx]")
@@ -157,7 +159,8 @@ auto DefineFinalVars(T &df){
                 .Define("eleR9Full5x5_lep1",    "eleR9Full5x5[eleIdx]")
                 .Define("gsfPtRatio_lep1",      "gsfPtRatio[eleIdx]")
                 .Define("gsfDeltaR_lep1",       "gsfDeltaR[eleIdx]")
-                .Define("gsfRelPtRatio_lep1",   "gsfRelPtRatio[eleIdx]");
+                .Define("gsfRelPtRatio_lep1",   "gsfRelPtRatio[eleIdx]")
+                .Define("gsfPtSum_lep1",        "gsfPtSum[eleIdx]");
     return nf;
 }
 
@@ -250,7 +253,7 @@ void rdfZmumug(string infile, string outfile, int year, string era, bool isMC){
     if (isMC){
         // concatenate Vars and weiVars
         vector<string> weiVars = {
-            "puwei", "puwei_up", "puwei_down",
+            "zMass", "puwei", "puwei_up", "puwei_down",
             "genwei","mcwei", "wei1", "wei2"
         };
         Vars.insert(Vars.end(), weiVars.begin(), weiVars.end());
