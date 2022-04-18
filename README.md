@@ -15,6 +15,20 @@ graph LR
 3. **rdfxAna.C** is the main analysis script to produce the flat mini trees.
 4. Calculate limit using **flashggFinalFit** package.
 
+## Environment setup
+1. All the necessary dependencies are listed in **environment.yml**. They can be installed by running
+```bash
+$ conda env create -f environment.yml
+```
+or the simpler command
+```bash
+$ conda create -c conda-forge --name hdalitz -y root=6.24 python=3.8 dask-cuda=21.10 numba=0.53.1 numpy=1.21.4 pandas=1.3.5 uproot seaborn py-xgboost-gpu
+```
+
+2. Activate the conda environment
+```bash
+$ conda activate hdalitz
+```
 
 ## Usage
 Brfore runing the sripts, you need to specify the path of the ntuple in **./pluginsV2/SampleConfig.py**
@@ -26,8 +40,8 @@ $ python3 skimTree.py --run [sample to run] --era [era]
 - `-r --run`: specify which sample to run (test or Data or HDalitz)
   - test: only process the ggF signal sample @ 125 GeV
   - Data: process the dataset specify in the SampleConfig.DataSample
-  - HDalitz: process full signal samples 
-- `-r --era`: 2016_preVFP or 2016_postVFP or 2017 or 2018 
+  - HDalitz: process full signal samples
+- `-r --era`: 2016_preVFP or 2016_postVFP or 2017 or 2018
 - `-n --NCPUs`: use all available cores by default.
 
 ### produce mini trees
@@ -38,8 +52,8 @@ $ python3 rdfxAnaRun.py --run [sample to run] --year [year] --doSys [option]
 - `-r --run`: specify which sample to run (test or Data or HDalitz)
   - test: only process the ggF signal sample @ 125 GeV
   - Data: process the dataset specify in the SampleConfig.DataSample
-  - HDalitz: process full signal samples 
-- `-y --year`: 2016 or 2017 or 2018 
+  - HDalitz: process full signal samples
+- `-y --year`: 2016 or 2017 or 2018
 - `-d --doSys`: produce the mini trees for estimating the experimental uncertainties or not. (True or False)
 - `-n --NCPUs`: use all available cores by default.
 
@@ -57,12 +71,12 @@ $ python3 Significance.py
   - ID training
 - **flashggFinalFit**: Forked from the official [flashgg](https://github.com/cms-analysis/flashggFinalFit) with some modification.
 - **pluginsV2**: Several header files used in **skimTree.py** and **rdfxAna.C** are put in this drectory.
-- **external**: Files for SFs, pile-up weight and R9 correction are put in this directory 
+- **external**: Files for SFs, pile-up weight and R9 correction are put in this directory
 
 
 ## To-Do
 - [ ] UL signal samples
-- [ ] SFs measurements of Merged ID  
+- [ ] SFs measurements of Merged ID
   - Scripts are almost done.
   - <img src="https://render.githubusercontent.com/render/math?math=Z\rightarrow\mu\mu\gamma"> (only two-track converted photons with radius < 16cm are used)
 - [ ] Trigger SFs (Diphoton/Dielectron)
