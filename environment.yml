@@ -278,4 +278,3 @@ dependencies:
   - zlib=1.2.11=h166bdaf_1014
   - zstandard=0.17.0=py38h0a891b7_1
   - zstd=1.5.2=ha95c52a_0
-prefix: /home/chenghan/.conda/envs/hdalitz
