@@ -2,17 +2,17 @@ import numpy as np
 
 #####################################################################
 # All plots, models, config file will be stored here
-OutputDirName = "./Results/Output_Merged1GsfID_EB_2017_dask"
-Pickle_signal = "./data/Merged-ID/Dataframe_MergedID_HDalitz_eeg_allMass_EB_2017.pkl"
-Pickle_bkg = "./data/Merged-ID/Dataframe_MergedID_DYJets_GJets_QCD_EB_2017.pkl"
+OutputDirName = "./Results/Output_Merged1GsfID_dask_Fall17_EB_CheckALL"
+Pickle_signal = "./data/Merged-ID/Dataframe_MergedID_HDalitz_Fall17_EB.pkl"
+Pickle_bkg = "./data/Merged-ID/Dataframe_MergedID_DYJets_QCD_Fall17_EB.pkl"
 Clfname = "MergedID"
 #####################################################################
 # prepare sample
 testsize = 0.2  #(0.2 means 20%)
-CommonCut = "(elePresel == True) and (nVtx > 1) and (nGsfMatchToReco == 1) and (Class != 'Merged-2Gsf')"
+CommonCut = "(elePresel == 1) and (nVtx > 1) and (nGsfMatchToReco == 1) and (Class != 'Merged-2Gsf')"
 #####################################################################
-Classes = ["Merged-1Gsf", "DYJets", "GJets", "QCD"]
-ClassColors = ["#377eb8", "#3A9679", "#E16262", "#787A91"]
+Classes = ["Merged-1Gsf", "DYJets", "QCD"]
+ClassColors = ["#377eb8", "#3A9679", "#E16262"]
 MVA = "XGB"
 
 featureplotparam_json = "FeaturePlotParam_MergedID_EB.json"
@@ -21,22 +21,27 @@ features = [
     "eleSCEta",
     "eleSCRawEn",
 
-    "eleD0",
-    "eleDz",
-    "eleSIP",
+    "eledEtaAtVtx",
+    "eledPhiAtVtx",
     "elePtError",
-    "eleSCPhiWidth",
+    "eleHoverE",
     "eleEoverP",
     "eleEoverPout",
     "eleEoverPInv",
-    "eledEtaAtVtx",
-    "eledPhiAtVtx",
+
+    "eleSCEtaWidth",
+    "eleSCPhiWidth",
     "eleSigmaIEtaIEtaFull5x5",
+    "eleSigmaIPhiIPhiFull5x5",
+    "eleR9Full5x5",
+    "eleBrem",
+
     "elePFChIso",
     "elePFPhoIso",
-    "eleR9Full5x5",
-    "eleTrkdxy",
-    "eleMissHits",
+    "elePFNeuIso",
+
+    # "gsfPtRatio",
+    # "gsfDeltaR",
     "gsfRelPtRatio"
 ]
 
@@ -47,24 +52,25 @@ param = {
     "eval_metric": "mlogloss",
     "tree_method": "gpu_hist",
     "random_state": RandomState,
-    "eta": 0.2,
-    "max_delta_step": 5,
+
+    "learning_rate": 0.2,
+    "max_delta_step": 7,
     "max_depth": 5,
-    "min_child_weight": 40,
-    "gamma": 1,
+    "min_child_weight": 100,
+    "min_split_loss": 1,
     "subsample": 0.5
 }
 
 # number of trees
 num_boost_round = 500
-early_stopping_rounds = 20
+early_stopping_rounds = 10
 
 #####################################################################
 # Reweighting scheme
 # ! Notice that "intwei" should be included in the input pkl files
-# * instwei: (relative xs) ggF as 1, for it being the production with the largest xs and VBF as xs_VBF/xs_ggF 
-Reweighing = "Nothing"
-ptbins = [0, 10, 20, 30, 40, 50, 60, 100, 150] 
-etabins = np.linspace(-1.5, 1.5, num = 11)
+# * instwei: (relative xs) ggF as 1, for it being the production with the largest xs and VBF as xs_VBF/xs_ggF
+Reweighing = "Merged-1Gsf"
+ptbins = [0., 15., 25., 35., 60., 20000]
+etabins = np.arange(-1.6, 1.6, 0.2)
 ptwtvar = "eleCalibPt"
-etawtvar = "eleEta"
+etawtvar = "eleSCEta"

@@ -35,10 +35,10 @@ class Preparation():
             catDict = {"Merged-2Gsf": 2, "Merged-1Gsf": 3}
             dfsig_list = []
             for cat in catDict.keys():
-                df = df.query("category == {}".format(catDict[cat]))
-                df_lep1 = df.filter(regex = "lep1") # variables of lep1
+                df_cat = df.query("category == {}".format(catDict[cat]))
+                df_lep1 = df_cat.filter(regex = "lep1") # variables of lep1
                 df_lep1.columns = df_lep1.columns.str.replace("_lep1", "") # rename the columns
-                df_lep1[self.branches_arr3] = df[self.branches_arr3].to_numpy()
+                df_lep1[self.branches_arr3] = df_cat[self.branches_arr3].to_numpy()
 
                 df_lep1 = df_lep1.dropna()
                 df_lep1["Class"] = cat # for multi-classification

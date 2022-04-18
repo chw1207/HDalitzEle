@@ -2,6 +2,12 @@ import sys, os
 import subprocess
 import json
 import pickle
+
+# https://stackoverflow.com/a/15778297
+import warnings
+if not sys.warnoptions:
+    warnings.simplefilter("ignore")
+
 import pandas as pd
 import numpy as np
 import time
@@ -18,6 +24,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_selection import SelectKBest
 from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, accuracy_score, auc, log_loss, classification_report
 from Tools.PlotTools import *
+
 
 # Some useful links
 # *     1) Dask: https://medium.com/rapids-ai/a-new-official-dask-api-for-xgboost-e8b10f3d1eb7
@@ -42,6 +49,9 @@ def Load_df():
         else:
             Bkgdf = pickle.load(f)
 
+        if isBinary == True:
+            Bkgdf["Class"] = "Background"
+
     print (color.BLUE + "---Loading signal dataframes from: {}---".format(Conf.Pickle_signal) + color.END)
 
     # load the background dataframe
@@ -52,11 +62,15 @@ def Load_df():
         else:
             Sigdf = pickle.load(f)
 
+        if isBinary == True:
+            Sigdf["Class"] = "Signal"
+
     df = pd.concat([Sigdf, Bkgdf], ignore_index = True, sort = False)
 
     # change the dtype
     cols = df.select_dtypes(include = [object]).columns.drop("Class")
-    df[cols] = df[cols].astype(np.float32)
+    df[cols] = df[cols].astype(np.float64)
+    df["instwei"] = 1.
 
     print (color.BLUE + "---Dataframes loading done!---" + color.END)
 
@@ -66,8 +80,12 @@ def Load_df():
 # split the dataframe to train and test sample
 def SplitTestTrain(df):
     df[cat] = 0
-    for i, k in enumerate(Conf.Classes):
-        df.loc[df.Class == k, cat] = i
+    if isBinary == True:
+        df.loc[df.Class == "Signal", cat] = 1
+        df.loc[df.Class == "Background", cat] = 0
+    else:
+        for i, k in enumerate(Conf.Classes):
+            df.loc[df.Class == k, cat] = i
 
     index = df.index
     TrainIndices, TestIndices = [], []
@@ -141,16 +159,17 @@ def AddWeight(df):
 
     elif Conf.Reweighing in Conf.Classes:
         # pt-eta reweighting for training set
+        prGreen("pt-eta reweighting to {} for training sample".format(Conf.Reweighing))
         df.loc[TrainIndices, weight] = df_pteta_rwt(df.loc[TrainIndices], "Class", ptw = Conf.ptbins, etaw = Conf.etabins, pt = Conf.ptwtvar, eta = Conf.etawtvar, SumWeightCol = "instwei", NewWeightCol = weight, cand = Conf.Reweighing, Classes = Conf.Classes)
         plotPtEtaRwt(df, Conf.ptwtvar, Conf.etawtvar, Conf.ptbins, Conf.etabins, Conf.OutputDirName+"/"+MVA)
 
         # pt-eta reweighting for testing set
+        prGreen("pt-eta reweighting to {} for testing sample".format(Conf.Reweighing))
         df.loc[TestIndices, weight] = df_pteta_rwt(df.loc[TestIndices], "Class", ptw = Conf.ptbins, etaw = Conf.etabins, pt = Conf.ptwtvar, eta = Conf.etawtvar, SumWeightCol = "instwei", NewWeightCol = weight, cand = Conf.Reweighing, Classes = Conf.Classes)
 
     else:
-        df[weight] = 1
-        print("This reweighting method is not yet available!")
-        sys.exit(1)
+        df[weight] = 1.
+        print("Sample weight is assigned as 1.!")
 
     return df
 
@@ -197,8 +216,8 @@ def Training(client: Client):
 
 # copy from the TensorFlow to_categoriacal function
 # Reference: https://github.com/keras-team/keras/blob/v2.7.0/keras/utils/np_utils.py#L21-L74
-def ToCategorical(y, num_classes = None, dtype = "float32"):
-    y = np.array(y, dtype='int')
+def ToCategorical(y, num_classes = None, dtype = "float64"):
+    y = np.array(y, dtype="int")
     input_shape = y.shape
     if input_shape and input_shape[-1] == 1 and len(input_shape) > 1:
         input_shape = tuple(input_shape[:-1])
@@ -217,12 +236,13 @@ def ToCategorical(y, num_classes = None, dtype = "float32"):
 if __name__ == "__main__":
     start_time = time.time()
 
+    # get the information from config file
     TrainConfig = sys.argv[1]
-
     prGreen("Importing settings from "+ TrainConfig.replace("/", "."))
     importConfig = TrainConfig.replace("/", ".")
     exec("import "+importConfig+" as Conf")
     cat, weight, label, Clfname, MVA = "EleType", "NewWt", Conf.Classes, Conf.Clfname, Conf.MVA
+    isBinary = True if len(Conf.Classes) == 2 else False
 
     print (color.BOLD + color.BLUE + "---Making output directory: {}---".format(Conf.OutputDirName)+ color.END)
     if (os.path.exists(Conf.OutputDirName) and len(os.listdir(Conf.OutputDirName)) != 0):
@@ -242,6 +262,8 @@ if __name__ == "__main__":
     DrawStatistic(df, Conf.OutputDirName)
 
     prGreen("Draw the training feature plots")
+    print("{} features are used in the training".format(len(Conf.features)))
+    print(Conf.features)
     os.makedirs("{}/FeaturePlot/".format(Conf.OutputDirName), exist_ok = True)
     with open("./Tools/{}".format(Conf.featureplotparam_json), "r") as fp:
         myTags = json.load(fp)
@@ -276,23 +298,9 @@ if __name__ == "__main__":
             Y_train, y_train_pred, Wt_train = dask.compute(Y_train, y_train_pred, Wt_train)
             Y_test, y_test_pred, Wt_test = dask.compute(Y_test, y_test_pred, Wt_test)
 
-            # print the training results
-            logloss = log_loss(Y_test, y_test_pred, sample_weight = Wt_test)
-            acc = accuracy_score(Y_test, y_test_pred.argmax(axis = 1), sample_weight = Wt_test)
-            AUC = roc_auc_score(Y_test, y_test_pred, sample_weight = Wt_test, multi_class = "ovr", average = "weighted")
-            prGreen("The training results for test sample......")
-            print("Expected log loss of the test sample: {:.4f}".format(logloss))
-            print("Accuracy of the test sample: {:.4f}".format(acc))
-            print("The average roc auc score of test sample is {:.4f}".format(AUC))
-            print(classification_report(Y_test, y_test_pred.argmax(axis = 1), target_names = Conf.Classes, sample_weight = Wt_test))
-
-            results = {"logloss": logloss, "accuracy": acc, "auc": AUC}
-            results_path = Conf.OutputDirName+"/"+MVA+"/"+MVA+"_"+"results.json"
-            with open(results_path, "w") as f:
-                json.dump(results, f)
-
             # visualize the results
             prGreen("Draw the training results......")
+
             #! 1) feature importance
             bst["booster"].feature_names = Conf.features
             importance = bst["booster"].get_score(importance_type = "gain")
@@ -307,21 +315,7 @@ if __name__ == "__main__":
             print("Save fig in {}".format(Conf.OutputDirName+"/"+MVA+"/"+MVA+"_"+"Importance.pdf"))
             plt.close("all")
 
-            #! 2) confusion metrices
-            cm_train = confusion_matrix(Y_train, y_train_pred.argmax(axis = 1), sample_weight = Wt_train)
-            plot_confusion_matrix(
-                cm_train, Conf.Classes, normalize = True,
-                title = "Normalized confusion matrix(Train sample)",
-                outName = Conf.OutputDirName+"/"+MVA+"/"+MVA+"_Normalized_CM_Training"+".pdf"
-            )
-            cm_test = confusion_matrix(Y_test, y_test_pred.argmax(axis = 1), sample_weight = Wt_test)
-            plot_confusion_matrix(
-                cm_test, Conf.Classes, normalize = True,
-                title = "Normalized confusion matrix(Test sample)",
-                outName = Conf.OutputDirName+"/"+MVA+"/"+MVA+"_Normalized_CM_Testing"+".pdf"
-            )
-
-            #! 3) history of epochs
+            #! 2) history of epochs
             eval_metric = Conf.param["eval_metric"]
             fig, axes = plt.subplots(1, 1, figsize = (6, 6))
             axes.plot(range(1, len(bst["history"]["train"][eval_metric]) + 1), bst["history"]["train"][eval_metric], linewidth = 3, linestyle = "-", color = "#184d47", label = "Training loss")
@@ -332,69 +326,151 @@ if __name__ == "__main__":
             print("Save fig in %s" %(Conf.OutputDirName+"/"+MVA+"/"+MVA+"_"+"LogLoss.pdf"))
             plt.close("all")
 
-            #! 4) MVA score and ROC
+            #! 3) MVA score and ROC
             # * ROC threshold: -> threshold seems rebundent for multi-classification ?
             # *     1) https://towardsdatascience.com/demystifying-roc-curves-df809474529a
             # *     2) https://machinelearningmastery.com/threshold-moving-for-imbalanced-classification/
-            Y_train_categorical = ToCategorical(Y_train, num_classes = len(Conf.Classes))
-            Y_test_categorical  = ToCategorical(Y_test, num_classes = len(Conf.Classes))
-            n_classes = len(Conf.Classes)
-            figMVA, axesMVA = plt.subplots(1, n_classes, figsize = (n_classes*8.5, 7))
-            fig, axes = plt.subplots(1, n_classes, figsize = (n_classes*8.5, 7))
-            for i in range(n_classes):
-                axMVA = axesMVA[i]
-                ax = axes[i]
-                for k in range(n_classes):
-                    axMVA.hist(
-                        y_test_pred[:, i][Y_test_categorical[:, k] == 1],
-                        bins = np.linspace(0, 1, num = 40), label = Conf.Classes[k]+": Test",
-                        weights = Wt_test[Y_test_categorical[:, k] == 1]/np.sum(Wt_test[Y_test_categorical[:, k] == 1]),
-                        histtype = "step", linewidth = 2, color = Conf.ClassColors[k]
-                    )
-                    axMVA.hist(
-                        y_train_pred[:, i][Y_train_categorical[:, k]==1],
-                        bins = np.linspace(0, 1, num = 40), label = Conf.Classes[k]+": Train",
-                        weights = Wt_train[Y_train_categorical[:, k] == 1]/np.sum(Wt_train[Y_train_categorical[:, k] == 1]),
-                        histtype = "stepfilled", alpha = 0.5, linewidth = 2, color = Conf.ClassColors[k]
-                    )
+            if isBinary == True:
+                figMVA, axesMVA = plt.subplots(1, 1, figsize = (6, 6))
+                fig, axes = plt.subplots(1, 1, figsize = (6, 6))
 
-                pltSty(axMVA, xName = "{}_pred".format(MVA), yName = "Normalized entries", TitleSize = 16, LabelSize = 17, TickSize = 17, MajTickLength = 10, MinTickLength = 6)
-                axMVA.legend(title = "{} vs Rest".format(Conf.Classes[i]), loc = "upper center", fontsize = 15, ncol = 2, edgecolor = "none", title_fontsize = 17)
-                axMVA.set_yscale("log")
-                axMVA.set_ylim([1E-5, 800])
-                axMVA.set_xlim([-0.05, 1.05])
+                df.loc[TrainIndices, MVA+"_pred"] = y_train_pred
+                df.loc[TestIndices, MVA+"_pred"] = y_test_pred
+                for i, j in enumerate(Conf.Classes):
+                    axesMVA.hist(
+                        df[(df["TrainDataset"] == 0) & (df.Class == j)][MVA+"_pred"],
+                        bins = np.linspace(0, 1, num = 40), label = Conf.Classes[i]+": Test",
+                        weights = df[(df["TrainDataset"] == 0) & (df.Class == j)]["instwei"]/np.sum(df[(df["TrainDataset"] == 0) & (df.Class == j)]["instwei"]),
+                        histtype = "step", linewidth = 2, color = Conf.ClassColors[i]
+                    )
+                    axesMVA.hist(
+                        df[(df["TrainDataset"] == 1) & (df.Class == j)][MVA+"_pred"],
+                        bins = np.linspace(0, 1, num = 40), label = Conf.Classes[i]+": Train",
+                        weights = df[(df["TrainDataset"] == 1) & (df.Class == j)]["instwei"]/np.sum(df[(df["TrainDataset"] == 1) & (df.Class == j)]["instwei"]),
+                        histtype = "stepfilled", alpha = 0.5, linewidth = 2, color = Conf.ClassColors[i]
+                    )
+                pltSty(axesMVA, xName = "{}_pred".format(MVA), yName = "Normalized entries", TitleSize = 16, LabelSize = 15, TickSize = 14, MajTickLength = 10, MinTickLength = 6)
+                axesMVA.legend(loc = "upper center", ncol = 2, fontsize = 13, edgecolor = "none")
+                axesMVA.set_yscale("log")
+                axesMVA.set_ylim([1E-4, 10])
+                axesMVA.set_xlim([-0.05, 1.05])
 
                 # tpr: true positive rate = signal efficiency
                 # fpr: false positive rate = background efficiency
-                fpr, tpr, th = roc_curve(Y_test_categorical[:, i], y_test_pred[:, i], sample_weight = Wt_test)
-                fpr_tr, tpr_tr, th_tr = roc_curve(Y_train_categorical[:, i], y_train_pred[:, i], sample_weight = Wt_train)
+                fpr, tpr, th = roc_curve(df[(df["TrainDataset"] == 0)][cat], y_test_pred, sample_weight = Wt_test)
+                fpr_tr, tpr_tr, th_tr = roc_curve(df[(df["TrainDataset"] == 1)][cat], y_train_pred, sample_weight = Wt_train)
 
-                bkgrej = np.array([1 - x for x in fpr])
-                bkgrej_tr = np.array([1 - x for x in fpr_tr])
+                bkgrej = (1 - fpr)
+                bkgrej_tr = (1 - fpr_tr)
 
-                # calculate the g-mean for each threshold
-                # if (i == 0):
-                #     print("Assume the first class is signal!")
-                #     gmeans = np.sqrt(tpr_tr * (1 - fpr_tr))
-                #     ix = np.argmax(gmeans)
-                #     print("Best Threshold = %.3f, G-Mean = %.3f" %(th_tr[ix], gmeans[ix]))
+                gmeans = np.sqrt(tpr_tr * bkgrej_tr)
+                ix = np.argmax(gmeans)
+                WPCuts = th_tr[ix]
+                print("Best Threshold = %.3f, G-Mean = %.3f" %(WPCuts, gmeans[ix]))
 
                 roc_auc = auc(fpr, tpr)
                 roc_auc_tr = auc(fpr_tr, tpr_tr)
 
-                ax.plot(tpr_tr, bkgrej_tr, label = "XGB Training auc = %.1f%s" %(roc_auc_tr*100, "%"),linewidth = 3, linestyle = "-", color = "#064635", zorder = 1)
-                ax.plot(tpr, bkgrej, label = "XGB Testing auc = %.1f%s"% (roc_auc*100, "%"), linewidth = 3, linestyle = "--", color = "#e2703a", zorder = 2)
-                # if (i == 0):
-                #     ax.scatter(tpr_tr[ix], bkgrej_tr[ix], marker = "o", color = "#202020", label = "Threshold with G-Mean = %.3f" %(gmeans[ix]), s = 100, zorder = 3)
-                pltSty(ax, xName = "Signal efficiency", yName = "Background rejection", TitleSize = 16, LabelSize = 17, TickSize = 17, MajTickLength = 10, MinTickLength = 6)
+                axes.plot(tpr_tr, bkgrej_tr, label = "XGB Training auc = %.1f%s" %(roc_auc_tr*100, "%"),linewidth = 3, linestyle = "-", color = "#064635", zorder = 1)
+                axes.plot(tpr, bkgrej, label = "XGB Testing auc = %.1f%s"% (roc_auc*100, "%"), linewidth = 3, linestyle = "--", color = "#e2703a", zorder = 2)
+                axes.scatter(tpr_tr[ix], bkgrej_tr[ix], marker = "o", color = "#202020", label = "Threshold with G-Mean = %.3f" %(gmeans[ix]), s = 90, zorder = 3)
 
-                ax.legend(title = "{} vs Rest".format(Conf.Classes[i]), loc = "best", edgecolor = "none", facecolor = "none", fontsize = 17, title_fontsize = 17)
+                pltSty(axes, xName = "Signal efficiency", yName = "Background rejection", TitleSize = 15, LabelSize = 15, TickSize = 15, MajTickLength = 7, MinTickLength = 4)
+                axes.legend(loc = "best", edgecolor = "none", facecolor = "none", fontsize = 13)
+
+
+            else:
+                Y_train_categorical = ToCategorical(Y_train, num_classes = len(Conf.Classes))
+                Y_test_categorical  = ToCategorical(Y_test, num_classes = len(Conf.Classes))
+                n_classes = len(Conf.Classes)
+                figMVA, axesMVA = plt.subplots(1, n_classes, figsize = (n_classes*8.5, 7))
+                fig, axes = plt.subplots(1, n_classes, figsize = (n_classes*8.5, 7))
+                for i in range(n_classes):
+                    axMVA = axesMVA[i]
+                    ax = axes[i]
+                    for k in range(n_classes):
+                        axMVA.hist(
+                            y_test_pred[:, i][Y_test_categorical[:, k] == 1],
+                            bins = np.linspace(0, 1, num = 40), label = Conf.Classes[k]+": Test",
+                            weights = Wt_test[Y_test_categorical[:, k] == 1]/np.sum(Wt_test[Y_test_categorical[:, k] == 1]),
+                            histtype = "step", linewidth = 2, color = Conf.ClassColors[k]
+                        )
+                        axMVA.hist(
+                            y_train_pred[:, i][Y_train_categorical[:, k]==1],
+                            bins = np.linspace(0, 1, num = 40), label = Conf.Classes[k]+": Train",
+                            weights = Wt_train[Y_train_categorical[:, k] == 1]/np.sum(Wt_train[Y_train_categorical[:, k] == 1]),
+                            histtype = "stepfilled", alpha = 0.5, linewidth = 2, color = Conf.ClassColors[k]
+                        )
+
+                    pltSty(axMVA, xName = "{}_pred".format(MVA), yName = "Normalized entries", TitleSize = 16, LabelSize = 17, TickSize = 17, MajTickLength = 10, MinTickLength = 6)
+                    axMVA.legend(title = "{} vs Rest".format(Conf.Classes[i]), loc = "upper center", fontsize = 15, ncol = 2, edgecolor = "none", title_fontsize = 17)
+                    axMVA.set_yscale("log")
+                    axMVA.set_ylim([1E-5, 800])
+                    axMVA.set_xlim([-0.05, 1.05])
+
+                    # tpr: true positive rate = signal efficiency
+                    # fpr: false positive rate = background efficiency
+                    fpr, tpr, th = roc_curve(Y_test_categorical[:, i], y_test_pred[:, i], sample_weight = Wt_test)
+                    fpr_tr, tpr_tr, th_tr = roc_curve(Y_train_categorical[:, i], y_train_pred[:, i], sample_weight = Wt_train)
+
+                    bkgrej = np.array([1 - x for x in fpr])
+                    bkgrej_tr = np.array([1 - x for x in fpr_tr])
+
+                    roc_auc = auc(fpr, tpr)
+                    roc_auc_tr = auc(fpr_tr, tpr_tr)
+
+                    ax.plot(tpr_tr, bkgrej_tr, label = "XGB Training auc = %.1f%s" %(roc_auc_tr*100, "%"),linewidth = 3, linestyle = "-", color = "#064635", zorder = 1)
+                    ax.plot(tpr, bkgrej, label = "XGB Testing auc = %.1f%s"% (roc_auc*100, "%"), linewidth = 3, linestyle = "--", color = "#e2703a", zorder = 2)
+
+                    pltSty(ax, xName = "Signal efficiency", yName = "Background rejection", TitleSize = 16, LabelSize = 17, TickSize = 17, MajTickLength = 10, MinTickLength = 6)
+                    ax.legend(title = "{} vs Rest".format(Conf.Classes[i]), loc = "best", edgecolor = "none", facecolor = "none", fontsize = 17, title_fontsize = 17)
 
             fig.savefig(Conf.OutputDirName+"/"+MVA+"/"+MVA+"_"+"ROC.pdf", bbox_inches = "tight")
             print("Save fig in {}".format(Conf.OutputDirName+"/"+MVA+"/"+MVA+"_"+"ROC.pdf"))
 
             figMVA.savefig(Conf.OutputDirName+"/"+MVA+"/"+MVA+"_"+"MVA.pdf", bbox_inches = "tight")
             print("Save fig in {}".format(Conf.OutputDirName+"/"+MVA+"/"+MVA+"_"+"MVA.pdf"))
+
+            if isBinary == True:
+                y_train_cat = np.array([1 if i > WPCuts else 0 for i in y_train_pred])
+                y_test_cat = np.array([1 if i > WPCuts else 0 for i in y_test_pred])
+                AUC = roc_auc_score(Y_test, y_test_pred, sample_weight = Wt_test)
+            else:
+                y_train_cat = y_train_pred.argmax(axis = 1)
+                y_test_cat = y_test_pred.argmax(axis = 1)
+                AUC = roc_auc_score(Y_test, y_test_pred, sample_weight = Wt_test, multi_class = "ovr", average = "weighted")
+
+            #! 4) confusion metrices
+            cm_train = confusion_matrix(Y_train, y_train_cat, sample_weight = Wt_train)
+            plot_confusion_matrix(
+                cm_train, Conf.Classes, normalize = True,
+                title = "Normalized confusion matrix(Train sample)",
+                outName = Conf.OutputDirName+"/"+MVA+"/"+MVA+"_Normalized_CM_Training"+".pdf"
+            )
+            cm_test = confusion_matrix(Y_test, y_test_cat, sample_weight = Wt_test)
+            plot_confusion_matrix(
+                cm_test, Conf.Classes, normalize = True,
+                title = "Normalized confusion matrix(Test sample)",
+                outName = Conf.OutputDirName+"/"+MVA+"/"+MVA+"_Normalized_CM_Testing"+".pdf"
+            )
+
+            # print the training results
+            logloss = log_loss(Y_test, y_test_pred, sample_weight = Wt_test)
+            acc = accuracy_score(Y_test, y_test_cat, sample_weight = Wt_test)
+            prGreen("The training results for test sample......")
+            print("Expected log loss of the test sample: {:.4f}".format(logloss))
+            print("Accuracy of the test sample: {:.4f}".format(acc))
+            print("The average roc auc score of test sample is {:.4f}".format(AUC))
+            print(classification_report(Y_test, y_test_cat, target_names = Conf.Classes, sample_weight = Wt_test))
+
+            if isBinary == True:
+                results = {"logloss": logloss, "accuracy": acc, "auc": AUC, "threshold": round(np.float(WPCuts), 3)}
+            else:
+                results = {"logloss": logloss, "accuracy": acc, "auc": AUC}
+            results_path = Conf.OutputDirName+"/"+MVA+"/"+MVA+"_"+"results.json"
+            with open(results_path, "w") as f:
+                json.dump(results, f)
+
 
     print(color.BOLD + color.BLUE + "---All done---!" + color.END)
     seconds = time.time() - start_time
