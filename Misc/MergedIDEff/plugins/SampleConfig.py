@@ -6,22 +6,28 @@ features_m1 = [
     "rho",
     "eleSCEta",
     "eleSCRawEn",
-    "eleD0",
-    "eleDz",
-    "eleSIP",
-    "elePtError",
-    "eleSCEtaWidth",
-    "eleHoverE",
-    "eleEoverP",
-    "eleEoverPInv",
+
     "eledEtaAtVtx",
     "eledPhiAtVtx",
+    "elePtError",
+    "eleHoverE",
+    "eleEoverP",
+    "eleEoverPout",
+    "eleEoverPInv",
+
+    "eleSCEtaWidth",
+    "eleSCPhiWidth",
     "eleSigmaIEtaIEtaFull5x5",
+    "eleSigmaIPhiIPhiFull5x5",
+    "eleR9Full5x5",
+    "eleBrem",
+
     "elePFChIso",
     "elePFPhoIso",
     "elePFNeuIso",
-    "eleR9Full5x5",
-    "eleTrkdxy",
+
+    # "gsfPtRatio",
+    # "gsfDeltaR",
     "gsfRelPtRatio"
 ]
 
@@ -30,20 +36,25 @@ features_m2 = [
     "eleSCEta",
     "eleSCRawEn",
 
+    "eledEtaAtVtx",
+    "eledPhiAtVtx",
     "elePtError",
-    "eleSCPhiWidth",
     "eleHoverE",
     "eleEoverP",
     "eleEoverPout",
     "eleEoverPInv",
-    "eleBrem",
-    "eledEtaAtVtx",
-    "eledPhiAtVtx",
+
+    "eleSCEtaWidth",
+    "eleSCPhiWidth",
     "eleSigmaIEtaIEtaFull5x5",
+    "eleSigmaIPhiIPhiFull5x5",
+    "eleR9Full5x5",
+    "eleBrem",
+
     "elePFChIso",
     "elePFPhoIso",
     "elePFNeuIso",
-    "eleR9Full5x5",
+
     "gsfPtRatio",
     "gsfDeltaR",
     "gsfRelPtRatio"
@@ -51,10 +62,16 @@ features_m2 = [
 
 features = {"M1": features_m1, "M2": features_m2}
 models = {
-    "M1EB": "../ID_Trainer/Results/Output_Merged1GsfID_EB_2017_daskNoGJets/XGB/XGB_modelXGB.pkl",
-    "M2EB": "../ID_Trainer/Results/Output_Merged2GsfID_EB_2017_daskNoGJets/XGB/XGB_modelXGB.pkl",
-    "M1EE": "../ID_Trainer/Results/Output_Merged1GsfID_EE_2017_daskNoGJets/XGB/XGB_modelXGB.pkl",
-    "M2EE": "../ID_Trainer/Results/Output_Merged2GsfID_EE_2017_daskNoGJets/XGB/XGB_modelXGB.pkl"
+    "M1EB": "../ID_Trainer/Results/Output_Merged1GsfID_dask_Fall17_EB_CheckALL/XGB/XGB_modelXGB.pkl",
+    "M2EB": "../ID_Trainer/Results/Output_Merged2GsfID_dask_Fall17_EB_CheckALL/XGB/XGB_modelXGB.pkl",
+    "M1EE": "../ID_Trainer/Results/Output_Merged1GsfID_dask_Fall17_EE_CheckALL/XGB/XGB_modelXGB.pkl",
+    "M2EE": "../ID_Trainer/Results/Output_Merged2GsfID_dask_Fall17_EE_CheckALL/XGB/XGB_modelXGB.pkl"
+}
+models_b = {
+    "M1EB": "../ID_Trainer/Results/Output_Merged1GsfID_dask_Fall17_EB_CheckALL_Binary/XGB/XGB_modelXGB.pkl",
+    "M2EB": "../ID_Trainer/Results/Output_Merged2GsfID_dask_Fall17_EB_CheckALL_Binary/XGB/XGB_modelXGB.pkl",
+    "M1EE": "../ID_Trainer/Results/Output_Merged1GsfID_dask_Fall17_EE_CheckALL_Binary/XGB/XGB_modelXGB.pkl",
+    "M2EE": "../ID_Trainer/Results/Output_Merged2GsfID_dask_Fall17_EE_CheckALL_Binary/XGB/XGB_modelXGB.pkl"
 }
 
 #===============================================#
@@ -72,30 +89,30 @@ MCSample = {
     "ZGToLLG_2016_preVFP": {
         "production": ["ZGToLLG"],
         "lumi": [19.28],
-        "xs": [55.48 * 1000.],
-        "path": ["/data6/ggNtuples/V10_02_10_08/job_UL16_Zg_aMCatNLO_preVFP",],
-        "outpath": ["/data4/chenghan/mc/V10_02_10_08/job_UL16_Zg_aMCatNLO_preVFP",]
+        "xs": [51.1 * 1000.],
+        "path": ["/data6/ggNtuples/V10_06_30_00/job_UL16_Zg_aMCatNLO_preVFP",],
+        "outpath": ["/data4/chenghan/mc/V10_06_30_00/job_UL16_Zg_aMCatNLO_preVFP",]
     },
     "ZGToLLG_2016_postVFP": {
         "production": ["ZGToLLG"],
         "lumi": [16.64],
-        "xs": [55.48 * 1000.],
-        "path": ["/data6/ggNtuples/V10_02_10_08/job_UL16_Zg_aMCatNLO_postVFP",],
-        "outpath": ["/data4/chenghan/mc/V10_02_10_08/job_UL16_Zg_aMCatNLO_postVFP",]
+        "xs": [51.1 * 1000.],
+        "path": ["/data6/ggNtuples/V10_06_30_00/job_UL16_Zg_aMCatNLO_postVFP",],
+        "outpath": ["/data4/chenghan/mc/V10_06_30_00/job_UL16_Zg_aMCatNLO_postVFP",]
     },
     "ZGToLLG_2017": {
         "production": ["ZGToLLG"],
         "lumi": [41.48],
-        "xs": [55.48 * 1000.],
-        "path": ["/data6/ggNtuples/V10_02_10_08/job_UL17_Zg_aMCatNLO",],
-        "outpath": ["/data4/chenghan/mc/V10_02_10_08/job_UL17_Zg_aMCatNLO",]
+        "xs": [51.1 * 1000.],
+        "path": ["/data6/ggNtuples/V10_06_30_00/job_UL17_Zg_aMCatNLO",],
+        "outpath": ["/data4/chenghan/mc/V10_06_30_00/job_UL17_Zg_aMCatNLO",]
     },
     "ZGToLLG_2018": {
         "production": ["ZGToLLG"],
         "lumi": [59.82],
-        "xs": [55.48 * 1000.],
-        "path": ["/data6/ggNtuples/V10_02_10_08/job_UL18_Zg_aMCatNLO",],
-        "outpath": ["/data4/chenghan/mc/V10_02_10_08/job_UL18_Zg_aMCatNLO",]
+        "xs": [51.1 * 1000.],
+        "path": ["/data6/ggNtuples/V10_06_30_00/job_UL18_Zg_aMCatNLO",],
+        "outpath": ["/data4/chenghan/mc/V10_06_30_00/job_UL18_Zg_aMCatNLO",]
     },
     "TTJets_2017": {
         "production": ["TTJets"],
@@ -103,6 +120,21 @@ MCSample = {
         "xs": [831.76 * 1000.],
         "path": ["/data6/ggNtuples/V10_02_10_08/job_UL17_TT_aMCatNLO",],
         "outpath": ["/data4/chenghan/mc/V10_02_10_08/job_UL17_TT_aMCatNLO",]
+    },
+
+
+    # Fall17 samples
+    # https://cms-gen-dev.cern.ch/xsdb/?searchQuery=DAS=DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8
+    "DYJets_2017": {
+        "production": ["DYJets"],
+        "lumi": [41.525],
+        "xs": [6529 * 1000.],
+        "path": [
+            "/data6/ggNtuples/V10_02_10_08/job_fall17_newPU_DYJetsToLL_m50_aMCatNLO*/"
+        ],
+        "outpath": [
+            "/data4/chenghan/mc/V10_02_10_08/job_fall17_newPU_DYJetsToLL_m50_aMCatNLO/"
+        ]
     },
 }
 
