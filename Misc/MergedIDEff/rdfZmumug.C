@@ -7,6 +7,8 @@
 #include "ROOT/RDF/RInterface.hxx"
 #include "TStopwatch.h"
 #include "TLorentzVector.h"
+#include "TRandom3.h"
+#include "./plugins/roccor/RoccoR.cc"
 #include "./plugins/MuSelections.h"
 #include "./plugins/PhoSelections.h"
 #include "./plugins/puweicalc.h"
@@ -44,18 +46,44 @@ namespace Helper{
 
 
 template <typename T>
-auto FindGoodMus(T &df) {
-    auto nf = df.Define("isMediumID",           "PassMuonID(muIDbit, 2)")
-                .Define("isGoodMuon",           "abs(muEta) < 2.4 && muPt > 10. && isMediumID")
+auto FindGoodMus(T &df, string era) {
+    map <string, string> rcName;
+    rcName["2016_preVFP"] = "./plugins/roccor/RoccoR2016aUL.txt";
+    rcName["2016_postVFP"] = "./plugins/roccor/RoccoR2016bUL.txt";
+    rcName["2017"] = "./plugins/roccor/RoccoR2017UL.txt";
+    rcName["2018"] = "./plugins/roccor/RoccoR2018UL.txt";
+
+    RoccoR* rc = new RoccoR(rcName[era.c_str()].c_str());
+    auto getRoccoR = [&, rc](bool isMC, long long event, int nMu, ROOT::RVec<int>& muCharge, ROOT::RVec<float>& muPt, ROOT::RVec<float>& muEta, ROOT::RVec<float>& muPhi, ROOT::RVec<int>& muTrkLayers){
+        ROOT::RVec<float> sf;
+        sf.clear();
+
+        TRandom* rd = new TRandom3(event); // event as seed (just for reproducibility)
+        float u[nMu];
+        rd->RndmArray(nMu, u);
+        for (int i = 0; i < nMu; i++){
+            if (isMC)
+                sf.push_back(rc->kSmearMC(muCharge[i], muPt[i], muEta[i], muPhi[i], muTrkLayers[i], u[i], 0, 0));
+            else
+                sf.push_back(rc->kScaleDT(muCharge[i], muPt[i], muEta[i], muPhi[i], 0, 0));
+        }
+
+        return sf;
+    };
+
+    auto nf = df.Define("muSF",                 getRoccoR,      {"isMC", "event", "nMu", "muCharge", "muPt", "muEta", "muPhi", "muTrkLayers"})
+                .Define("muCorrPt",             "muPt * muSF")
+                .Define("isMediumID",           "PassMuonID(muIDbit, 2)")
+                .Define("isGoodMuon",           "abs(muEta) < 2.4 && muCorrPt > 10. && isMediumID")
 
                 .Filter("Sum(isGoodMuon) > 1", "good muon")
 
-                .Define("mu1Idx",               "Helper::getIdx(isGoodMuon, muPt)[0]")
-                .Define("mu2Idx",               "Helper::getIdx(isGoodMuon, muPt)[1]")
-                .Define("mu1",                  "TLorentzVector v; v.SetPtEtaPhiM(muPt[mu1Idx], muEta[mu1Idx], muPhi[mu1Idx], 105.658*0.001); return v;")
-                .Define("mu2",                  "TLorentzVector v; v.SetPtEtaPhiM(muPt[mu2Idx], muEta[mu2Idx], muPhi[mu2Idx], 105.658*0.001); return v;")
+                .Define("mu1Idx",               "Helper::getIdx(isGoodMuon, muCorrPt)[0]")
+                .Define("mu2Idx",               "Helper::getIdx(isGoodMuon, muCorrPt)[1]")
+                .Define("mu1",                  "TLorentzVector v; v.SetPtEtaPhiM(muCorrPt[mu1Idx], muEta[mu1Idx], muPhi[mu1Idx], 105.658*0.001); return v;")
+                .Define("mu2",                  "TLorentzVector v; v.SetPtEtaPhiM(muCorrPt[mu2Idx], muEta[mu2Idx], muPhi[mu2Idx], 105.658*0.001); return v;")
 
-                .Filter("muPt[mu1Idx] > 20 && muPt[mu2Idx] > 10", "HLT pTCut")
+                .Filter("muCorrPt[mu1Idx] > 20 && muCorrPt[mu2Idx] > 10", "HLT pTCut")
                 .Filter("(muCharge[mu1Idx] * muCharge[mu2Idx]) < 0", "+/- charge");
     return nf;
 }
@@ -141,22 +169,26 @@ auto DefineFinalVars(T &df){
 
                 .Define("eleCalibPt_lep1",      "eleCalibPt[eleIdx]")
                 .Define("eleSCRawEn_lep1",      "eleSCRawEn[eleIdx]")
+
+                .Define("eledEtaAtVtx_lep1",    "eledEtaAtVtx[eleIdx]")
+                .Define("eledPhiAtVtx_lep1",    "eledPhiAtVtx[eleIdx]")
                 .Define("elePtError_lep1",      "elePtError[eleIdx]")
-                .Define("eleSCPhiWidth_lep1",   "eleSCPhiWidth[eleIdx]")
-                .Define("eleSCEtaWidth_lep1",   "eleSCEtaWidth[eleIdx]")
                 .Define("eleHoverE_lep1",       "eleHoverE[eleIdx]")
                 .Define("eleEoverP_lep1",       "eleEoverP[eleIdx]")
                 .Define("eleEoverPout_lep1",    "eleEoverPout[eleIdx]")
                 .Define("eleEoverPInv_lep1",    "eleEoverPInv[eleIdx]")
-                .Define("eleBrem_lep1",         "eleBrem[eleIdx]")
-                .Define("eledEtaAtVtx_lep1",    "eledEtaAtVtx[eleIdx]")
-                .Define("eledPhiAtVtx_lep1",    "eledPhiAtVtx[eleIdx]")
+
+                .Define("eleSCEtaWidth_lep1",   "eleSCEtaWidth[eleIdx]")
+                .Define("eleSCPhiWidth_lep1",   "eleSCPhiWidth[eleIdx]")
                 .Define("eleSigmaIEtaIEtaFull5x5_lep1",      "eleSigmaIEtaIEtaFull5x5[eleIdx]")
+                .Define("eleSigmaIPhiIPhiFull5x5_lep1",      "eleSigmaIPhiIPhiFull5x5[eleIdx]")
+                .Define("eleR9Full5x5_lep1",    "eleR9Full5x5[eleIdx]")
+                .Define("eleBrem_lep1",         "eleBrem[eleIdx]")
+
                 .Define("elePFChIso_lep1",      "elePFChIso[eleIdx]")
                 .Define("elePFPhoIso_lep1",     "elePFPhoIso[eleIdx]")
                 .Define("elePFNeuIso_lep1",     "elePFNeuIso[eleIdx]")
-                .Define("elePFPUIso_lep1",      "elePFPUIso[eleIdx]")
-                .Define("eleR9Full5x5_lep1",    "eleR9Full5x5[eleIdx]")
+
                 .Define("gsfPtRatio_lep1",      "gsfPtRatio[eleIdx]")
                 .Define("gsfDeltaR_lep1",       "gsfDeltaR[eleIdx]")
                 .Define("gsfRelPtRatio_lep1",   "gsfRelPtRatio[eleIdx]")
@@ -220,7 +252,7 @@ void rdfZmumug(string infile, string outfile, int year, string era, bool isMC){
     cout << "[INFO] Pool size: " << df.GetNSlots() << endl;
 
     auto df1 = df.Define("isMC", [&, isMC]{return isMC;});
-    auto df2 = FindGoodMus(df1);
+    auto df2 = FindGoodMus(df1, era.c_str());
     auto df3 = FindGoodPho(df2);
     auto df4 = FindFSRMu(df3);
     auto df5 = FindMatchEle(df4);
@@ -239,7 +271,7 @@ void rdfZmumug(string infile, string outfile, int year, string era, bool isMC){
     // Define the final variables to save to the miniTree //
     //====================================================//
     vector<string> defColNames = dfFin.GetDefinedColumnNames();
-    vector<string> Vars;
+    vector<string> Vars = {"event", "zMass"};
     for (int i = 0; i < defColNames.size(); i++){
         size_t foundLep1 = defColNames[i].find("_lep1");
         size_t foundLep2 = defColNames[i].find("_lep2");
@@ -253,7 +285,7 @@ void rdfZmumug(string infile, string outfile, int year, string era, bool isMC){
     if (isMC){
         // concatenate Vars and weiVars
         vector<string> weiVars = {
-            "zMass", "puwei", "puwei_up", "puwei_down",
+            "puwei", "puwei_up", "puwei_down",
             "genwei","mcwei", "wei1", "wei2"
         };
         Vars.insert(Vars.end(), weiVars.begin(), weiVars.end());
