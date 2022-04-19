@@ -16,13 +16,9 @@ graph LR
 4. Calculate limit using **flashggFinalFit** package.
 
 ## Environment setup
-1. All the necessary dependencies are listed in **environment.yml**. They can be installed by running
+1. All the necessary dependencies are listed in **requirements.txt**. They can be installed by running
 ```bash
-$ conda env create -f environment.yml
-```
-or the simpler command
-```bash
-$ conda create -c conda-forge --name hdalitz -y root=6.24 python=3.8 dask-cuda=21.10 numba=0.53.1 numpy=1.21.4 pandas=1.3.5 uproot seaborn py-xgboost-gpu
+$ conda create --name hdalitz --file requirements.txt
 ```
 
 2. Activate the conda environment
