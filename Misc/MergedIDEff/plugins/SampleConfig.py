@@ -90,51 +90,89 @@ MCSample = {
         "production": ["ZGToLLG"],
         "lumi": [19.28],
         "xs": [51.1 * 1000.],
-        "path": ["/data6/ggNtuples/V10_06_30_00/job_UL16_Zg_aMCatNLO_preVFP",],
-        "outpath": ["/data4/chenghan/mc/V10_06_30_00/job_UL16_Zg_aMCatNLO_preVFP",]
+        "path": ["/data6/ggNtuples/V10_06_30_00/job_UL16_Zg_aMCatNLO_preVFP"],
+        "outpath": ["/data4/chenghan/mc/V10_06_30_00/job_UL16_Zg_aMCatNLO_preVFP"]
     },
     "ZGToLLG_2016_postVFP": {
         "production": ["ZGToLLG"],
         "lumi": [16.64],
         "xs": [51.1 * 1000.],
-        "path": ["/data6/ggNtuples/V10_06_30_00/job_UL16_Zg_aMCatNLO_postVFP",],
-        "outpath": ["/data4/chenghan/mc/V10_06_30_00/job_UL16_Zg_aMCatNLO_postVFP",]
+        "path": ["/data6/ggNtuples/V10_06_30_00/job_UL16_Zg_aMCatNLO_postVFP"],
+        "outpath": ["/data4/chenghan/mc/V10_06_30_00/job_UL16_Zg_aMCatNLO_postVFP"]
     },
     "ZGToLLG_2017": {
         "production": ["ZGToLLG"],
         "lumi": [41.48],
         "xs": [51.1 * 1000.],
-        "path": ["/data6/ggNtuples/V10_06_30_00/job_UL17_Zg_aMCatNLO",],
-        "outpath": ["/data4/chenghan/mc/V10_06_30_00/job_UL17_Zg_aMCatNLO",]
+        "path": ["/data6/ggNtuples/V10_06_30_00/job_UL17_Zg_aMCatNLO"],
+        "outpath": ["/data4/chenghan/mc/V10_06_30_00/job_UL17_Zg_aMCatNLO"]
     },
     "ZGToLLG_2018": {
         "production": ["ZGToLLG"],
         "lumi": [59.82],
         "xs": [51.1 * 1000.],
-        "path": ["/data6/ggNtuples/V10_06_30_00/job_UL18_Zg_aMCatNLO",],
-        "outpath": ["/data4/chenghan/mc/V10_06_30_00/job_UL18_Zg_aMCatNLO",]
+        "path": ["/data6/ggNtuples/V10_06_30_00/job_UL18_Zg_aMCatNLO"],
+        "outpath": ["/data4/chenghan/mc/V10_06_30_00/job_UL18_Zg_aMCatNLO"]
+    },
+
+
+    "TTJets_2016_preVFP": {
+        "production": ["TTJets"],
+        "lumi": [19.28],
+        "xs": [831.76 * 1000.],
+        "path": ["/data6/ggNtuples/V10_06_30_00/job_UL16_TT_aMCatNLO_preVFP"],
+        "outpath": ["/data4/chenghan/mc/V10_06_30_00/job_UL16_TT_aMCatNLO_preVFP"]
+    },
+    "TTJets_2016_postVFP": {
+        "production": ["TTJets"],
+        "lumi": [16.64],
+        "xs": [831.76 * 1000.],
+        "path": ["/data6/ggNtuples/V10_06_30_00/job_UL16_Zg_aMCatNLO_postVFP"],
+        "outpath": ["/data4/chenghan/mc/V10_06_30_00/job_UL16_Zg_aMCatNLO_postVFP"]
     },
     "TTJets_2017": {
         "production": ["TTJets"],
         "lumi": [41.48],
         "xs": [831.76 * 1000.],
-        "path": ["/data6/ggNtuples/V10_02_10_08/job_UL17_TT_aMCatNLO",],
-        "outpath": ["/data4/chenghan/mc/V10_02_10_08/job_UL17_TT_aMCatNLO",]
+        "path": ["/data6/ggNtuples/V10_06_30_00/job_UL17_TT_aMCatNLO"],
+        "outpath": ["/data4/chenghan/mc/V10_06_30_00/job_UL17_TT_aMCatNLO"]
+    },
+    "TTJets_2018": {
+        "production": ["TTJets"],
+        "lumi": [59.82],
+        "xs": [831.76 * 1000.],
+        "path": ["/data6/ggNtuples/V10_06_30_00/job_UL18_TT_aMCatNLO"],
+        "outpath": ["/data4/chenghan/mc/V10_06_30_00/job_UL18_TT_aMCatNLO"]
     },
 
 
-    # Fall17 samples
-    # https://cms-gen-dev.cern.ch/xsdb/?searchQuery=DAS=DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8
+    "DYJets_2016_preVFP": {
+        "production": ["DYJets"],
+        "lumi": [19.28],
+        "xs": [6404. * 1000.],
+        "path": ["/data6/ggNtuples/V10_06_30_00/job_UL16_DYJetsToLL_m50_aMCatNLO_preVFP"],
+        "outpath": ["/data4/chenghan/mc/V10_06_30_00/job_UL16_DYJetsToLL_m50_aMCatNLO_preVFP"]
+    },
+    "DYJets_2016_postVFP": {
+        "production": ["DYJets"],
+        "lumi": [16.64],
+        "xs": [6404. * 1000.],
+        "path": ["/data6/ggNtuples/V10_06_30_00/job_UL16_DYJetsToLL_m50_aMCatNLO_postVFP"],
+        "outpath": ["/data4/chenghan/mc/V10_06_30_00/job_UL16_DYJetsToLL_m50_aMCatNLO_postVFP"]
+    },
     "DYJets_2017": {
         "production": ["DYJets"],
-        "lumi": [41.525],
-        "xs": [6529 * 1000.],
-        "path": [
-            "/data6/ggNtuples/V10_02_10_08/job_fall17_newPU_DYJetsToLL_m50_aMCatNLO*/"
-        ],
-        "outpath": [
-            "/data4/chenghan/mc/V10_02_10_08/job_fall17_newPU_DYJetsToLL_m50_aMCatNLO/"
-        ]
+        "lumi": [41.48],
+        "xs": [6435. * 1000.],
+        "path": ["/data6/ggNtuples/V10_06_30_00/job_UL17_DYJetsToLL_m50_aMCatNLO"],
+        "outpath": ["/data4/chenghan/mc/V10_06_30_00/job_UL17_DYJetsToLL_m50_aMCatNLO"]
+    },
+    "DYJets_2018": {
+        "production": ["DYJets"],
+        "lumi": [59.82],
+        "xs": [6529. * 1000.],
+        "path": ["/data6/ggNtuples/V10_06_30_00/job_UL18_DYJetsToLL_m50_aMCatNLO"],
+        "outpath": ["/data4/chenghan/mc/V10_06_30_00/job_UL18_DYJetsToLL_m50_aMCatNLO"]
     },
 }
 
