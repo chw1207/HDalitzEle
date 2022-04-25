@@ -58,7 +58,7 @@ auto FindGoodMus(T &df, string era) {
         ROOT::RVec<float> sf;
         sf.clear();
 
-        TRandom* rd = new TRandom3(event); // event as seed (just for reproducibility)
+        TRandom3* rd = new TRandom3(event); // event as seed (just for reproducibility)
         float u[nMu];
         rd->RndmArray(nMu, u);
         for (int i = 0; i < nMu; i++){
@@ -76,14 +76,13 @@ auto FindGoodMus(T &df, string era) {
                 .Define("isMediumID",           "PassMuonID(muIDbit, 2)")
                 .Define("isGoodMuon",           "abs(muEta) < 2.4 && muCorrPt > 10. && isMediumID")
 
-                .Filter("Sum(isGoodMuon) > 1", "good muon")
+                .Filter("Sum(isGoodMuon) > 1", "good mu")
 
                 .Define("mu1Idx",               "Helper::getIdx(isGoodMuon, muCorrPt)[0]")
                 .Define("mu2Idx",               "Helper::getIdx(isGoodMuon, muCorrPt)[1]")
                 .Define("mu1",                  "TLorentzVector v; v.SetPtEtaPhiM(muCorrPt[mu1Idx], muEta[mu1Idx], muPhi[mu1Idx], 105.658*0.001); return v;")
                 .Define("mu2",                  "TLorentzVector v; v.SetPtEtaPhiM(muCorrPt[mu2Idx], muEta[mu2Idx], muPhi[mu2Idx], 105.658*0.001); return v;")
 
-                .Filter("muCorrPt[mu1Idx] > 20 && muCorrPt[mu2Idx] > 10", "HLT pTCut")
                 .Filter("(muCharge[mu1Idx] * muCharge[mu2Idx]) < 0", "+/- charge");
     return nf;
 }
@@ -98,7 +97,7 @@ auto FindGoodPho(T &df) {
                 .Define("isGoodPho",            "(isEBPho || isEEPho) && isFSR && phoCalibEt > 15.")
                 .Define("isHggPho",             "HggPreSelection(rhoAll, nPho, phoSCEta, phoPFChIso, phoPFPhoIso, phoTrkIsoHollowConeDR03, phoR9Full5x5, phoCalibEt, phoSigmaIEtaIEtaFull5x5, phoHoverE)")
 
-                .Filter("Sum(isGoodPho) > 0", "good phon")
+                .Filter("Sum(isGoodPho) > 0", "good pho")
 
                 .Define("phoIdx",               "GetZPho(mu1, mu2, phoP4, isGoodPho)")
                 .Define("pho",                  "phoP4[phoIdx]")
@@ -114,7 +113,7 @@ auto FindFSRMu(T &df) {
     auto nf = df.Define("fsrmu",                "if (mu1.DeltaR(pho) > mu2.DeltaR(pho)) return mu2; else return mu1")
                 .Define("nfsrmu",               "if (mu1.DeltaR(pho) > mu2.DeltaR(pho)) return mu1; else return mu2")
 
-                .Filter("nfsrmu.Pt() > 20", "non-fsr mu");
+                .Filter("nfsrmu.Pt() > 20 && fsrmu.Pt() > 10", "HLT pT cut");
     return nf;
 }
 
@@ -229,7 +228,6 @@ auto AddWeights(T &df, string era, int year, bool isMC){
                 .Define("genwei",           "if (genWeight > 0) return 1.; else return -1.;")
                 .Define("wei1",             "puwei * mcwei")
                 .Define("wei2",             "puwei * mcwei * genwei");
-
     return nf;
 }
 
