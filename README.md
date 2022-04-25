@@ -71,10 +71,7 @@ $ python3 Significance.py
 
 
 ## To-Do
-- [ ] UL signal samples
-- [ ] SFs measurements of Merged ID
-  - Scripts are almost done.
-  - <img src="https://render.githubusercontent.com/render/math?math=Z\rightarrow\mu\mu\gamma"> (only two-track converted photons with radius < 16cm are used)
+- [ ] UL signal samples (were requested)
 - [ ] Trigger SFs (Diphoton/Dielectron)
 - [ ] SFs measurements of electron veto and missing hits.
 - [ ] Hgg preselection SFs
