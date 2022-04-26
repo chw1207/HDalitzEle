@@ -72,6 +72,11 @@ def Draw2DSFs(df_EB, df_EE):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
+    fout = ROOT.TFile("MergedIDSFs_combined.root", "RECREATE")
+    fout.cd()
+    hSF_2D.Write()
+    fout.Close()
+
     c1.Print("{}/2DSFs_combined.png".format(directory))
     c1.Print("{}/2DSFs_combined.pdf".format(directory))
     c1.Close()
