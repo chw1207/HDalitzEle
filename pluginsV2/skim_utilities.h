@@ -19,8 +19,8 @@ float phoIntConv(vector<string> fileVec){
     tree->SetBranchStatus("mcMomPID",       1);
     tree->SetBranchStatus("mcStatusFlag",   1);
 
-    int nMC;      
-    vector<int>* mcPID = new vector<int>(); 
+    int nMC;
+    vector<int>* mcPID = new vector<int>();
     vector<int>* mcMomPID = new vector<int>();
     vector<unsigned short>* mcStatusFlag = new vector<unsigned short>();
     tree->SetBranchAddress("nMC",           &nMC);
@@ -39,22 +39,33 @@ float phoIntConv(vector<string> fileVec){
             if (((((*mcStatusFlag)[j] >> 0) & 1) == 1) && ((((*mcStatusFlag)[j] >> 1) & 1) == 1)) IntPho += 1;
         }
     }
-    
+
     delete tree;
     const float wei = IntPho / (float)tev;
     return wei;
 }
 
-// Function to check if this is a main gsf track 
-ROOT::RVec<int> IsMainGSF(ROOT::RVec<float>& eleD0, ROOT::RVec<float>& gsfD0){
+
+
+// Function to check if this is a main gsf track (more strict)
+ROOT::RVec<int> IsMainGSF(ROOT::RVec<float>& eleD0, ROOT::RVec<float>& gsfD0, ROOT::RVec<float>& eleDz, ROOT::RVec<float>& gsfDz){
     ROOT::RVec<int> v;
     v.clear();
 
     for (int i = 0; i < gsfD0.size(); i++){
-        // if the GSF track with D0 the same as electron, then this GSF track is the main GSF track of the electron
-        if (count(eleD0.begin(), eleD0.end(), gsfD0[i]))
+        // if the GSF track with D0, Dz the same as electron,
+        // then this GSF track is the main GSF track of the electron
+        bool isMatched = false;
+        for (int j = 0; j < eleD0.size(); j++){
+            if ((eleD0[j] == gsfD0[i]) && (eleDz[j] == gsfDz[i])){
+                isMatched = true;
+                break;
+            }
+        }
+
+        if (isMatched)
             v.push_back(1);
-        else 
+        else
             v.push_back(0);
     }
 
@@ -65,35 +76,36 @@ ROOT::RVec<int> IsMainGSF(ROOT::RVec<float>& eleD0, ROOT::RVec<float>& gsfD0){
     }
 
     return v;
-} 
+}
 
 
-// Find the ambiguous gsf tracks of a electron
+// Find the ambiguous gsf tracks of a electron (more strict)
 //* Description:
 //*     1) The collection of GSF tracks are split into several chunks associated with the different electrons(ambiguousGSF)
 //*     2) Start from the main GSF track of an electron, I keep adding the rest GSF tracks to this electron's ambiguousGSF until meeting the main GSF track of the other electron.
-//*     3) No quality cuts applied 
+//*     3) No quality cuts applied
 //*     4) Each GSF track in the reco::GsfTrack should all pass the dEta and dPhi requirements described in the CMS reconstruction paper, otherwise, it will not be stored in the reco::GsfTrack.
 //*     5) https://iopscience.iop.org/article/10.1088/1748-0221/16/05/P05014
-ROOT::RVec<ROOT::RVec<int>> TrackElectronMatching(ROOT::RVec<float>& eleD0, ROOT::RVec<float>& gsfD0, ROOT::RVec<int>& isMainGSF){
+ROOT::RVec<ROOT::RVec<int>> TrackElectronMatching(ROOT::RVec<float>& eleD0, ROOT::RVec<float>& gsfD0, ROOT::RVec<float>& eleDz, ROOT::RVec<float>& gsfDz, ROOT::RVec<int>& isMainGSF){
     ROOT::RVec<ROOT::RVec<int>> v_associateIdx;
     v_associateIdx.clear();
-    
+
     const ROOT::RVec<int> mainGsfIdx = Nonzero(isMainGSF);
     for (int i = 0; i < eleD0.size(); i++){
-        
+
         const float mainGSFD0 = eleD0[i];
+        const float mainGSFDz = eleDz[i];
         pair<int, int> results(-1, -1);
         for (int j = 0; j < mainGsfIdx.size(); j++){
-            if (gsfD0[mainGsfIdx[j]] == mainGSFD0){
+            if ((gsfD0[mainGsfIdx[j]] == mainGSFD0) && (gsfDz[mainGsfIdx[j]] == mainGSFDz)){
                 results.first = j;
                 results.second = mainGsfIdx[j];
                 break;
             }
         }
 
-        // the first element is always the index of main gsf track  
-        ROOT::RVec<int> associateIdx; // the indecies of gsf tracks associated with the electron. 
+        // the first element is always the index of main gsf track
+        ROOT::RVec<int> associateIdx; // the indecies of gsf tracks associated with the electron.
         associateIdx.clear();
         if (results.second == mainGsfIdx.back()){ // the last main gsf track in this event
             for (int k = results.second; k < gsfD0.size(); k++){
@@ -108,9 +120,78 @@ ROOT::RVec<ROOT::RVec<int>> TrackElectronMatching(ROOT::RVec<float>& eleD0, ROOT
 
         v_associateIdx.push_back(associateIdx);
     }
-    
+
     return v_associateIdx;
 }
+
+
+// Function to check if this is a main gsf track
+ROOT::RVec<int> IsMainGSF(ROOT::RVec<float>& eleD0, ROOT::RVec<float>& gsfD0){
+    ROOT::RVec<int> v;
+    v.clear();
+
+    for (int i = 0; i < gsfD0.size(); i++){
+        // if the GSF track with D0 the same as electron, then this GSF track is the main GSF track of the electron
+        if (count(eleD0.begin(), eleD0.end(), gsfD0[i]))
+            v.push_back(1);
+        else
+            v.push_back(0);
+    }
+
+    const int nMainGSF = Sum(v);
+    if (nMainGSF != eleD0.size()){
+        cout << "[ERROR]: There is electron without proper matched GSF track!!!!!!" << endl;
+        exit(-1);
+    }
+
+    return v;
+}
+
+
+// Find the ambiguous gsf tracks of a electron
+//* Description:
+//*     1) The collection of GSF tracks are split into several chunks associated with the different electrons(ambiguousGSF)
+//*     2) Start from the main GSF track of an electron, I keep adding the rest GSF tracks to this electron's ambiguousGSF until meeting the main GSF track of the other electron.
+//*     3) No quality cuts applied
+//*     4) Each GSF track in the reco::GsfTrack should all pass the dEta and dPhi requirements described in the CMS reconstruction paper, otherwise, it will not be stored in the reco::GsfTrack.
+//*     5) https://iopscience.iop.org/article/10.1088/1748-0221/16/05/P05014
+ROOT::RVec<ROOT::RVec<int>> TrackElectronMatching(ROOT::RVec<float>& eleD0, ROOT::RVec<float>& gsfD0, ROOT::RVec<int>& isMainGSF){
+    ROOT::RVec<ROOT::RVec<int>> v_associateIdx;
+    v_associateIdx.clear();
+
+    const ROOT::RVec<int> mainGsfIdx = Nonzero(isMainGSF);
+    for (int i = 0; i < eleD0.size(); i++){
+
+        const float mainGSFD0 = eleD0[i];
+        pair<int, int> results(-1, -1);
+        for (int j = 0; j < mainGsfIdx.size(); j++){
+            if (gsfD0[mainGsfIdx[j]] == mainGSFD0){
+                results.first = j;
+                results.second = mainGsfIdx[j];
+                break;
+            }
+        }
+
+        // the first element is always the index of main gsf track
+        ROOT::RVec<int> associateIdx; // the indecies of gsf tracks associated with the electron.
+        associateIdx.clear();
+        if (results.second == mainGsfIdx.back()){ // the last main gsf track in this event
+            for (int k = results.second; k < gsfD0.size(); k++){
+                associateIdx.push_back(k);
+            }
+        }
+        else{
+            for (int k = results.second; k < mainGsfIdx[results.first + 1]; k++){
+                associateIdx.push_back(k);
+            }
+        }
+
+        v_associateIdx.push_back(associateIdx);
+    }
+
+    return v_associateIdx;
+}
+
 
 // Function to calculate the number of ambiguous gsf tracks
 ROOT::RVec<int> CalcNGsfMatchToReco(int nEle, ROOT::RVec<ROOT::RVec<int>>& ambiguousGSF){
@@ -131,7 +212,7 @@ ROOT::RVec<int> FindMainGSF(int nEle, ROOT::RVec<ROOT::RVec<int>>& ambiguousGSF)
     v.clear();
 
     for (int i = 0; i < nEle; i++){
-        v.push_back(ambiguousGSF[i][0]); 
+        v.push_back(ambiguousGSF[i][0]);
     }
 
     return v;
@@ -156,7 +237,7 @@ ROOT::RVec<int> FindSubGSF_PtMax(int nEle, ROOT::RVec<ROOT::RVec<int>>& ambiguou
                 eleSubTrkIdx = ambiguousGSF[i][j];
             }
         }
-        
+
         v.push_back(eleSubTrkIdx);
     }
 
@@ -183,7 +264,7 @@ ROOT::RVec<int> FindSubGSF_dRMin(int nEle, ROOT::RVec<ROOT::RVec<int>>& ambiguou
                 eleSubTrkIdx = ambiguousGSF[i][j];
             }
         }
-        
+
         v.push_back(eleSubTrkIdx);
     }
 
@@ -247,16 +328,28 @@ ROOT::RVec<float> GetTrkdR(int nEle, ROOT::RVec<int>& nGsfMatchToReco, ROOT::RVe
 }
 
 
+ROOT::RVec<float> GetTrkPtSum(int nEle, ROOT::RVec<int>& nGsfMatchToReco, ROOT::RVec<TLorentzVector>& eleTrk1, ROOT::RVec<TLorentzVector>& eleTrk2){
+    ROOT::RVec<float> v;
+    v.clear();
+    for (int iele = 0; iele < nEle; iele++){
+        if (nGsfMatchToReco[iele] > 1) v.push_back(eleTrk1[iele].Pt() + eleTrk2[iele].Pt());
+        else v.push_back(eleTrk1[iele].Pt());
+    }
+
+    return v;
+}
+
+
 // Function to get the deltaR between electron trak and sub-track (if nGsfMatchToReco > 1)
 ROOT::RVec<float> GetTrkRelPtRatio(int nEle, ROOT::RVec<float>& eleCalibPt, ROOT::RVec<int>& nGsfMatchToReco, ROOT::RVec<TLorentzVector>& eleTrk1, ROOT::RVec<TLorentzVector>& eleTrk2){
     ROOT::RVec<float> v;
     v.clear();
     for (int iele = 0; iele < nEle; iele++){
-        if (nGsfMatchToReco[iele] == 0) 
+        if (nGsfMatchToReco[iele] == 0)
             v.push_back(-999.);
-        else if (nGsfMatchToReco[iele] == 1) 
+        else if (nGsfMatchToReco[iele] == 1)
             v.push_back(eleTrk1[iele].Pt()/eleCalibPt[iele]);
-        else 
+        else
             v.push_back((eleTrk1[iele] + eleTrk2[iele]).Pt()/eleCalibPt[iele]);
     }
 
@@ -274,7 +367,7 @@ ROOT::RVec<float> GetTrkRelPtRatio(int nEle, ROOT::RVec<float>& eleCalibPt, ROOT
 // ROOT::RVec<ROOT::RVec<int>> GetTrkIdx(int nEle, ROOT::RVec<float>& eleCalibEn, ROOT::RVec<float>& eleEta, ROOT::RVec<float>& elePhi, int nGSFTrk, ROOT::RVec<float>& gsfPt, ROOT::RVec<float>& gsfEta, ROOT::RVec<float>& gsfPhi){
 //     ROOT::RVec<int> LeadTrk; // leading track
 //     LeadTrk.clear();
-    
+
 //     ROOT::RVec<int> SubLeadTrk; // trailing track
 //     SubLeadTrk.clear();
 
@@ -287,7 +380,7 @@ ROOT::RVec<float> GetTrkRelPtRatio(int nEle, ROOT::RVec<float>& eleCalibPt, ROOT
 
 //         ROOT::RVec<int> idx;
 //         idx.clear();
-        
+
 //         ROOT::RVec<float> pt;
 //         pt.clear();
 //         for (int igsf = 0; igsf < nGSFTrk; igsf++){
@@ -298,7 +391,7 @@ ROOT::RVec<float> GetTrkRelPtRatio(int nEle, ROOT::RVec<float>& eleCalibPt, ROOT
 //             if (Gsf.Pt()/Ele.Pt() > 5.) continue; // remove gsf track with unreasonable high pT
 //             if (fabs(Ele.Eta() - Gsf.Eta()) > 0.02) continue;
 //             if (Ele.DeltaPhi(Gsf) > 0.15) continue;
-            
+
 //             idx.push_back(igsf);
 //             pt.push_back(gsfPt[igsf]);
 //         }
@@ -312,10 +405,10 @@ ROOT::RVec<float> GetTrkRelPtRatio(int nEle, ROOT::RVec<float>& eleCalibPt, ROOT
 //             auto sortIndices = Reverse(Argsort(pt)); // descending sorting
 //             sort_idx = Take(idx, sortIndices);
 //         }
-        
+
 //         if (ngsf != 0) LeadTrk.push_back(sort_idx[0]);
 //         else LeadTrk.push_back(-1);
-        
+
 //         if (ngsf > 1) SubLeadTrk.push_back(sort_idx[1]);
 //         else SubLeadTrk.push_back(-1);
 //     }
@@ -329,21 +422,21 @@ ROOT::RVec<float> GetTrkRelPtRatio(int nEle, ROOT::RVec<float>& eleCalibPt, ROOT
 // // Function to find the main gsf track to electron (old version)
 // //* Description:
 // //*     1) pt, eta, phi of main gsf of electron are not stored in the ggNtuple
-// //*     2) match eleD0 (main gsf track dxy) and gsfD0 to find the main gsf index 
+// //*     2) match eleD0 (main gsf track dxy) and gsfD0 to find the main gsf index
 // ROOT::RVec<int> FindMainGSF(ROOT::RVec<float>& eleD0, ROOT::RVec<float>& gsfD0){
 //     ROOT::RVec<int> maingsfIdx;
 //     maingsfIdx.clear();
 
 //     for (int i = 0; i < eleD0.size(); i++){
 //         int match = -1;
-        
+
 //         for (int j = 0; j < gsfD0.size(); j++){
 //             if (fabs(eleD0[i] - gsfD0[j]) < 0.0001){
 //                 match = j;
 //                 break;
 //             }
 //         }
-        
+
 //         if (match == -1) {
 //             cout << "[ERROR]: No matched main gsf track!!!!!!" << endl;
 //             exit(-1);
@@ -363,7 +456,7 @@ ROOT::RVec<float> GetTrkRelPtRatio(int nEle, ROOT::RVec<float>& eleCalibPt, ROOT
 // ROOT::RVec<ROOT::RVec<int>> FindSubGSF(ROOT::RVec<int>& eleTrkIdx, ROOT::RVec<float>& gsfPt, ROOT::RVec<float>& gsfEta, ROOT::RVec<float>& gsfPhi){
 //     ROOT::RVec<int> subLeadTrk; // trailing track
 //     subLeadTrk.clear();
-    
+
 //     ROOT::RVec<int> vngsf; // nGsfMatchToReco
 //     vngsf.clear();
 
@@ -384,7 +477,7 @@ ROOT::RVec<float> GetTrkRelPtRatio(int nEle, ROOT::RVec<float>& eleCalibPt, ROOT
 //             subGSF.SetPtEtaPhiM(gsfPt[j], gsfEta[j], gsfPhi[j], 0.000511);
 
 //             if (mainGSF.DeltaR(subGSF) > 0.1) continue;
-            
+
 //             idx.push_back(j);
 //             pt.push_back(gsfPt[j]);
 //         }
@@ -431,7 +524,7 @@ ROOT::RVec<float> GetTrkRelPtRatio(int nEle, ROOT::RVec<float>& eleCalibPt, ROOT
 //     for(int i = 0; i < nEle; i++){
 //         vector<int> accInd;
 //         accInd.clear();
-        
+
 //         TLorentzVector Ele;
 //         Ele.SetPtEtaPhiE(eleCalibEn[i]/cosh(eleEta[i]), eleEta[i], elePhi[i], eleCalibEn[i]);
 
@@ -453,7 +546,7 @@ ROOT::RVec<float> GetTrkRelPtRatio(int nEle, ROOT::RVec<float>& eleCalibPt, ROOT
 //         float Relratio = -999; // ngsf = 0
 //         if (ngsf > 1){
 
-//             // argsort the index 
+//             // argsort the index
 //             for (int j = 0; j < (accInd.size() - 1); j++) {
 //                 for (int x = 0; x < (accInd.size() - j - 1); x++) {
 //                     if (gsfPt[accInd[x]] < gsfPt[accInd[x + 1]]) {
@@ -465,7 +558,7 @@ ROOT::RVec<float> GetTrkRelPtRatio(int nEle, ROOT::RVec<float>& eleCalibPt, ROOT
 //             }
 
 //             ratio = gsfPt[accInd[1]]/gsfPt[accInd[0]];
-            
+
 //             TLorentzVector Gsf1, Gsf2, digsf;
 //             Gsf1.SetPtEtaPhiM(gsfPt[accInd[0]], gsfEta[accInd[0]], gsfPhi[accInd[0]], 0.000511);
 //             Gsf2.SetPtEtaPhiM(gsfPt[accInd[1]], gsfEta[accInd[1]], gsfPhi[accInd[1]], 0.000511);
@@ -491,6 +584,6 @@ ROOT::RVec<float> GetTrkRelPtRatio(int nEle, ROOT::RVec<float>& eleCalibPt, ROOT
 //     gsf_vec.push_back(vGsfPtRatio);
 //     gsf_vec.push_back(vGsfDeltaR);
 //     gsf_vec.push_back(vGsfRelPtRatio);
-    
+
 //     return gsf_vec;
 // }
