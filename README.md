@@ -11,7 +11,7 @@ graph LR
     C -->D(calculate limit)
 ```
 1. **ggNtuple** is produced with the [ggNtuplizer](https://github.com/cmkuo/ggAnalysis/tree/106X) by NCU group.
-2. **skimTree.py** is used to preprocess the ggNtuple. It do the minimum selections such as HLT to reduce the ntuple size. It also add ID prediction to the non-flat ntuple via the python package [uproot](https://uproot.readthedocs.io/en/latest/index.html).
+2. **skimTree.py** is used to preprocess the ggNtuple. It does the minimum selections such as HLT to reduce the ntuple size. It is also used to add ID prediction to the non-flat ntuple via the python package [uproot](https://uproot.readthedocs.io/en/latest/index.html).
 3. **rdfxAna.C** is the main analysis script to produce the flat mini trees.
 4. Calculate limit using **flashggFinalFit** package.
 
