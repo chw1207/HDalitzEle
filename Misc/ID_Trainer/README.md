@@ -27,7 +27,7 @@ Before performing the training, one could modify the training setting in the fol
 
 One could further exucute the python scripts via
 ```bash
-python Trainer-HDalitz-hyper.py config/[Training config python file]
+python3 Trainer-HDalitz-hyper.py config/[Training config python file]
 # eq.
 # python3 Trainer-HDalitz-hyper.py configs/TrainConfig_Merged2GsfID_EB_opt
 ```
