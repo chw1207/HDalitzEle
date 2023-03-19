@@ -1,0 +1,508 @@
+
+# configuration for drawKinematic.cpp and runSignificance .cpp
+############################################################################################################
+mcTree_path:
+  - "/data4/chenghan/electron/miniTree_reg/UL2017/miniTree_HDalitz_ggF_eeg_125_UL2017.root"
+  - "/data4/chenghan/electron/miniTree_reg/UL2017/miniTree_HDalitz_VBF_eeg_125_UL2017.root"
+  - "/data4/chenghan/electron/miniTree_reg/UL2017/miniTree_HDalitz_WH_eeg_125_UL2017.root"
+  - "/data4/chenghan/electron/miniTree_reg/UL2017/miniTree_HDalitz_ZH_eeg_125_UL2017.root"
+  - "/data4/chenghan/electron/miniTree_reg/UL2017/miniTree_HDalitz_ttH_eeg_125_UL2017.root"
+  - "/data4/chenghan/electron/miniTree_reg/UL2017/miniTree_HDalitz_bbH_eeg_125_UL2017.root"
+
+dataTree_path:
+  - "/data4/chenghan/electron/miniTree/UL2017/miniTree_DoubleEG_Run2017B_UL2017.root"
+  - "/data4/chenghan/electron/miniTree/UL2017/miniTree_DoubleEG_Run2017C_UL2017.root"
+  - "/data4/chenghan/electron/miniTree/UL2017/miniTree_DoubleEG_Run2017D_UL2017.root"
+  - "/data4/chenghan/electron/miniTree/UL2017/miniTree_DoubleEG_Run2017E_UL2017.root"
+  - "/data4/chenghan/electron/miniTree/UL2017/miniTree_DoubleEG_Run2017F_UL2017.root"
+
+cms_lumi:
+  lumi_text: "41.5 fb^{-1}"
+  year: 2017
+  extra_text: "Work-in-progress"
+  proc_text:  "H #rightarrow #gamma* #gamma #rightarrow ee#gamma"
+
+AMS_file: "../ams/AMS_UL2017_reg.txt"
+significance:
+  mass_range: [110, 170]
+  mass_column: "CMS_higgs_mass"
+  weight_column: "weight"
+  category: # category name and the corresponding selection in minitree
+    Merged-2Gsf-HVBF:   "category == 1"
+    Merged-2Gsf-LVBF:   "category == 2"
+    Merged-2Gsf-Bst:    "category == 3"
+    Merged-2Gsf-EBHR9:  "category == 4"
+    Merged-2Gsf-EBLR9:  "category == 5"
+    Merged-2Gsf-EE:     "category == 6"
+    Merged-1Gsf-HVBF:   "category == 7"
+    Merged-1Gsf-LVBF:   "category == 8"
+    Merged-1Gsf-Bst:    "category == 9"
+    Merged-1Gsf-EBHR9:  "category == 10"
+    Merged-1Gsf-EBLR9:  "category == 11"
+    Merged-1Gsf-EE:     "category == 12"
+    Resolved:           "category == 13"
+
+plot_path: "../plots/UL2017"
+kinematics:
+  dR_e1g_isM2:
+    column: "ROOT::VecOps::DeltaR(eleEta_Lead, phoEta_Lead, elePhi_Lead, phoPhi_Lead)"
+    selecs: "isM2 == 1"
+    numbin: [80, 0.5, 4.5] # bins, lower bound, upper bound
+    x-axis: "#DeltaR(e', #gamma)"
+    y-axis: "Events / 0.05"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 500
+    y_scale: 1.3
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Merged-2Gsf"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.19, 0.4]
+    leg_posy: [0.71, 0.8]
+
+  eleP4Et_isM2:
+    column: "eleP4Et_Lead"
+    selecs: "isM2 == 1"
+    numbin: [40, 0, 200] # bins, lower bound, upper bound
+    x-axis: "Calibrated p^{e}_{T} [GeV]"
+    y-axis: "Events / 5 GeV"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 500
+    y_scale: 1.3
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Merged-2Gsf"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.69, 0.9]
+    leg_posy: [0.75, 0.84]
+
+  eleEta_isM2:
+    column: "eleEta_Lead"
+    selecs: "isM2 == 1"
+    numbin: [25, -2.5, 2.5] # bins, lower bound, upper bound
+    x-axis: "#eta^{e}"
+    y-axis: "Events / 0.25"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 500
+    y_scale: 1.4
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Merged-2Gsf"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.69, 0.9]
+    leg_posy: [0.75, 0.84]
+
+  elePhi_isM2:
+    column: "elePhi_Lead"
+    selecs: "isM2 == 1"
+    numbin: [20, -3.14, 3.14] # bins, lower bound, upper bound
+    x-axis: "#phi^{e}"
+    y-axis: "Events / 0.314"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 500
+    y_scale: 1.4
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Merged-2Gsf"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.69, 0.9]
+    leg_posy: [0.75, 0.84]
+
+  eleGsfDeltaR_isM2:
+    column: "eleGsfDeltaR_Lead"
+    selecs: "isM2 == 1"
+    numbin: [50, 0, 0.1] # bins, lower bound, upper bound
+    x-axis: "#DeltaR(g_{1}, g_{2})"
+    y-axis: "Events / 0.002"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 500
+    y_scale: 1.5
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Merged-2Gsf"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.69, 0.9]
+    leg_posy: [0.75, 0.84]
+
+  eleGsfPtRatio_isM2:
+    column: "eleGsfPtRatio_Lead"
+    selecs: "isM2 == 1"
+    numbin: [40, 0, 1] # bins, lower bound, upper bound
+    x-axis: "p^{g_{2}}_{T} / p^{g_{1}}_{T}"
+    y-axis: "Events / 0.025"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 500
+    y_scale: 1.3
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Merged-2Gsf"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.69, 0.9]
+    leg_posy: [0.75, 0.84]
+
+  phoCalibEt_isM2:
+    column: "phoCalibEt_Lead"
+    selecs: "isM2 == 1"
+    numbin: [40, 0, 200] # bins, lower bound, upper bound
+    x-axis: "E^{#gamma}_{T} [GeV]"
+    y-axis: "Events / 5 GeV"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 500
+    y_scale: 1.3
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Merged-2Gsf"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.69, 0.9]
+    leg_posy: [0.75, 0.84]
+
+  higgsMass_isM2:
+    column: "CMS_higgs_mass"
+    selecs: "isM2 == 1"
+    addsel: "CMS_higgs_mass < 120 || CMS_higgs_mass > 130" # apply for data only
+    numbin: [60, 110, 170] # bins, lower bound, upper bound
+    x-axis: "M_{e'#gamma} [GeV]"
+    y-axis: "Events / 1 GeV"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 100
+    y_scale: 1.3
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Merged-2Gsf"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.69, 0.9]
+    leg_posy: [0.75, 0.84]
+
+  elePtoverMass_isM2:
+    column: "eleP4Et_Lead/CMS_higgs_mass"
+    selecs: "isM2 == 1"
+    # addsel: "CMS_higgs_mass < 120 || CMS_higgs_mass > 130" # apply for data only
+    numbin: [50, 0, 1] # bins, lower bound, upper bound
+    x-axis: "Calibrated p^{e}_{T} / M_{e'#gamma}"
+    y-axis: "Events / 0.02"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 500
+    y_scale: 1.5
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Merged-2Gsf"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.69, 0.9]
+    leg_posy: [0.75, 0.84]
+
+  phoEtoverMass_isM2:
+    column: "phoCalibEt_Lead/CMS_higgs_mass"
+    selecs: "isM2 == 1"
+    # addsel: "CMS_higgs_mass < 120 || CMS_higgs_mass > 130" # apply for data only
+    numbin: [50, 0, 1] # bins, lower bound, upper bound
+    x-axis: "E^{#gamma}_{T} / M_{e'#gamma}"
+    y-axis: "Events / 0.02"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 500
+    y_scale: 1.5
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Merged-2Gsf"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.69, 0.9]
+    leg_posy: [0.75, 0.84]
+
+  diGsfMass_isM2:
+    column: "(gsf1+gsf2).M()"
+    selecs: "isM2 == 1"
+    numbin: [50, 0, 5] # bins, lower bound, upper bound
+    x-axis: "M_{g_{1}g_{2}} [GeV]"
+    y-axis: "Events / 0.1 GeV"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 500
+    y_scale: 1.5
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Merged-2Gsf"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.69, 0.9]
+    leg_posy: [0.75, 0.84]
+
+  eleXGBID_isM2:
+    column: "eleXGBID_Lead"
+    selecs: "isM2 == 1"
+    numbin: [50, 0, 1] # bins, lower bound, upper bound
+    x-axis: "Merged ID MVA score"
+    y-axis: "Events / 0.02"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 200
+    y_scale: 1.5
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Merged-2Gsf"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.19, 0.4]
+    leg_posy: [0.71, 0.8]
+
+  dR_e1g_isRe:
+    column: "ROOT::VecOps::DeltaR(eleEta_Lead, phoEta_Lead, elePhi_Lead, phoPhi_Lead)"
+    selecs: "isRe == 1"
+    numbin: [40, 0.5, 4.5] # bins, lower bound, upper bound
+    x-axis: "#DeltaR(e_{1}, #gamma)"
+    y-axis: "Events / 0.2"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 100
+    y_scale: 1.3
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Resolved"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.19, 0.4]
+    leg_posy: [0.71, 0.8]
+
+  dR_e2g_isRe:
+    column: "ROOT::VecOps::DeltaR(eleEta_subLead, phoEta_Lead, elePhi_subLead, phoPhi_Lead)"
+    selecs: "isRe == 1"
+    numbin: [40, 0.5, 4.5] # bins, lower bound, upper bound
+    x-axis: "#DeltaR(e_{2}, #gamma)"
+    y-axis: "Events / 0.2"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 100
+    y_scale: 1.3
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Resolved"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.19, 0.4]
+    leg_posy: [0.71, 0.8]
+
+  eleP4Et_Lead_isRe:
+    column: "eleP4Et_Lead"
+    selecs: "isRe == 1"
+    numbin: [20, 0, 100] # bins, lower bound, upper bound
+    x-axis: "p^{e_{1}}_{T} [GeV]"
+    y-axis: "Events / 5 GeV"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 100
+    y_scale: 1.3
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Resolved"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.69, 0.9]
+    leg_posy: [0.75, 0.84]
+
+  eleP4Et_subLead_isRe:
+    column: "eleP4Et_subLead"
+    selecs: "isRe == 1"
+    numbin: [20, 0, 100] # bins, lower bound, upper bound
+    x-axis: "p^{e_{2}}_{T} [GeV]"
+    y-axis: "Events / 5 GeV"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 100
+    y_scale: 1.3
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Resolved"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.69, 0.9]
+    leg_posy: [0.75, 0.84]
+
+  diEleDeltaR_isRe:
+    column: "ROOT::VecOps::DeltaR(eleEta_Lead, eleEta_subLead, elePhi_Lead, elePhi_subLead)"
+    selecs: "isRe == 1"
+    numbin: [50, 0, 5] # bins, lower bound, upper bound
+    x-axis: "#DeltaR(e_{1}, e_{2})"
+    y-axis: "Events / 0.1"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 100
+    y_scale: 1.5
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Resolved"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.69, 0.9]
+    leg_posy: [0.75, 0.84]
+
+  phoCalibEt_isRe:
+    column: "phoCalibEt_Lead"
+    selecs: "isRe == 1"
+    numbin: [40, 0, 200] # bins, lower bound, upper bound
+    x-axis: "E^{#gamma}_{T} [GeV]"
+    y-axis: "Events / 5 GeV"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 100
+    y_scale: 1.5
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Resolved"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.69, 0.9]
+    leg_posy: [0.75, 0.84]
+
+
+  higgsMass_isRe:
+    column: "CMS_higgs_mass"
+    selecs: "isRe == 1"
+    addsel: "CMS_higgs_mass < 120 || CMS_higgs_mass > 130" # apply for data only
+    numbin: [60, 110, 170] # bins, lower bound, upper bound
+    x-axis: "M_{ee#gamma} [GeV]"
+    y-axis: "Events / 1 GeV"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 50
+    y_scale: 1.5
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Resolved"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.69, 0.9]
+    leg_posy: [0.75, 0.84]
+
+  diElePtoverMass_isRe:
+    column: "(ele1 + ele2).Pt()/CMS_higgs_mass"
+    selecs: "isRe == 1"
+    # addsel: "CMS_higgs_mass < 120 || CMS_higgs_mass > 130" # apply for data only
+    numbin: [50, 0, 1] # bins, lower bound, upper bound
+    x-axis: "p^{ee}_{T} / M_{ee#gamma}"
+    y-axis: "Events / 0.02"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 100
+    y_scale: 1.5
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Resolved"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.69, 0.9]
+    leg_posy: [0.75, 0.84]
+
+  phoEtoverMass_isRe:
+    column: "phoCalibEt_Lead/CMS_higgs_mass"
+    selecs: "isRe == 1"
+    # addsel: "CMS_higgs_mass < 120 || CMS_higgs_mass > 130" # apply for data only
+    numbin: [50, 0, 1] # bins, lower bound, upper bound
+    x-axis: "E^{#gamma}_{T} / M_{ee#gamma}"
+    y-axis: "Events / 0.02"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 100
+    y_scale: 1.5
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Resolved"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.69, 0.9]
+    leg_posy: [0.75, 0.84]
+
+  diEleMass_isRe:
+    column: "(ele1+ele2).M()"
+    selecs: "isRe == 1"
+    numbin: [50, 0, 50] # bins, lower bound, upper bound
+    x-axis: "M_{ee} [GeV]"
+    y-axis: "Events / 1 GeV"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 100
+    y_scale: 1.5
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Resolved"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.69, 0.9]
+    leg_posy: [0.75, 0.84]
+
+  eleXGBID_Lead_isRe:
+    column: "eleXGBID_Lead"
+    selecs: "isRe == 1"
+    numbin: [50, 0, 1] # bins, lower bound, upper bound
+    x-axis: "Merged ID MVA score of e_{1}"
+    y-axis: "Events / 0.02"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 200
+    y_scale: 1.5
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Resolved"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.69, 0.9]
+    leg_posy: [0.75, 0.84]
+
+  eleXGBID_subLead_isRe:
+    column: "eleXGBID_subLead"
+    selecs: "isRe == 1"
+    numbin: [50, 0, 1] # bins, lower bound, upper bound
+    x-axis: "Merged ID MVA score of e_{2}"
+    y-axis: "Events / 0.02"
+    normalize: false
+    mc_wei: "weight"
+    mc_scale: 200
+    y_scale: 1.5
+    isLogY: false
+    mc_fcolor: "#F8CE68"
+    mc_lcolor: "#F8CE68"
+    latex_text: "Resolved"
+    latex_posx: 0.70
+    latex_posy: 0.88
+    leg_posx: [0.69, 0.9]
+    leg_posy: [0.75, 0.84]
