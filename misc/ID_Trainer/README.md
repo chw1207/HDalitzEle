@@ -12,9 +12,9 @@ Based on the number of **Gsf tracks(nGsfTracks)** matched to the electron, **Mer
 ---
 
 ### Prepare training samples
-Merged electrons are selected as signal from the <img src="https://render.githubusercontent.com/render/math?math=\gamma^*\rightarrow ee"> process. Real single electrons are provided by DYJetsToLL sample and jet fake electrons are provided by QCD sample. One could exucute the python scripts via
+**PrepareData_MergedID_Dask.py** is used to convert the root files to parquet files. One could exucute the python scripts via
 ```bash
-$ python3 PrepareData_MergedID.py
+$ python3 PrepareData_MergedID_Dask.py
 ```
 ---
 
