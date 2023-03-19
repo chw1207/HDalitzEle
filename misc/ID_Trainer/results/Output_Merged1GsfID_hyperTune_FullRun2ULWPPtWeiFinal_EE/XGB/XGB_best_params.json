@@ -1,0 +1,16 @@
+{
+    "colsample_bytree": 0.39668784932100576,
+    "eval_metric": "mlogloss",
+    "grow_policy": "depthwise",
+    "learning_rate": 0.019813222470328157,
+    "max_delta_step": 11,
+    "max_depth": 9,
+    "min_child_weight": 447.5832370639826,
+    "min_split_loss": 0.7552093075861697,
+    "num_class": 3,
+    "objective": "multi:softprob",
+    "random_state": 40,
+    "reg_lambda": 5.991048498561008,
+    "subsample": 0.25178034407340644,
+    "tree_method": "gpu_hist"
+}

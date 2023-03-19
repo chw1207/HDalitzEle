@@ -1,0 +1,522 @@
+{
+    "rho": {
+        "bininfo": [
+            40,
+            0,
+            80
+        ],
+        "xAxisLabel": "$\\rho$",
+        "yAxisUnit": "",
+        "xoverflow": "false",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.2
+    },
+    "eleEn": {
+        "bininfo": [
+            50,
+            0,
+            200
+        ],
+        "xAxisLabel": "E [GeV]",
+        "yAxisUnit": "GeV",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 5
+    },
+    "eleSCEn": {
+        "bininfo": [
+            50,
+            0,
+            200
+        ],
+        "xAxisLabel": "$E_{SC}$ [GeV]",
+        "yAxisUnit": "GeV",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 5
+    },
+    "eleSCRawEn": {
+        "bininfo": [
+            50,
+            0,
+            200
+        ],
+        "xAxisLabel": "$Raw\\ E_{SC}$ [GeV]",
+        "yAxisUnit": "GeV",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.2
+    },
+    "eleSCEta": {
+        "bininfo": [
+            32,
+            -1.6,
+            1.6
+        ],
+        "xAxisLabel": "$\\eta_{SC}$",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "False",
+        "y_axisscale": 1.5
+    },
+    "eleEcalEn": {
+        "bininfo": [
+            50,
+            0,
+            200
+        ],
+        "xAxisLabel": "$E_{Ecal}$ [GeV]",
+        "yAxisUnit": "GeV",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 5
+    },
+    "eleD0": {
+        "bininfo": [
+            40,
+            0,
+            0.2
+        ],
+        "xAxisLabel": "$d_{0}$ [cm]",
+        "yAxisUnit": "cm",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 1.2
+    },
+    "eleDz": {
+        "bininfo": [
+            40,
+            0,
+            0.2
+        ],
+        "xAxisLabel": "$d_{z}$ [cm]",
+        "yAxisUnit": "cm",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 1.2
+    },
+    "eleSIP": {
+        "bininfo": [
+            50,
+            0,
+            10
+        ],
+        "xAxisLabel": "Significance of IP",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.2
+    },
+    "elePtError": {
+        "bininfo": [
+            50,
+            0,
+            5
+        ],
+        "xAxisLabel": "$p_{T}$ error [GeV]",
+        "yAxisUnit": "GeV",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.2
+    },
+    "eleEta": {
+        "bininfo": [
+            32,
+            -1.6,
+            1.6
+        ],
+        "xAxisLabel": "$\\eta$",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.5
+    },
+    "eleR9": {
+        "bininfo": [
+            50,
+            0,
+            1
+        ],
+        "xAxisLabel": "$R_{9}$",
+        "yAxisUnit": "",
+        "xoverflow": "false",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.5
+    },
+    "eleSCEtaWidth": {
+        "bininfo": [
+            40,
+            0,
+            0.04
+        ],
+        "xAxisLabel": "$\\eta_{SC}$ width",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.2
+    },
+    "eleSCPhiWidth": {
+        "bininfo": [
+            50,
+            0,
+            0.2
+        ],
+        "xAxisLabel": "$\\phi_{SC}$ width",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.2
+    },
+    "eleHoverE": {
+        "bininfo": [
+            50,
+            0,
+            0.2
+        ],
+        "xAxisLabel": "H/E",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 5
+    },
+    "eleEoverP": {
+        "bininfo": [
+            60,
+            0,
+            3
+        ],
+        "xAxisLabel": "E/P",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.2
+    },
+    "eleEoverPout": {
+        "bininfo": [
+            80,
+            0,
+            4
+        ],
+        "xAxisLabel": "$E/P_{out}$",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.2
+    },
+    "eleEoverPInv": {
+        "bininfo": [
+            50,
+            -0.05,
+            0.05
+        ],
+        "xAxisLabel": "$1/E - 1/P [GeV^{-1}]$",
+        "yAxisUnit": "GeV^{-1}",
+        "xoverflow": "true",
+        "xunderflow": "true",
+        "logy": "false",
+        "y_axisscale": 1.2
+    },
+    "eleBrem": {
+        "bininfo": [
+            50,
+            0,
+            1
+        ],
+        "xAxisLabel": "$f_{brem}$",
+        "yAxisUnit": "",
+        "xoverflow": "false",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.2
+    },
+    "eledEtaAtVtx": {
+        "bininfo": [
+            80,
+            -0.02,
+            0.02
+        ],
+        "xAxisLabel": "$\\Delta\\eta\\ at\\ Vtx.$",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.5
+    },
+    "eledPhiAtVtx": {
+        "bininfo": [
+            120,
+            -0.3,
+            0.3
+        ],
+        "xAxisLabel": "$\\Delta\\phi\\ at\\ Vtx.$",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.5
+    },
+    "eleSigmaIEtaIEtaFull5x5": {
+        "bininfo": [
+            80,
+            0,
+            0.025
+        ],
+        "xAxisLabel": "$\\sigma_{i\\eta i\\eta}$",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.2
+    },
+    "eleSigmaIPhiIPhiFull5x5": {
+        "bininfo": [
+            50,
+            0.005,
+            0.03
+        ],
+        "xAxisLabel": "$\\sigma_{i\\phi i\\phi}$",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.2
+    },
+    "elePFChIso": {
+        "bininfo": [
+            40,
+            0,
+            20
+        ],
+        "xAxisLabel": "$Iso._{PF\\ charged\\ hadron}$ [GeV]",
+        "yAxisUnit": "GeV",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 10
+    },
+    "elePFPhoIso": {
+        "bininfo": [
+            40,
+            0,
+            20
+        ],
+        "xAxisLabel": "$Iso._{PF\\ photon}$ [GeV]",
+        "yAxisUnit": "GeV",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 10
+    },
+    "elePFNeuIso": {
+        "bininfo": [
+            40,
+            0,
+            20
+        ],
+        "xAxisLabel": "$Iso._{PF\\ neutral\\ hadron}$ [GeV]",
+        "yAxisUnit": "GeV",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 10
+    },
+    "elePFPUIso": {
+        "bininfo": [
+            40,
+            0,
+            20
+        ],
+        "xAxisLabel": "$Iso._{PF\\ pile-up}$ [GeV]",
+        "yAxisUnit": "GeV",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 5
+    },
+    "eleIDMVAIso": {
+        "bininfo": [
+            50,
+            -1,
+            1
+        ],
+        "xAxisLabel": "MVA score",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 1.7
+    },
+    "eleIDMVANoIso": {
+        "bininfo": [
+            50,
+            -1,
+            1
+        ],
+        "xAxisLabel": "MVA score",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 1.7
+    },
+    "eleR9Full5x5": {
+        "bininfo": [
+            50,
+            0,
+            1
+        ],
+        "xAxisLabel": "$R_{9}^{full 5\\times 5}$",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.5
+    },
+    "eleTrkdxy": {
+        "bininfo": [
+            50,
+            0,
+            0.05
+        ],
+        "xAxisLabel": "$d_{xy}^{Trk.}$ [cm]",
+        "yAxisUnit": "cm",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 5
+    },
+    "eleMissHits": {
+        "bininfo": [
+            10,
+            0,
+            10
+        ],
+        "xAxisLabel": "Number of missing hits",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 1.2
+    },
+    "nGsfMatchToReco": {
+        "bininfo": [
+            10,
+            0.5,
+            10.5
+        ],
+        "xAxisLabel": "Number of Gsf tracks match to Reco",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.2
+    },
+    "gsfPtSum": {
+        "bininfo": [
+            100,
+            0,
+            200
+        ],
+        "xAxisLabel": "Sum of $p_{T}^{Gsf}$ [GeV]",
+        "yAxisUnit": "GeV",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.3
+    },
+    "gsfPtSum2": {
+        "bininfo": [
+            100,
+            0,
+            1000
+        ],
+        "xAxisLabel": "Sum of $p_{T, Gsf}^{2}$ [GeV]",
+        "yAxisUnit": "GeV",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.3
+    },
+    "gsfPtRatio": {
+        "bininfo": [
+            50,
+            -0.01,
+            1.01
+        ],
+        "xAxisLabel": "$p_{T}^{Gsf2}/p_{T}^{Gsf1}$",
+        "yAxisUnit": "",
+        "xoverflow": "false",
+        "xunderflow": "false",
+        "logy": "true",
+        "y_axisscale": 1.2
+    },
+    "gsfDeltaR": {
+        "bininfo": [
+            30,
+            0,
+            0.15
+        ],
+        "xAxisLabel": "$\\Delta R(Gsf1,\\ Gsf2)$",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.1
+    },
+    "gsfMissHitsSum": {
+        "bininfo": [
+            10,
+            0.5,
+            10.5
+        ],
+        "xAxisLabel": "Number of missing hits of Gsf traks",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.2
+    },
+    "gsfRelPtRatio": {
+        "bininfo": [
+            60,
+            0,
+            3
+        ],
+        "xAxisLabel": "$\\frac{p_{T}^{Gsf}}{p_{T}^e}$",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.3
+    },
+    "gsfDiffPtRatio": {
+        "bininfo": [
+            60,
+            -1,
+            1
+        ],
+        "xAxisLabel": "$\\frac{|\\sum_{Gsf} \\vec{p_{T}}| - p_{T}^e}{|\\sum_{Gsf} \\vec{p_{T}}| + p_{T}^e}$",
+        "yAxisUnit": "",
+        "xoverflow": "true",
+        "xunderflow": "false",
+        "logy": "false",
+        "y_axisscale": 1.3
+    }
+}
