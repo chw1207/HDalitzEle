@@ -11,5 +11,5 @@ This trigger is the main trigger for merged category. To measure the scale facto
     root -l -b -q 'runMergeTnpNtuples.C("unseed")' # merge ntuples for unseeded leg
    ```
 
-3. Use Tag-and-Probe technic to measure the the efficiencies and scale factors
+3. Use Tag-and-Probe technic to measure the efficiencies and scale factors
     - [Modified egm_tnp_analysis](https://github.com/chw1207/egm_tnp_analysis): please follow the instruction of this repository to perform the measurements.
