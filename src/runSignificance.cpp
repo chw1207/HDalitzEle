@@ -41,7 +41,7 @@ std::map<std::string, double> calc_sigmaEff(ROOT::RDF::RNode df_sig_cat, ROOT::R
     const double sideband_yield_range = sideband_stats_range->GetN() * (sigma2[1] - sigma2[0])/(mass_range[1] - mass_range[0]);
     effsig["Sideband"] = sideband_yield;
     effsig["Sideband_2sigma"] = sideband_yield_range; // %
-    effsig["Ratio"] = sig_yield_range*100/sideband_yield_range;
+    effsig["Ratio"] = sig_yield_range*100/(sideband_yield_range+sig_yield_range);
     effsig["AMS"] = sqrt(2 * ( (sig_yield_range + sideband_yield_range) * log( 1 + (sig_yield_range/sideband_yield_range) ) - sig_yield_range));
 
     return effsig;

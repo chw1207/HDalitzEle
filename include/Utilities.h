@@ -37,6 +37,8 @@ namespace utils{
     // print cut report gracefully and return the report as TString
     TString printReport(ROOT::RDF::RResultPtr<ROOT::RDF::RCutFlowReport> cutflow);
 
+    // print parameters gracefully
+    void printParameters(std::string config, std::string era, std::string nthreads, int max_events);
 
     // return vector -> {hours, mins, seconds}
     std::vector<int> GetHumanTime(double time);
@@ -52,9 +54,10 @@ namespace utils{
     //              aaa = somthing_2
     //      Using FindBins:
     //          vector<float> someting = {somthing_1, somthing_2};
-    //          float aaa = someting[FindBins(someting, fabs(eta))];
+    //          vector<float> etas = {0, 1.479, 2.5};
+    //          float aaa = someting[FindBins(etas, fabs(eta))];
     // Note: FindBins return -1 when underflow and overflow
-    int FindBins(const std::vector<float> bin, const float var);
+    int FindBins(std::vector<float> bin, const float var);
 
 
     // calculate the effective sigma of a vector under a given threshold

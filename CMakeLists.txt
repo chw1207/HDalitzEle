@@ -5,20 +5,26 @@ project(HDalitzEle LANGUAGES CXX)
 # show all of the warning information
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-add_compile_options(-O3 -Wall -Wextra -pedantic)
+add_compile_options(-O3 -Wall -Wextra)
 
 # find all of the shared libraries of ROOT in config file
 # execute 'root-config --libs' in command line to check
 # TMVA is also needed (not in the root-config)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-find_package(ROOT 6.24 CONFIG REQUIRED COMPONENTS TMVA XMLIO)
+find_package(ROOT CONFIG REQUIRED COMPONENTS TMVA XMLIO)
 find_package(Boost REQUIRED COMPONENTS program_options)
 find_package(fmt CONFIG REQUIRED) # txt format
 find_package(yaml-cpp REQUIRED)
 find_package(xgboost REQUIRED)
 
 # create a shared libarary
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+set(LIBRARY_DIRECTORY "${CMAKE_SOURCE_DIR}/lib_ana")
+option(MAKE_DEVELOPE, "LIBRARY_FOR_DEVELOPMENT" OFF)
+if (MAKE_DEVELOPE)
+    set(LIBRARY_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+endif()
+
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_DIRECTORY})
 add_library(HDalitzEle
     SHARED
         src/tdrstyle.cpp
@@ -48,31 +54,35 @@ target_link_libraries(HDalitzEle
         fmt::fmt-header-only
 )
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-# script to perform the main HDalitz analysis
-add_executable(runAnalysis src/runAnalysis.cpp)
-target_link_libraries(runAnalysis
-    PRIVATE
-        HDalitzEle
-)
-# script to skim the signal tree
-add_executable(skimTree src/skimTree.cpp)
-target_link_libraries(skimTree
-    PRIVATE
-        HDalitzEle
-)
-# script to draw kinematics distributions
-add_executable(drawKinematics src/drawKinematics.cpp)
-target_link_libraries(drawKinematics
-    PRIVATE
-        HDalitzEle
-)
-# script to calculate the significance for each category
-add_executable(runSignificance src/runSignificance.cpp)
-target_link_libraries(runSignificance
-    PRIVATE
-        HDalitzEle
-)
+
+if (NOT MAKE_DEVELOPE)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+    # script to perform the main HDalitz analysis
+    add_executable(ResolvedAnalysis src/ResolvedAnalysis.cpp)
+    target_link_libraries(ResolvedAnalysis
+        PRIVATE
+            HDalitzEle
+    )
+    # script to perform the main HDalitz analysis
+    add_executable(MergedAnalysis src/MergedAnalysis.cpp)
+    target_link_libraries(MergedAnalysis
+        PRIVATE
+            HDalitzEle
+    )
+
+    # script to draw kinematics distributions
+    add_executable(drawKinematics src/drawKinematics.cpp)
+    target_link_libraries(drawKinematics
+        PRIVATE
+            HDalitzEle
+    )
+    # script to calculate the significance for each category
+    add_executable(runSignificance src/runSignificance.cpp)
+    target_link_libraries(runSignificance
+        PRIVATE
+            HDalitzEle
+    )
+endif()
 
 
 

@@ -38,18 +38,6 @@ namespace cat{
         const ROOT::RVec<float>& jetEn,
         const ROOT::Math::PtEtaPhiMVector H
     );
-
-    int makeCat(
-        bool isM2,
-        bool isM1,
-        bool isRe,
-        bool isHVbf,
-        bool isLVbf,
-        bool isBst,
-        bool isEE,
-        bool isEBHR9,
-        bool isEBLR9
-    );
 }
 
 #endif

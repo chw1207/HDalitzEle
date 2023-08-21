@@ -27,6 +27,10 @@ ROOT::RVec<int> cat::CutBasedJet(
     const ROOT::RVec<float>& jetMUF,
     std::string era
 ){
+    // NOTE: from Jet POG
+    //*      We generally recommend to apply the jet ID criteria listed below including those marked as "for LepVeto" for all analyses. 
+    //*      For analyses that perform any special cleaning or selections between jets and leptons, the jet ID can also be applied without the vetoing on leptons to avoid possible biases.
+    // Therefore, i remove the lepton veto cut (avoid bias on lepton selection)
     ROOT::RVec<int> v(nJet);
     for (int i = 0; i < nJet; i++){
         bool cutID = false;
@@ -115,7 +119,7 @@ ROOT::RVec<int> cat::VBFtag(
                     vbf = {tag_number, jet1_ind, jet2_ind};
                     return vbf;
                 }
-                else if (dijet.M() <= 500. && dijet.M() > 360){
+                else if (dijet.M() <= 500. && dijet.M() > 360){ // deprecated
                     tag_number = 2;
                     jet1_ind = i1;
                     jet2_ind = i2;
@@ -127,45 +131,4 @@ ROOT::RVec<int> cat::VBFtag(
     }
 
     return vbf;
-}
-
-
-int cat::makeCat(
-    bool isM2,
-    bool isM1,
-    bool isRe,
-    bool isHVbf,
-    bool isLVbf,
-    bool isBst,
-    bool isEE,
-    bool isEBHR9,
-    bool isEBLR9
-){
-    int cat = 0;
-    if (isM2){
-        if (isHVbf == 1) cat = 1;
-        else if (isLVbf == 1) cat = 2;
-        else if (isBst == 1) cat = 3;
-        else if (isEBHR9 == 1) cat = 4;
-        else if (isEBLR9 == 1) cat = 5;
-        else if (isEE == 1) cat = 6;
-        else
-            throw std::runtime_error("No proper category for M2");
-    }
-    else if (isM1 == 1){
-        if (isHVbf == 1) cat = 7;
-        else if (isLVbf == 1) cat = 8;
-        else if (isBst == 1) cat = 9;
-        else if (isEBHR9 == 1) cat = 10;
-        else if (isEBLR9 == 1) cat = 11;
-        else if (isEE == 1) cat = 12;
-        else
-            throw std::runtime_error("No proper category for M1");
-    }
-    else if (isRe == 1)
-        cat = 13;
-    else
-        throw std::runtime_error("No proper category for Resolved");
-
-    return cat;
 }

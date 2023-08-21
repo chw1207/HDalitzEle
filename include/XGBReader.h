@@ -10,8 +10,11 @@
 class XGBReader{
 public:
     XGBReader(std::string _fName);
+    XGBReader();
     virtual ~XGBReader();
 
+    void Init(std::string _fName);
+    
     std::vector<float> Compute(const std::vector<float>& features);
     // std::vector<std::vector<float>> Compute(std::vector<std::vector<float>>& features, bool verbose=false);
     // TMVA::Experimental::RTensor<float> Compute(TMVA::Experimental::RTensor<float>& features, bool verbose=false);

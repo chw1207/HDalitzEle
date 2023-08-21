@@ -59,7 +59,7 @@ void draw_var(ROOT::RDF::RNode df_mc, ROOT::RDF::RNode df_data, const std::strin
     h_data->GetXaxis()->SetTitleOffset(1.25);
     h_data->GetYaxis()->SetTitleSize(0.04);
     h_data->GetYaxis()->SetLabelSize(0.04);
-    h_data->GetYaxis()->SetTitleOffset(1.8);
+    h_data->GetYaxis()->SetTitleOffset(2);
     if (setting["isLogY"].as<bool>())
         h_data->GetYaxis()->SetRangeUser(1, h_data->GetBinContent(h_data->GetMaximumBin()) * setting["y_scale"].as<float>());
     else

@@ -5,7 +5,6 @@
 
 std::vector<std::string> utils::find_files(std::string dirname){
     std::vector<std::string> v;
-    v.clear();
     for (const auto &entry : std::filesystem::directory_iterator(dirname)){
         if (!std::filesystem::is_directory(entry) && entry.path().extension() == ".root")
             v.push_back(entry.path());
@@ -15,7 +14,6 @@ std::vector<std::string> utils::find_files(std::string dirname){
         throw std::runtime_error(Form("No files found in %s", dirname.c_str()));
 
     std::string fcount = v.size() == 1 ? "file" : "files";
-    std::cout << Form("[INFO] Find files: %zu %s are found", v.size(), fcount.c_str()) << std::endl;
     return v;
 }
 
@@ -36,12 +34,10 @@ ROOT::RVec<ROOT::Math::PtEtaPhiMVector> utils::P4Vector(
     const ROOT::RVec<float>& phi,
     float m
 ){
-    ROOT::RVec<ROOT::Math::PtEtaPhiMVector> v;
-    v.clear();
+    ROOT::RVec<ROOT::Math::PtEtaPhiMVector> v(pt.size());
 
     for (size_t i = 0; i < pt.size(); ++i){
-        ROOT::Math::PtEtaPhiMVector LVec(pt[i], eta[i], phi[i], m);
-        v.push_back(LVec);
+        v[i].SetCoordinates(pt[i], eta[i], phi[i], m);
     }
 
     return v;
@@ -75,6 +71,21 @@ TString utils::printReport(ROOT::RDF::RResultPtr<ROOT::RDF::RCutFlowReport> cutf
 }
 
 
+void utils::printParameters(std::string config, std::string era, std::string nthreads, int max_events){
+    TString pars("******************************************************\n");
+    pars += TString::Format("                  Common parameters                   \n");
+    pars += TString::Format("******************************************************\n");
+    pars += TString::Format("config files: %s\n", config.c_str());
+    pars += TString::Format("era: %s\n", era.c_str());
+    pars += TString::Format("nthreads: %s\n", nthreads.c_str());
+    pars += TString::Format("max events: %d (-1 means all)\n", max_events);
+    pars += TString::Format("******************************************************\n");
+    pars += TString::Format("\n");
+
+    printf(pars.Data());
+}
+
+
 std::vector<int> utils::GetHumanTime(double time){
     std::vector<int> t(3, 0);
     if (time < 0)
@@ -98,12 +109,14 @@ std::vector<int> utils::GetHumanTime(double time){
 }
 
 
-int utils::FindBins(const std::vector<float> bin, const float var){
-    auto lower = std::lower_bound(bin.begin(), bin.end(), var);
-    int position = std::distance(bin.begin(), lower) - 1;
-    if (position < 0 || position > (int) bin.size()-2) // underflow or overflow
-        return (int) -1;
-    return position;
+int utils::FindBins(std::vector<float> bin, const float var){
+    std::sort(bin.begin(), bin.end()); // ensure the values are sorted from low to high 
+    auto it = std::lower_bound(bin.begin(), bin.end(), var);
+    int pos = std::distance(bin.begin(), it) - 1;
+    int max_pos = bin.size() - 2;
+    if ((pos < 0) || (pos > max_pos)) // underflow or overflow
+        return -1;
+    return pos;
 }
 
 

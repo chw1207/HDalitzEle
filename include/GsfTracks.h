@@ -1,10 +1,16 @@
 #ifndef GSFTRACKS_H_
 #define GSFTRACKS_H_
 
+#include "ROOT/RDF/InterfaceUtils.hxx"
+#include "ROOT/RDataFrame.hxx"
 #include "ROOT/RVec.hxx"
 #include "Math/Vector4D.h"
 
 namespace gsf{
+    // create the dataframe with tracks related columns using the following functions
+    ROOT::RDF::RNode DefineGSFColumns(ROOT::RDF::RNode df);
+
+
     // lable the main gsf tracks in reco::GsfTrack.
     ROOT::RVec<int> IsMainGSF(
         const Long64_t event,

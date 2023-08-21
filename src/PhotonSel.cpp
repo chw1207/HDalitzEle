@@ -1,5 +1,6 @@
 #include "PhotonSel.h"
 #include "Utilities.h"
+#include "TMath.h"
 
 ROOT::RVec<int> phoSel::HggPresel(
     const int nPho,
@@ -15,7 +16,7 @@ ROOT::RVec<int> phoSel::HggPresel(
     const ROOT::RVec<float>& phoHoverE
 ){
     ROOT::RVec<int> v;
-    v.clear();
+    v.reserve(nPho);
 
     const std::vector<float> bins = {0., 0.9, 1.5, 2, 2.2, 3};
     const std::vector<float> reff = {0.16544, 0.16544, 0.13212, 0.13212, 0.13212};
@@ -23,7 +24,7 @@ ROOT::RVec<int> phoSel::HggPresel(
         // to mitigate PU effect
         const int effbin = utils::FindBins(bins, fabs(phoSCEta[phoIdx]));
         const float phoEffArea = (effbin != -1) ? reff[effbin] : 0.;
-        const float phoPFPhoIso_corr = std::max(phoPFPhoIso[phoIdx] - rhoAll * phoEffArea, (float) 0.);
+        const float phoPFPhoIso_corr = TMath::Max(phoPFPhoIso[phoIdx] - rhoAll * phoEffArea, (float) 0.);
 
         const bool isEB = (fabs(phoSCEta[phoIdx]) < 1.4442);
         const bool isEE = (fabs(phoSCEta[phoIdx]) > 1.566 && fabs(phoSCEta[phoIdx]) < 2.5);
@@ -40,7 +41,7 @@ ROOT::RVec<int> phoSel::HggPresel(
         // Hgg preselection without passElectronVeto
         // const int isHgg = (base_pT_cut && isAOD && (isHR9_EB || isLR9_EB || isHR9_EE || isLR9_EE)) ? 1 : 0;
         const int isHgg = (isAOD && (isHR9_EB || isLR9_EB || isHR9_EE || isLR9_EE)) ? 1 : 0;
-        v.push_back(isHgg);
+        v.emplace_back(isHgg);
     }
 
     return v;

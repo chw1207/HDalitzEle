@@ -1,0 +1,52 @@
+era: "UL2016preVFP"
+isMC: false
+luminosity: 19.52
+threads: 20
+
+# configuration for MergedAnalysis.cpp
+############################################################################################################
+#! NOTE: number of "datasets_path", "cross_section", and "miniTree_path" should be the same.
+ntuple_path:
+  - "/data3/ggNtuples/V10_06_30_00/job_DoubleEG_Run2016B_UL/*.root"
+  - "/data3/ggNtuples/V10_06_30_00/job_DoubleEG_Run2016C_UL/*.root"
+  - "/data3/ggNtuples/V10_06_30_00/job_DoubleEG_Run2016D_UL/*.root"
+  - "/data3/ggNtuples/V10_06_30_00/job_DoubleEG_Run2016E_UL/*.root"
+  - "/data3/ggNtuples/V10_06_30_00/job_DoubleEG_Run2016F1_UL/*.root"
+
+miniTree_path:
+  - "/data4/chenghan/electron/miniTree_merged/UL2016preVFP/miniTree_DoubleEG_Run2016B_UL2016preVFP.root"
+  - "/data4/chenghan/electron/miniTree_merged/UL2016preVFP/miniTree_DoubleEG_Run2016C_UL2016preVFP.root"
+  - "/data4/chenghan/electron/miniTree_merged/UL2016preVFP/miniTree_DoubleEG_Run2016D_UL2016preVFP.root"
+  - "/data4/chenghan/electron/miniTree_merged/UL2016preVFP/miniTree_DoubleEG_Run2016E_UL2016preVFP.root"
+  - "/data4/chenghan/electron/miniTree_merged/UL2016preVFP/miniTree_DoubleEG_Run2016F1_UL2016preVFP.root"
+
+external_files:
+  mergedID_model: # XGBReader (xgboost/c_api.h)
+    M2EB: "/data4/chenghan/external/MergedID/Output_Merged2GsfID_hyperTune_FullRun2ULWPPtWeiFinal_EB/XGB/XGB_modelXGB.txt"
+    M2EE: "/data4/chenghan/external/MergedID/Output_Merged2GsfID_hyperTune_FullRun2ULWPPtWeiFinal_EE/XGB/XGB_modelXGB.txt"
+    # M1EB: "/data4/chenghan/external/MergedID/Output_Merged1GsfID_hyperTune_FullRun2ULWPPtWeiFinal_EB/XGB/XGB_modelXGB.txt"
+    # M1EE: "/data4/chenghan/external/MergedID/Output_Merged1GsfID_hyperTune_FullRun2ULWPPtWeiFinal_EE/XGB/XGB_modelXGB.txt"
+  mergedID_wp:
+    M2EB: 0.4283
+    M2EE: 0.4479
+    # M1EB: 0.4390
+    # M1EE: 0.4381
+
+  mergedReg_model: # XGBReader (xgboost/c_api.h)
+    M2EB: "/data4/chenghan/external/RegressionFinal/XGBRegression_NoRobustScaling_EGMRegTarget_EB/XGB_Regression.txt"
+    M2EE: "/data4/chenghan/external/RegressionFinal/XGBRegression_NoRobustScaling_EGMRegTarget_EE/XGB_Regression.txt"
+
+  energy_correction: 
+    energy_reg: # EnCalibrater and XGBReader (xgboost/c_api.h)
+      - "/data4/chenghan/external/RegressionFinal/XGBRegression_NoRobustScaling_EGMRegTarget_EB/XGB_Regression.txt"
+      - "/data4/chenghan/external/RegressionFinal/XGBRegression_NoRobustScaling_EGMRegTarget_EE/XGB_Regression.txt"
+    resi_scale: 
+      - "/data4/chenghan/external/Correction/EnScale_xgb_final_EB.root"
+      - "/data4/chenghan/external/Correction/EnScale_xgb_final_EE.root"
+    resi_smear: 
+      - "/data4/chenghan/external/Correction/EnSmear_xgb_final_EB.root"
+      - "/data4/chenghan/external/Correction/EnSmear_xgb_final_EE.root"
+
+  HggPhoID_model: # XGBReader (xgboost/c_api.h)
+    EB: "../external/tmva-to-xgboost/HggPhoID/PhoID_barrel_UL16_SA_TMVA_BDTG.weights.json"
+    EE: "../external/tmva-to-xgboost/HggPhoID/PhoID_endcap_UL16_SA_TMVA_BDTG.weights.json"

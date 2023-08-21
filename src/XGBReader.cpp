@@ -14,9 +14,20 @@ XGBReader::XGBReader(std::string _fName){
 }
 
 
+XGBReader::XGBReader(){
+    safe_xgboost(XGBoosterCreate(NULL, 0, &booster));
+    safe_xgboost(XGBoosterSetParam(booster, "nthread", "1"));
+}
+
+
 XGBReader::~XGBReader(){
     // safe_xgboost(XGDMatrixFree(dpred));
     safe_xgboost(XGBoosterFree(booster));
+}
+
+
+void XGBReader::Init(std::string _fName){
+    safe_xgboost(XGBoosterLoadModel(booster, _fName.c_str()));
 }
 
 

@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <filesystem>
 #include "yaml-cpp/yaml.h"
+#include "boost/algorithm/string.hpp"
 #include "boost/program_options.hpp"
 #include "ROOT/RVec.hxx"
 #include "ROOT/RDF/InterfaceUtils.hxx"
@@ -25,8 +26,12 @@
 
 namespace fs = std::filesystem;
 namespace po = boost::program_options;
+namespace ba = boost::algorithm;
+
 template <typename T>
 using Vec = const ROOT::RVec<T>&;
+
+
 
 //* Script to skim the ntuples:  ../bin/skimTree --config ../config/UL2017_SignalMC.yaml
 //  For signal:  
@@ -37,7 +42,7 @@ using Vec = const ROOT::RVec<T>&;
 //      b. good primary vertex
 //      c. at least one electron and one photn in the event
 //  4. for skimTree, energy regression branch "eleHDALRegPt" and gsf track related branches are added (check src/MergedEnCorrector.cpp)
-//  5. To-Do: add R9 correction and Residual correction 
+//? 5. To-Do: add R9 correction and Residual correction 
 //  For data:  
 //  1. apply the same preselections as signal
 //  2. branch "eleHDALRegPt" and gsf track related branches are also added
@@ -45,12 +50,12 @@ using Vec = const ROOT::RVec<T>&;
 
 float CalcMLL(Vec<int> lhePID, Vec<float> lhePx, Vec<float> lhePy, Vec<float> lhePz){
     // MLL cut at 60 GeV
-    auto LHE_Eles = abs(lhePID) == 11; // gen electron
+    auto mask = abs(lhePID) == 11; // gen electron
     float mass = std::numeric_limits<float>::max();
-    if (ROOT::VecOps::Nonzero(LHE_Eles).size() == 2){
-        auto LHEElePx = lhePx[LHE_Eles];
-        auto LHEElePy = lhePy[LHE_Eles];
-        auto LHEElePz = lhePz[LHE_Eles];
+    if (ROOT::VecOps::Nonzero(mask).size() == 2){
+        auto LHEElePx = lhePx[mask];
+        auto LHEElePy = lhePy[mask];
+        auto LHEElePz = lhePz[mask];
         ROOT::Math::PxPyPzMVector ele1(LHEElePx[0], LHEElePy[0], LHEElePz[0], 0.000511);
         ROOT::Math::PxPyPzMVector ele2(LHEElePx[1], LHEElePy[1], LHEElePz[1], 0.000511);
         mass = (ele1 + ele2).M();
@@ -61,28 +66,25 @@ float CalcMLL(Vec<int> lhePID, Vec<float> lhePx, Vec<float> lhePy, Vec<float> lh
 
 bool IsPhoIntConv(const int nMC, Vec<int> mcPID, Vec<int> mcMomPID, Vec<unsigned short> mcStatusFlag){
     // remove internal conversion photon
-    int realpho = 0;
-    for (int i = 0; i < nMC; i++){
-        bool hardProc = (mcStatusFlag[i] >> 0 & 1) == 1;
-        bool isPrompt = (mcStatusFlag[i] >> 1 & 1) == 1;
-        bool isRealPho = mcPID[i] == 22 && mcMomPID[i] == 25 && hardProc && isPrompt;
-        if (isRealPho)
-            realpho += 1;
-    }
+    auto hardProc = ROOT::VecOps::Map(mcStatusFlag, [](unsigned short bit){return (bit >> 0) & 1;});
+    auto isPrompt = ROOT::VecOps::Map(mcStatusFlag, [](unsigned short bit){return (bit >> 1) & 1;});
+    auto isRealPh = mcPID == 22 && mcMomPID == 25 && hardProc && isPrompt;
+    
+    int realpho = ROOT::VecOps::Sum(isRealPho);
     bool isPhoIntConv = (realpho == 0) ? true : false; // no real photon
+    
     return isPhoIntConv;
 }
 
 
 ROOT::RDF::RNode FindGSFTracks(ROOT::RDF::RNode df) {
     auto make_ditrkPt = [](Vec<ROOT::Math::PtEtaPhiMVector> eleTrk1, Vec<ROOT::Math::PtEtaPhiMVector> eleTrk2){
-        ROOT::RVec<float> ditrkPt(eleTrk1.size());
-        for (size_t i = 0; i < eleTrk1.size(); i++){
-            ditrkPt[i] = (float)(eleTrk1[i]+eleTrk2[i]).Pt();
-        }
+        auto ditrkPt = ROOT::VecOps::Map(eleTrk1, eleTrk2, [](ROOT::Math::PtEtaPhiMVector trk1, ROOT::Math::PtEtaPhiMVector trk2){
+            return (float)(trk1+trk2).Pt();
+        });
         return ditrkPt;
-    };
-
+    }
+    
     // match the gsf tracks to the associated electron
     auto nf = df.Define("M_ELE",                "(float) 0.000511")
                 .Define("isMainGSF",            gsf::IsMainGSF,             {"event", "nGSFTrk", "gsfD0", "gsfDz", "nEle", "eleD0", "eleDz"})
@@ -142,7 +144,6 @@ int main(int argc, char** argv){
     if (vm.count("config") < 1)
         throw std::invalid_argument("the option '--config' is required but missing");
 
-
     //=======================================================//
     //    Load config file and setup the common parameters   //
     //=======================================================//
@@ -153,8 +154,8 @@ int main(int argc, char** argv){
         throw std::runtime_error("Number of ntuple_path != number of skimTree_path");
 
     // check the directory to save the miniTree exist or not. if not, create it
-    std::string direc = std::filesystem::path(skimTree_path[0]).parent_path();
-    if (!std::filesystem::exists(direc)){
+    std::string direc = fs::path(skimTree_path[0]).parent_path();
+    if (!fs::exists(direc)){
         system(Form("mkdir -p %s", direc.c_str()));
     }
 
@@ -202,14 +203,27 @@ int main(int argc, char** argv){
         //*     bit position: https://github.com/cmkuo/ggAnalysis/blob/106X/ggNtuplizer/plugins/ggNtuplizer_globalEvent.cc#L364
         //*     1) HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90_v (2016)
         //*     2) HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90_v (2017 and 2018)
-        //* Di-electron trigger (for resolved)
-        //*     bit position: https://github.com/cmkuo/ggAnalysis/blob/106X/ggNtuplizer/plugins/ggNtuplizer_globalEvent.cc#L297
-        //*     bit position: https://github.com/cmkuo/ggAnalysis/blob/106X/ggNtuplizer/plugins/ggNtuplizer_globalEvent.cc#L332
-        //*     1) HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v (2016)
-        //*     2) HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v (2017 and 2018)   
-        std::string diEleTrigger = "((HLTEleMuX >> 40 & 1) == 1) || ((HLTEleMuX >> 5 & 1) == 1)";
-        if (era.find("2016") != std::string::npos)
-            diEleTrigger = "(HLTEleMuX >> 40 & 1) == 1"; 
+        //* Single trigger (for resolved)
+        //*     1) HLT_Ele27_WPTight_Gsf_v (2016)
+        //*     2) HLT_Ele32_WPTight_Gsf_L1DoubleEG_v (2017)
+        //*     3) HLT_Ele32_WPTight_Gsf_v (2018)
+        /* old trigger path
+            Di-electron trigger (for resolved)
+                bit position: https://github.com/cmkuo/ggAnalysis/blob/106X/ggNtuplizer/plugins/ggNtuplizer_globalEvent.cc#L297
+                bit position: https://github.com/cmkuo/ggAnalysis/blob/106X/ggNtuplizer/plugins/ggNtuplizer_globalEvent.cc#L332
+                1) HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v (2016)
+                2) HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v (2017 and 2018)
+        */
+        
+        std::string SingleEleTrigger;
+        if (ba::contains(era, "2016")) 
+            SingleEleTrigger = "(HLTEleMuX >> 4  & 1) == 1";
+        else if (ba::contains(era, "2017")) 
+            SingleEleTrigger = "(HLTEleMuX >> 54 & 1) == 1";
+        else if (ba::contains(era, "2018")) 
+            SingleEleTrigger = "(HLTEleMuX >> 55 & 1) == 1";
+        else 
+            throw std::runtime_error(Form("%s:%ld in %s:Unknown era: %s", era.c_str()));
 
         // energy regression models
         auto model_path = cfg["external_files"]["energy_correction"]["energy_reg"].as<std::vector<std::string>>();
@@ -219,7 +233,7 @@ int main(int argc, char** argv){
                          .Define("HasIntPho",       IsPhoIntConv, {"nMC", "mcPID", "mcMomPID", "mcStatusFlag"})
                          .Filter("diLepMCMass < 60 && HasIntPho == 0", "mc preslections");
 
-            // calculate the weight wrt cross section
+            // calculate the weight wrt luminosity
             auto df2 = df1.Filter("event % 2 == 1", "analysis"); // == 1 for analysis, == 0 for ID training and regression
             printf(" [+] Weight application for analysis tree:\n");
             auto pos = df2.Filter("genWeight > 0",   "positive event").Count();
@@ -232,9 +246,9 @@ int main(int argc, char** argv){
             printf("     - MC weight (XS * Luminosity / Nevents): %f \n", mcwei);
             
             // save the analysis tree 
-            auto df_skim  = df1.Define("mcwei",   [&, mcwei](){return mcwei;})
+            auto df_skim  = df1.Define("mcwei",                [&, mcwei](){return mcwei;})
                                .Define("isDiPhoHLT",           "((HLTPho >> 14) & 1) == 1")
-                               .Define("isDiEleHLT",           diEleTrigger)
+                               .Define("isDiEleHLT",           "((HLTEleMuX >> 40) & 1) == 1")
                                .Define("eleESEnToRawE",        "(eleESEnP1+eleESEnP2)/eleSCRawEn")
                                .Filter("isDiPhoHLT || isDiEleHLT", "diPho || diEle HLT")
                                .Filter("isPVGood == 1", "Good Vtx")
@@ -264,8 +278,9 @@ int main(int argc, char** argv){
 
         }
         else{ // data
-            auto df1  = df.Define("isDiPhoHLT",           "((HLTPho >> 14) & 1) == 1")
-                          .Define("isDiEleHLT",           diEleTrigger)
+            auto df1  = df.Define("isDiPhoHLT",           "((HLTPho    >> 14) & 1) == 1")
+                          .Define("isDiEleHLT",           "((HLTEleMuX >> 40) & 1) == 1")
+                          .Define("isSingleEleHLT",       "((HLTPho >> 14) & 1) == 1")
                           .Define("eleESEnToRawE",        "(eleESEnP1+eleESEnP2)/eleSCRawEn")
                           .Filter("isDiPhoHLT || isDiEleHLT", "diPho || diEle HLT")
                           .Filter("isPVGood == 1", "Good Vtx")

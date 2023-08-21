@@ -8,7 +8,6 @@ namespace gen{
 
     // calculate di-electron mass in lhe level
     float CalcLHEMee(
-        const int nLHE,
         const ROOT::RVec<int>& lhePID,
         const ROOT::RVec<float>& lhePx,
         const ROOT::RVec<float>& lhePy,
@@ -17,14 +16,13 @@ namespace gen{
 
     // Find the events that photon is internal conversion
     bool IsPhoIntConv(
-        const int nMC,
         const ROOT::RVec<int>& mcPID,
         const ROOT::RVec<int>& mcMomPID,
         const ROOT::RVec<unsigned short> mcStatusFlag
     );
 
     // Find the signal electrons
-    ROOT::RVec<int> GenMatch(
+    ROOT::RVec<int> MatchedGenEle(
         const ROOT::Math::PtEtaPhiMVector reco,
         const int nMC,
         const ROOT::RVec<float>& mcEta,
@@ -32,6 +30,17 @@ namespace gen{
         const ROOT::RVec<int>& mcPID,
         const ROOT::RVec<int>& mcMomPID,
         const ROOT::RVec<int>& mcGMomPID,
+        const ROOT::RVec<unsigned short> mcStatusFlag
+    );
+
+    // Find the signal photon
+    int MatchedGenPho(
+        const ROOT::Math::PtEtaPhiMVector reco,
+        const int nMC,
+        const ROOT::RVec<float>& mcEta,
+        const ROOT::RVec<float>& mcPhi,
+        const ROOT::RVec<int>& mcPID,
+        const ROOT::RVec<int>& mcMomPID,
         const ROOT::RVec<unsigned short> mcStatusFlag
     );
 }
