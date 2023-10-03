@@ -105,6 +105,7 @@ std::vector<std::string> scale_factors = { // required scale factors, if values 
     "HggPhoCSEV",
     "HggPhoID"
 };
+int N_merged_cat = 6; // number of merged categories 
 
 
 void ArgumentParser(int argc, char** argv){
@@ -189,13 +190,36 @@ std::vector<Long64_t> GetMergedEvents(std::string repath){
     std::vector<Long64_t> v; 
     TString MergedDir = gSystem->GetDirName(MergedPath.Data());
     if (!fs::exists(MergedDir.Data())){
-        Warn(Form("Fail to find the root files for merged category: %s", MergedDir.Data()));
+        Warn(Form("Fail to find the root files for merged category: %s\n", MergedDir.Data()));
         return v;
     }
+
+    // TString MergedHLTPath(repath);
+    // MergedPath.ReplaceAll("resolved", "merged_HLT");
+    // if (MergedPath.Contains("SingleEle"))
+    //     MergedPath.ReplaceAll("SingleEle", "DoubleEG");
+
+    // std::vector<Long64_t> v; 
+    // TString MergedHLTDir = gSystem->GetDirName(MergedHLTPath.Data());
+    // if (!fs::exists(MergedHLTDir.Data())){
+    //     Warn(Form("Fail to find the root files for merged HLT category: %s\n", MergedHLTDir.Data()));
+    //     return v;
+    // }
         
     auto df_merged = ROOT::RDataFrame("miniTree", MergedPath.Data(), {"event"});
     auto evCol = df_merged.Take<Long64_t>("event");
 
+    // auto df_merged_HLT = ROOT::RDataFrame("miniTree", MergedHLTPath.Data(), {"event"});
+    // auto evCol_HLT = df_merged_HLT.Take<Long64_t>("event");
+
+    // std::vector<Long64_t> v(*evCol);
+    // v.insert(v.end(), (*evCol_HLT).begin(), (*evCol_HLT).end());
+
+    // return v;
+
+    printf(" [+] Find out the merged events in :\n");
+    printf("     - %s\n", MergedPath.Data());
+    printf("     - %ld events are found\n", (*evCol).size());
     return *evCol;
 }
 
@@ -490,8 +514,8 @@ bool xAna(std::string inpath, std::string outpath, int iset){
     auto ef = pf.Define("eleESEnToRawE",        "(eleESEnP1 + eleESEnP2) / eleSCRawEn")
                 .Define("isEBEle",              "abs(eleSCEta) < 1.4442")
                 .Define("isEEEle",              "abs(eleSCEta) > 1.566 && abs(eleSCEta) < 2.5")
-                .Define("isMVAEle",             eleSel::Fall17V2ID,         {"nEle", "elePt", "eleSCEta", "eleIDMVAIso"})
-                .Define("isGoodEle",            "(isEBEle || isEEEle) && isMVAEle")
+                .Define("isMVAEle",             eleSel::Fall17V2ID,         {"nEle", "elePt", "eleSCEta", "eleIDMVAIso"}) // WP90
+                .Define("isGoodEle",            "((isEBEle && abs(eleD0) < 0.02 && abs(eleDz) < 0.1) || (isEEEle && abs(eleD0) < 0.05 && abs(eleDz) < 0.2)) && isMVAEle")
                 .Filter("ROOT::VecOps::Sum(isGoodEle) > 1", "event with good eles")
                 .Define("eleIdx",               utils::getIdx,              {"isGoodEle", "eleCalibPt"})
                 .Define("eleIdx1",              "eleIdx[0]")
@@ -561,10 +585,10 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                                                         // else if (isEBLR9)   return cat = 7;
                                                         // else if (isEE)      return cat = 8;
                                                         // else throw std::runtime_error("No proper category for Re");
-                                                        int cat = 6;
+                                                        int cat = (N_merged_cat+1);
                                                         return cat;
                                                     }, {"isEBHR9", "isEBLR9", "isEE"})
-                .Define("category_str",         [&](int category){return categories.at(category-6);},      {"category"});
+                .Define("category_str",         [&](int category){return categories.at(category-(N_merged_cat+1));},      {"category"});
 
     //=======================================================//
     //                  scale factors for MC                 //
@@ -880,7 +904,7 @@ bool xAna(std::string inpath, std::string outpath, int iset){
     auto report = df_Final.Report();
     std::vector<ROOT::RDF::RResultPtr<TH1D>> nominal_hists;
     for (size_t i = 0; i < categories.size(); i++){
-        nominal_hists.emplace_back(df_Final.Filter(Form("category == %ld", i+6)).Histo1D({"Hmass", "", 60, 110, 170}, "CMS_higgs_mass", "weight"));
+        nominal_hists.emplace_back(df_Final.Filter(Form("category == %ld", i+(N_merged_cat+1))).Histo1D({"Hmass", "", 60, 110, 170}, "CMS_higgs_mass", "weight"));
     }
     std::vector<ROOT::RDF::Experimental::RResultMap<TH1D>> hists;
     if (doVariation){
@@ -929,7 +953,7 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                 if (var.Contains("ele:")) var.ReplaceAll("ele:", "");
                 if (var.Contains("jet:")) var.ReplaceAll("jet:", "");
                 
-                it->second->SetName(Form(("cat%ld_"+var).Data(), i+6));
+                it->second->SetName(Form(("cat%ld_"+var).Data(), i+(N_merged_cat+1)));
                 it->second->Write();
             }
         }

@@ -17,12 +17,12 @@
 
 
 // approximate median significance (AMS): https://www.pp.rhul.ac.uk/~cowan/stat/notes/medsigNote.pdf (so-called combined significance)
-std::map<std::string, double> calc_sigmaEff(ROOT::RDF::RNode df_sig_cat, ROOT::RDF::RNode df_bkg_cat, std::string mass_column, std::string weight_column, std::vector<int> mass_range){
+std::map<std::string, double> calc_sigmaEff(ROOT::RDF::RNode df_sig_cat, ROOT::RDF::RNode df_bkg_cat, std::string mass_column, std::string weight_column, std::vector<int> mass_range, float range_percentage){
     std::map<std::string, double> effsig;
     auto arr = df_sig_cat.Take<float>(mass_column);
     std::vector<float> mass((*arr).begin(), (*arr).end());
     std::vector<float> sigma1 = utils::sigmaEff(mass, 0.683);
-    std::vector<float> sigma2 = utils::sigmaEff(mass, 0.955);
+    std::vector<float> sigma2 = utils::sigmaEff(mass, range_percentage);
 
     std::string sig_range = fmt::format("{} > {} && {} < {}", mass_column, sigma2[0], mass_column, sigma2[1]);
     auto sig_stats = df_sig_cat.Stats(mass_column, weight_column);
@@ -65,20 +65,28 @@ int main(int argc, char** argv){
     auto mass_column = cfg["significance"]["mass_column"].as<std::string>();
     auto weight_column = cfg["significance"]["weight_column"].as<std::string>();
     auto category = cfg["significance"]["category"];
+    auto range = cfg["range"].as<std::vector<float>>(); 
 
     // calculate the combined significance and format to a table
-    TString info = TString::Format("%-20s|%10s|%10s|%10s|%10s|%10s|%10s|%12s|\n", "category", "AMS", "f95.5[%]","sigma[GeV]", "Nsig", "Nsig95.5", "Nbkg", "Nbkg95.5");
-    info += TString::Format("====================================================================================================\n");
-    for (auto it = category.begin(); it != category.end(); it++){
-        auto cat_name = it->first.as<std::string>();
-        auto cat_filter = it->second.as<std::string>();
-        auto df_sig_cat = df_sig.Filter(cat_filter);
-        auto df_bkg_cat = df_bkg.Filter(cat_filter);
+    TString all_info;
+    for (size_t i = 0; i < range.size(); i++){
+        TString info = TString::Format("%-20s|%10s|%10s|%10s|%10s|%10s|%10s|%12s|\n", "category", "AMS", Form("f%.1f[%%]", range[i]), "sigma[GeV]", "Nsig",  Form("Nsig%.1f", range[i]), "Nbkg", Form("Nbkg%.1f", range[i]));
+        info += TString::Format("====================================================================================================\n");
+        for (auto it = category.begin(); it != category.end(); it++){
+            auto cat_name = it->first.as<std::string>();
+            auto cat_filter = it->second.as<std::string>();
+            auto df_sig_cat = df_sig.Filter(cat_filter);
+            auto df_bkg_cat = df_bkg.Filter(cat_filter);
 
-        auto effsig = calc_sigmaEff(df_sig_cat, df_bkg_cat, mass_column, weight_column, mass_range);
-        info += TString::Format("%-20s|%10.2f|%10.2f|%10.2f|%10.2f|%10.2f|%10d|%12.2f|\n", cat_name.c_str(), effsig["AMS"], effsig["Ratio"], effsig["Resolution"], effsig["Signal"], effsig["Signal_2sigma"], (int)effsig["Sideband"], effsig["Sideband_2sigma"]);
+            auto effsig = calc_sigmaEff(df_sig_cat, df_bkg_cat, mass_column, weight_column, mass_range, range[i]/100);
+            info += TString::Format("%-20s|%10.2f|%10.2f|%10.2f|%10.2f|%10.2f|%10d|%12.2f|\n", cat_name.c_str(), effsig["AMS"], effsig["Ratio"], effsig["Resolution"], effsig["Signal"], effsig["Signal_2sigma"], (int)effsig["Sideband"], effsig["Sideband_2sigma"]);
+        }
+        info += TString::Format("====================================================================================================\n");
+        info += TString::Format("                                                                                                    \n");
+        printf(info.Data());
+
+        all_info += info;
     }
-    printf(info.Data());
 
     // save the results to the file
     auto outName = cfg["AMS_file"].as<std::string>();
@@ -88,11 +96,12 @@ int main(int argc, char** argv){
         system(Form("mkdir -p %s", outpath.parent_path().c_str()));
     std::ofstream outfile(outName);
     if (outfile.is_open()){
-        outfile << info.Data();
+        outfile << all_info.Data();
         outfile.close();
-    }
+
+    }     
     else
         throw std::runtime_error(Form("Failed to open the file: %s", outName.c_str()));
-
+    
     return 0;
 }

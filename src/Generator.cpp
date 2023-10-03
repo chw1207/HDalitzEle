@@ -95,3 +95,29 @@ int gen::MatchedGenPho(
     }
     return -1;
 }
+
+
+int gen::FindGenParticle(
+    const ROOT::Math::PtEtaPhiMVector reco,
+    const int nMC,
+    const ROOT::RVec<float>& mcEta,
+    const ROOT::RVec<float>& mcPhi,
+    const ROOT::RVec<float>& mcPt
+){
+    int   tempInd = -1;
+    float tempRat = 999999.;
+    for (int i = 0; i < nMC; i++){
+        const float dr = ROOT::VecOps::DeltaR(mcEta[i], (float)reco.Eta(), mcPhi[i], (float)reco.Phi());
+        if (dr > 0.1)
+            continue;
+        
+        if (fabs((mcPt[i] / reco.Pt()) - 1.) < tempRat){
+            tempRat = fabs((mcPt[i] / reco.Pt()) - 1.);
+            tempInd = i;
+            continue;
+        }
+        else continue;
+    }
+
+    return tempInd;
+}

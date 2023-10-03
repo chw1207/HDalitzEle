@@ -5,6 +5,7 @@
 #include "ROOT/RVec.hxx"
 #include "ROOT/RDF/InterfaceUtils.hxx"
 #include "ROOT/RDataFrame.hxx"
+#include "Math/Vector3D.h"
 
 namespace eleSel{
     //  Fall17V2 MVA ID selection
@@ -39,6 +40,29 @@ namespace eleSel{
         const ROOT::RVec<float>& phoSigmaIEtaIEtaFull5x5,
         const ROOT::RVec<float>& phoHoverE
     );
+
+    // veto the late converted electron 
+    // matching: https://github.com/cms-analysis/flashgg/blob/dev_legacy_runII/MicroAOD/plugins/LegacyVertexSelector.cc#L512-L580
+    // matching: https://github.com/cms-sw/cmssw/blob/master/CommonTools/Egamma/src/ConversionTools.cc#L103-L127
+    // matching: https://github.com/cms-sw/cmssw/blob/master/CommonTools/Egamma/interface/ConversionTools.h#L57-L63
+    ROOT::RVec<int> LateConvVeto(
+        const ROOT::RVec<float>& eleSCEta,
+        const ROOT::RVec<float>& eleSCPhi,
+        
+        const int nConv,
+        const ROOT::RVec<float>& convFitPairPX,
+        const ROOT::RVec<float>& convFitPairPY,
+        const ROOT::RVec<float>& convFitPairPZ,
+        const ROOT::RVec<float>& convVtxRadius
+    );
+
+    // ROOT::RVec<int> FindMatchedSC(
+    //     const ROOT::RVec<float>& eleSCEta,
+    //     const ROOT::RVec<float>& eleSCPhi,
+
+    //     const ROOT::RVec<float>& phoSCEta,
+    //     const ROOT::RVec<float>& phoSCPhi,
+    // )
 }
 
 

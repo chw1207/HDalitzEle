@@ -124,3 +124,45 @@ ROOT::RVec<int> eleSel::HggPresel(
 }
 
 
+ROOT::RVec<int> eleSel::LateConvVeto(
+    const ROOT::RVec<float>& eleSCEta,
+    const ROOT::RVec<float>& eleSCPhi,
+    
+    const int nConv,
+    const ROOT::RVec<float>& convFitPairPX,
+    const ROOT::RVec<float>& convFitPairPY,
+    const ROOT::RVec<float>& convFitPairPZ,
+    const ROOT::RVec<float>& convVtxRadius
+){
+    ROOT::RVec<int> v;
+    for (size_t i = 0; i < eleSCEta.size(); i++){
+        int pass_ = 1;
+        if (nConv > 0){
+            int selected_conversion_index = -1;
+            for (int j = 0; j < nConv; j++){
+                ROOT::Math::XYZVector RefPairMo(convFitPairPX[j], convFitPairPY[j], convFitPairPZ[j]);
+
+                float dR = ROOT::VecOps::DeltaR(eleSCEta[i], (float) RefPairMo.Eta(), eleSCPhi[i], (float) RefPairMo.Phi());
+                float dEta = RefPairMo.Eta() - eleSCEta[i];
+                float dPhi = ROOT::VecOps::DeltaPhi(eleSCPhi[i], (float) RefPairMo.Phi());
+                if (dR > 0.1)
+                    continue;
+                if (dEta > 999.)
+                    continue;
+                if (dPhi > 999.)
+                    continue;
+
+                selected_conversion_index = j;
+                break;
+            }   
+            if (selected_conversion_index != -1 && convVtxRadius[selected_conversion_index] > 40) // convVtxRadius stored in ggNtuple is radius^2
+                pass_ = 0; // if matched vtx has radius > sqrt{40} cm then veto the electron
+        }
+        v.emplace_back(pass_);
+    }
+
+    return v;
+}
+
+
+

@@ -43,6 +43,14 @@ namespace gen{
         const ROOT::RVec<int>& mcMomPID,
         const ROOT::RVec<unsigned short> mcStatusFlag
     );
+
+    int FindGenParticle(
+        const ROOT::Math::PtEtaPhiMVector reco,
+        const int nMC,
+        const ROOT::RVec<float>& mcEta,
+        const ROOT::RVec<float>& mcPhi,
+        const ROOT::RVec<float>& mcPt
+    );
 }
 
 #endif
