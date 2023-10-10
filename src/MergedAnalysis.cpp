@@ -36,6 +36,7 @@
 #include "Categorizer.h"
 #include "Generator.h"
 #include "EnCalibrater.h"
+#include "TMVASafeReader.h"
 
 #define CGREEN  "\033[0;32m"
 #define CRED    "\033[1;31m"
@@ -299,7 +300,7 @@ bool xAna(std::string inpath, std::string outpath, int iset){
             if (!fs::exists(direc)){
                 int status = gSystem->mkdir(direc.c_str(), true);
                 if (status == -1)
-                    throw::std::runtime_error(Form("Fail to create directory: %s", direc.c_str()));
+                    throw std::runtime_error(Form("Fail to create directory: %s", direc.c_str()));
             }
             printf(" [+] Save trainTree in:\n");
             printf("     - %s\n", skimTree_path[iset].c_str());
@@ -360,12 +361,15 @@ bool xAna(std::string inpath, std::string outpath, int iset){
     //=======================================================//
     //                  photon selections                    //
     //=======================================================//
-    XGBReader hggReader[2]; // Hgg ID readers (only need for data) 
+    // XGBReader hggReader[2]; // Hgg ID readers (only need for data) 
+    std::vector<std::unique_ptr<TMVASafeReader>> hggReader(2); // Hgg ID readers (only need for data or bkg mc) 
     std::vector<std::string> hggvals_EB;
     std::vector<std::string> hggvals_EE;
+
     if (!isSignalMC){
         auto hggModelFiles = cfg["external_files"]["HggPhoID_model"].as<std::map<std::string, std::string>>();
-        hggReader[0].Init(hggModelFiles["EB"]);
+        // hggReader[0].Init(hggModelFiles["EB"]);
+        hggReader[0] = std::make_unique<TMVASafeReader>(hggModelFiles["EB"], nthreads);
         hggvals_EB = {
             "phoSCRawE",
             "phoR9Full5x5",
@@ -382,7 +386,8 @@ bool xAna(std::string inpath, std::string outpath, int iset){
         };
         std::string hggvals_EB_str = ba::join(hggvals_EB, ", ");
 
-        hggReader[1].Init(hggModelFiles["EE"]);
+        // hggReader[1].Init(hggModelFiles["EE"]);
+        hggReader[1] = std::make_unique<TMVASafeReader>(hggModelFiles["EE"], nthreads);
         hggvals_EE = {
             "phoSCRawE",
             "phoR9Full5x5",
@@ -400,26 +405,39 @@ bool xAna(std::string inpath, std::string outpath, int iset){
             "phoESEnToRawE"
         };
         std::string hggvals_EE_str = ba::join(hggvals_EE, ", ");
-        mf = mf.Define("phoRho",            "ROOT::RVec<float> v(nPho, rho); return v;")
-               .Define("phoCorrR9Full5x5",  "phoR9Full5x5")     
-               .Define("phoMVAEBVals",      Form("MakeMVAVals<%d, float>(%s)", (int)hggvals_EB.size(), hggvals_EB_str.c_str()))
-               .Define("phoMVAEEVals",      Form("MakeMVAVals<%d, float>(%s)", (int)hggvals_EE.size(), hggvals_EE_str.c_str()))
-               .Define("phoCorrHggIDMVA",   [&](const ROOT::RVec<float>& phoSCEta,
-                                                const ROOT::RVec<std::vector<float>>& phoMVAEBVals,
-                                                const ROOT::RVec<std::vector<float>>& phoMVAEEVals){
-                                                    ROOT::RVec<float> mva(phoSCEta.size());
-                                                    for (size_t i = 0; i < phoSCEta.size(); i++){
-                                                        float raw_mva;
-                                                        if (fabs(phoSCEta[i]) < 1.479)
-                                                            raw_mva = hggReader[0].Compute(phoMVAEBVals[i])[0];
-                                                        else
-                                                            raw_mva = hggReader[1].Compute(phoMVAEEVals[i])[0];
+        mf = mf.Define("phoRho",                "ROOT::RVec<float> v(nPho, rho); return v;")
+               .Define("phoCorrR9Full5x5",      "phoR9Full5x5")     
+               .Define("phoMVAEBVals",          Form("MakeMVAVals<%d, float>(%s)", (int)hggvals_EB.size(), hggvals_EB_str.c_str()))
+               .Define("phoMVAEEVals",          Form("MakeMVAVals<%d, float>(%s)", (int)hggvals_EE.size(), hggvals_EE_str.c_str()))
+            //    .Define("phoCorrHggIDMVA",   [&](const ROOT::RVec<float>& phoSCEta,
+            //                                     const ROOT::RVec<std::vector<float>>& phoMVAEBVals,
+            //                                     const ROOT::RVec<std::vector<float>>& phoMVAEEVals){
+            //                                         ROOT::RVec<float> mva(phoSCEta.size());
+            //                                         for (size_t i = 0; i < phoSCEta.size(); i++){
+            //                                             float raw_mva;
+            //                                             if (fabs(phoSCEta[i]) < 1.479)
+            //                                                 raw_mva = hggReader[0].Compute(phoMVAEBVals[i])[0];
+            //                                             else
+            //                                                 raw_mva = hggReader[1].Compute(phoMVAEEVals[i])[0];
 
-                                                        // convert to the MVA score between -1 and 1
-                                                        mva[i] = 2.0 / (1.0 + TMath::Exp(-2.0 * raw_mva)) - 1;
-                                                    }
-                                                    return mva;
-                                                }, {"phoSCEta", "phoMVAEBVals", "phoMVAEEVals"}); 
+            //                                             // convert to the MVA score between -1 and 1
+            //                                             mva[i] = 2.0 / (1.0 + TMath::Exp(-2.0 * raw_mva)) - 1;
+            //                                         }
+            //                                         return mva;
+            //                                     }, {"phoSCEta", "phoMVAEBVals", "phoMVAEEVals"}); 
+                .DefineSlot("phoCorrHggIDMVA",  [&](unsigned int slot,
+                                                    const ROOT::RVec<float>& phoSCEta,
+                                                    const ROOT::RVec<std::vector<float>>& phoMVAEBVals,
+                                                    const ROOT::RVec<std::vector<float>>& phoMVAEEVals){
+                                                        ROOT::RVec<float> mva(phoSCEta.size());
+                                                        for (size_t i = 0; i < phoSCEta.size(); i++){
+                                                            if (fabs(phoSCEta[i]) < 1.479)
+                                                                mva[i] = hggReader[0]->Compute(phoMVAEBVals[i], slot)[0];
+                                                            else
+                                                                mva[i] = hggReader[1]->Compute(phoMVAEEVals[i], slot)[0];
+                                                        }
+                                                        return mva;
+                                                    }, {"phoSCEta", "phoMVAEBVals", "phoMVAEEVals"});
     }
     auto pf = mf.Define("isEBPho",                  "abs(phoSCEta) < 1.4442")
                 .Define("isEEPho",                  "abs(phoSCEta) > 1.566 && abs(phoSCEta) < 2.5")  

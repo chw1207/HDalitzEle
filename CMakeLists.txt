@@ -42,6 +42,7 @@ add_library(HDalitzEle
         src/PhoR9SSCorrection.cpp
         src/Categorizer.cpp
         src/Generator.cpp
+        src/TMVASafeReader.cpp
 )
 target_include_directories(HDalitzEle PUBLIC include)
 target_link_libraries(HDalitzEle
@@ -57,7 +58,7 @@ target_link_libraries(HDalitzEle
 
 if (NOT MAKE_DEVELOPE)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-    # script to perform the main HDalitz analysis
+    # script to perform the main HDalitz analysis 
     add_executable(ResolvedAnalysis src/ResolvedAnalysis.cpp)
     target_link_libraries(ResolvedAnalysis
         PRIVATE
@@ -66,6 +67,13 @@ if (NOT MAKE_DEVELOPE)
     # script to perform the main HDalitz analysis
     add_executable(MergedAnalysis src/MergedAnalysis.cpp)
     target_link_libraries(MergedAnalysis
+        PRIVATE
+            HDalitzEle
+    )
+
+    # script to perform the main HDalitz analysis (trigger study)
+    add_executable(MergedAnalysis_HLTstudy src/MergedAnalysis_HLTstudy.cpp)
+    target_link_libraries(MergedAnalysis_HLTstudy
         PRIVATE
             HDalitzEle
     )
