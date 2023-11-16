@@ -53,6 +53,7 @@ namespace ba = boost::algorithm;
 // global variables
 int range = -1;
 bool saveTrainTree = false;
+bool skipSS = false;
 
 std::string config_path;
 YAML::Node cfg;
@@ -104,7 +105,6 @@ std::map<std::string, std::string> allowed_variations = {
     {"JECDo",           " - jetJECUnc"},
 };
 std::vector<std::string> categories = {
-    "Merged-2Gsf-Loose",
     "Merged-2Gsf-VBF", 
     "Merged-2Gsf-BST", 
     "Merged-2Gsf-EBHR9", 
@@ -116,6 +116,7 @@ std::vector<std::string> scale_factors = { // required scale factors, if values 
     "MissHitsTrk",
     "MissHitsSubTrk",
     "ConvVetoTrk",
+    "ConvVetoSubTrk",
     "MergedEleID",
     "HggPreselForEle",
     "HggPreselForPho",
@@ -131,10 +132,11 @@ std::vector<std::string> scale_factors = { // required scale factors, if values 
 void ArgumentParser(int argc, char** argv){
     po::options_description desc{"Options"};
     desc.add_options()
-        ("help,h",                                      "Higgs Dalitz decay analysis script to select a merged elctron and a photon")
-        ("config,c",        po::value(&config_path),    "configuration file (required)")
-        ("range,r",         po::value(&range),          "maximal number of events to process; -1 means all; if specified MT will be turned off")
-        ("trainTreeOnly",   po::value(&saveTrainTree),  "produce the tree for ID training and regression (only for MC)");
+        ("help,h",                                            "Higgs Dalitz decay analysis script to select a merged elctron and a photon")
+        ("config,c",        po::value(&config_path),          "configuration file (required)")
+        ("range,r",         po::value(&range),                "maximal number of events to process; -1 means all; if specified MT will be turned off")
+        ("trainTreeOnly",   po::bool_switch(&saveTrainTree),  "produce the tree for ID training and regression only ? (only for signal MC)")
+        ("skipSS",          po::bool_switch(&skipSS),         "skip the shower shape correction? if yes, corrected files will not loaded (only for signal MC)");;
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -215,13 +217,13 @@ bool xAna(std::string inpath, std::string outpath, int iset){
     TString InDir = gSystem->GetDirName(InPathStr.Data());
     TString SSInDir = gSystem->GetDirName(InPathStr.Data());
     bool sspath_found = false;
-    if (isSignalMC){ // find the path containing shower shape corrections
+    if (isSignalMC && !skipSS){ // find the path containing shower shape corrections
         // eg: ntuple : "/data5/ggNtuples/V10_06_30_02/job_UL17_Dalitz_eeg_VBF_m130"
         //     sscorr : "/data5/ggNtuples/V10_06_30_02_sscorr/job_UL17_Dalitz_eeg_VBF_m130"
         TString tok;
         int position = 0;
         while (InDir.Tokenize(tok, position, "/")){
-            if (tok.Contains("V10")){
+            if (tok.Contains("V10")){ //! FIXEDME
                 SSInDir.ReplaceAll(tok, tok+"_sscorr");
                 break;
             }
@@ -291,9 +293,8 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                                                         .Define("HasIntPho",       gen::IsPhoIntConv, {"mcPID", "mcMomPID", "mcStatusFlag"})
                                                         .Filter("diLepMCMass < 60 && HasIntPho == 0", "mc preslections"))
                                 :  ROOT::RDF::AsRNode(df);
-                                       
 
-        if (saveTrainTree){
+        if (saveTrainTree && isSignalMC){
             // save the tree for training
             auto skimTree_path = cfg["skimTree_path"].as<std::vector<std::string>>();
             std::string direc = fs::path(skimTree_path[iset]).parent_path();
@@ -325,20 +326,18 @@ bool xAna(std::string inpath, std::string outpath, int iset){
             float puwei_down = puCalc[2].GetWeight(run, puTrue[0]);
             return puwei_down;
         };
-        auto af = (isSignalMC) ? nf.Filter("event % 2 == 1",  "analysis") : nf; // == 1 for analysis, == 0 for ID training and regression
+        auto af = (isSignalMC) ? nf.Filter("event % 2 == 1",  "analysis").Define("genwei", "(float) (genWeight/abs(genWeight))") 
+                               : nf.Define("genwei", "(float) (genWeight/abs(genWeight))"); // == 1 for analysis, == 0 for ID training and regression
         const float xs   = cfg["cross_section"].as<std::vector<float>>()[iset]; 
         const float lumi = cfg["luminosity"].as<float>();
-        auto pos = af.Filter("genWeight > 0",   "positive event").Count();
-        auto neg = af.Filter("genWeight <= 0",  "negative event").Count();
+        auto totalev = af.Sum("genwei");
 
         // define the weights in the dataframe
         printf(" [+] Weight calculation for analysis tree:\n");
-        const int totalev = pos.GetValue() - neg.GetValue();
-        mcwei = ((xs * lumi) / totalev);
-        printf("     - XS = %f fb, Luminosity = %f fb^-1, Nevents = %d \n", xs, lumi, totalev);
+        mcwei = ((xs * lumi) / totalev.GetValue());
+        printf("     - XS = %f fb, Luminosity = %f fb^-1, Nevents = %d \n", xs, lumi, (int)totalev.GetValue());
         printf("     - MC weight (XS * Luminosity / Nevents): %f \n", mcwei);
         df_analysis = af.Define("mcwei",            [&](){return mcwei;})
-                        .Define("genwei",           "if (genWeight > 0) return 1.; else return -1.;")
                         .Define("puwei",            get_pu,             {"run", "puTrue"})
                         .Define("puwei_up",         get_pu_up,          {"run", "puTrue"})
                         .Define("puwei_down",       get_pu_do,          {"run", "puTrue"});
@@ -346,14 +345,17 @@ bool xAna(std::string inpath, std::string outpath, int iset){
     else
         df_analysis = df_analysis.Define("weight", "(float) 1.");
 
-    // =======================================================//
-    //  minimum event filter (trigger, non zero gamma and e)  //
-    // =======================================================//
-    //! Note: do not apply DoublePhoHLT on MC (because L1 seed is not well simulated)
-    std::string DoublePhoHLT = (isMC) ? "true" : "((HLTPho >> 14) & 1) == 1";
+    //=======================================================//
+    // minimum event filter (trigger, non zero gamma and e)  //
+    //=======================================================//
+    //! Note: do not apply DiPho30HLT on MC (because L1 seed is not well simulated)
+    // https://github.com/cmkuo/ggAnalysis/blob/106X/ggNtuplizer/plugins/ggNtuplizer_globalEvent.cc#L364
+    // HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90_v
+    std::string DiPho30HLT     = (isMC) ? "true" 
+                                        : "((HLTPho >> 14) & 1) == 1";
     auto mf = df_analysis.Define("era",                 [&](){return era;})
-                         .Filter(DoublePhoHLT, "trigger cut")
-                         .Filter("isPVGood == 1", "Good Vtx")
+                         .Filter(DiPho30HLT, "trigger cut")
+                         .Filter("isPVGood == 1", "Good Vtx") // main pv should be good
                          .Filter("nEle > 0 && nPho > 0", "1 ele, 1 pho")
                          .Define("phoS4Full5x5",        "phoE2x2Full5x5/phoE5x5Full5x5")
                          .Define("phoESEnToRawE",       "(phoESEnP1+phoESEnP2)/phoSCRawE"); 
@@ -361,14 +363,15 @@ bool xAna(std::string inpath, std::string outpath, int iset){
     //=======================================================//
     //                  photon selections                    //
     //=======================================================//
-    // XGBReader hggReader[2]; // Hgg ID readers (only need for data) 
+    //* 1. Hgg preselection -> mimic diphoton trigger (phoSel::HggPresel)
+    //* 2. Hgg photon ID -> select prompt photon
+    //* 3. CSEV: veto the electron
     std::vector<std::unique_ptr<TMVASafeReader>> hggReader(2); // Hgg ID readers (only need for data or bkg mc) 
     std::vector<std::string> hggvals_EB;
     std::vector<std::string> hggvals_EE;
 
-    if (!isSignalMC){
+    if (!isSignalMC || skipSS){
         auto hggModelFiles = cfg["external_files"]["HggPhoID_model"].as<std::map<std::string, std::string>>();
-        // hggReader[0].Init(hggModelFiles["EB"]);
         hggReader[0] = std::make_unique<TMVASafeReader>(hggModelFiles["EB"], nthreads);
         hggvals_EB = {
             "phoSCRawE",
@@ -386,7 +389,6 @@ bool xAna(std::string inpath, std::string outpath, int iset){
         };
         std::string hggvals_EB_str = ba::join(hggvals_EB, ", ");
 
-        // hggReader[1].Init(hggModelFiles["EE"]);
         hggReader[1] = std::make_unique<TMVASafeReader>(hggModelFiles["EE"], nthreads);
         hggvals_EE = {
             "phoSCRawE",
@@ -409,23 +411,7 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                .Define("phoCorrR9Full5x5",      "phoR9Full5x5")     
                .Define("phoMVAEBVals",          Form("MakeMVAVals<%d, float>(%s)", (int)hggvals_EB.size(), hggvals_EB_str.c_str()))
                .Define("phoMVAEEVals",          Form("MakeMVAVals<%d, float>(%s)", (int)hggvals_EE.size(), hggvals_EE_str.c_str()))
-            //    .Define("phoCorrHggIDMVA",   [&](const ROOT::RVec<float>& phoSCEta,
-            //                                     const ROOT::RVec<std::vector<float>>& phoMVAEBVals,
-            //                                     const ROOT::RVec<std::vector<float>>& phoMVAEEVals){
-            //                                         ROOT::RVec<float> mva(phoSCEta.size());
-            //                                         for (size_t i = 0; i < phoSCEta.size(); i++){
-            //                                             float raw_mva;
-            //                                             if (fabs(phoSCEta[i]) < 1.479)
-            //                                                 raw_mva = hggReader[0].Compute(phoMVAEBVals[i])[0];
-            //                                             else
-            //                                                 raw_mva = hggReader[1].Compute(phoMVAEEVals[i])[0];
-
-            //                                             // convert to the MVA score between -1 and 1
-            //                                             mva[i] = 2.0 / (1.0 + TMath::Exp(-2.0 * raw_mva)) - 1;
-            //                                         }
-            //                                         return mva;
-            //                                     }, {"phoSCEta", "phoMVAEBVals", "phoMVAEEVals"}); 
-                .DefineSlot("phoCorrHggIDMVA",  [&](unsigned int slot,
+               .DefineSlot("phoCorrHggIDMVA",   [&](unsigned int slot,
                                                     const ROOT::RVec<float>& phoSCEta,
                                                     const ROOT::RVec<std::vector<float>>& phoMVAEBVals,
                                                     const ROOT::RVec<std::vector<float>>& phoMVAEEVals){
@@ -443,7 +429,7 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                 .Define("isEEPho",                  "abs(phoSCEta) > 1.566 && abs(phoSCEta) < 2.5")  
                 .Define("isHggPho",                 phoSel::HggPresel,  {"nPho", "rhoAll", "phoSCEta", "phoPFChIso", "phoPFPhoIso", "phoTrkIsoHollowConeDR03", "phoR9Full5x5", "phoEt", "phoSigmaIEtaIEtaFull5x5", "phoHoverE"})
                 .Define("isGoodPho",                "(isEBPho || isEEPho) && phoEleVeto == 1 && isHggPho && phoCorrHggIDMVA > -0.9")
-                .Filter("ROOT::VecOps::Sum(isGoodPho) > 0", "event with good pho")
+                .Filter("ROOT::VecOps::Sum(isGoodPho) > 0", "event with good pho") //! End of photon selection
                 .Define("phoIdx1",                  [ ](const ROOT::RVec<int>& isGoodPho,
                                                         const ROOT::RVec<float>& phoCalibEt){
                                                             // get the photon with highest et in good photons 
@@ -455,7 +441,7 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                 .Define("phoCorrHggIDMVA_Lead",     "phoCorrHggIDMVA[phoIdx1]")
                 .Define("phoEt_Lead",               "phoEt[phoIdx1]");
 
-    // systematic variations for photon et
+    // systematic variations for photon et and r9
     std::vector<std::string> pho_sys;
     std::vector<std::string> pho_sys_bra;
     std::string r9sys = "";
@@ -487,16 +473,18 @@ bool xAna(std::string inpath, std::string outpath, int iset){
     }
     pf = pf.Define("pho", "ROOT::Math::PtEtaPhiMVector v(phoCalibEt_Lead, phoEta[phoIdx1], phoPhi[phoIdx1], 0.); return v;");  
 
+
     //=======================================================//
     //                electron selections                    //
     //=======================================================//
     auto gf = gsf::DefineGSFColumns(pf); // create gsf tracks related columns
+    // gf.Display({"", "y"}, 128);
 
     // initialize the reader for merged electron ID
     XGBReader m2EBReader(cfg["external_files"]["mergedID_model"]["M2EB"].as<std::string>());
     XGBReader m2EEReader(cfg["external_files"]["mergedID_model"]["M2EE"].as<std::string>());
-    float m2EBWPLoose = cfg["external_files"]["mergedID_wp"]["M2EBLoose"].as<float>();
-    float m2EEWPLoose = cfg["external_files"]["mergedID_wp"]["M2EELoose"].as<float>();   
+    float m2EBWPTight = cfg["external_files"]["mergedID_wp"]["M2EBTight"].as<float>();
+    float m2EEWPTight = cfg["external_files"]["mergedID_wp"]["M2EETight"].as<float>();   
     std::vector<std::string> m2vals = {
         "eleRho",
         "eleSCEta",
@@ -528,7 +516,6 @@ bool xAna(std::string inpath, std::string outpath, int iset){
     auto fregression    = energy_correction["energy_reg"].as<std::vector<std::string>>();
     auto fscale         = energy_correction["resi_scale"].as<std::vector<std::string>>();
     auto fsmear         = energy_correction["resi_smear"].as<std::vector<std::string>>();
-
     XGBReader regEBReader(fregression[0]);
     XGBReader regEEReader(fregression[1]);
     std::vector<std::string> regVals_EB = {
@@ -569,15 +556,13 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                 .Define("eleNVtx",              "ROOT::RVec<float> v(nEle, nVtx); return v;")
                 .Define("eleESEnToRawE",        "(eleESEnP1 + eleESEnP2) / eleSCRawEn")
                 .Define("eleM2MVAVals",         Form("MakeMVAVals<%d, float>(%s)", (int)m2vals.size(),      m2vals_str.c_str()))
-                .Define("eleRegEBMVAVals",      Form("MakeMVAVals<%d, float>(%s)", (int)regVals_EB.size(),  regVals_EB_str.c_str()))
-                .Define("eleRegEEMVAVals",      Form("MakeMVAVals<%d, float>(%s)", (int)regVals_EB.size()+1,regVals_EE_str.c_str()))
                 .Define("eleM2IDMVAs",          [&](const ROOT::RVec<float>& eleSCEta,
-                                                    const ROOT::RVec<int>& nGsfMatchToReco,
+                                                    const ROOT::RVec<int>& eleSubTrkIdx,
                                                     const ROOT::RVec<std::vector<float>>& eleM2MVAVals){
                                                         ROOT::RVec<std::vector<float>> mvas;
                                                         for (size_t i = 0; i < eleSCEta.size(); i++){
                                                             std::vector<float> scores(3, -999);
-                                                            if (nGsfMatchToReco[i] > 1){
+                                                            if (eleSubTrkIdx[i] != -1){
                                                                 if (fabs(eleSCEta[i]) < 1.479)
                                                                     scores = m2EBReader.Compute(eleM2MVAVals[i]);
                                                                 else
@@ -586,27 +571,41 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                                                             mvas.emplace_back(scores);
                                                         }
                                                         return mvas;
-                                                    }, {"eleSCEta", "nGsfMatchToReco", "eleM2MVAVals"})
+                                                    }, {"eleSCEta", "eleSubTrkIdx", "eleM2MVAVals"})
                 .Define("isM2IDEle",            [&](const ROOT::RVec<float>& eleSCEta,
-                                                    const ROOT::RVec<int>& nGsfMatchToReco, 
+                                                    const ROOT::RVec<int>& eleSubTrkIdx, 
                                                     const ROOT::RVec<std::vector<float>>& eleM2IDMVAs){
                                                         ROOT::RVec<int> v(eleM2IDMVAs.size());
                                                         for (size_t i = 0; i < eleM2IDMVAs.size(); i++){
                                                             int class_with_max_score = TMath::LocMax(eleM2IDMVAs[i].size(), eleM2IDMVAs[i].data());
-                                                            float wp = (fabs(eleSCEta[i]) < 1.479) ? m2EBWPLoose : m2EEWPLoose;
-                                                            v[i] = (nGsfMatchToReco[i] > 1 && class_with_max_score == 0 && eleM2IDMVAs[i][0] > wp) ? 1 : 0;
+                                                            float wp = (fabs(eleSCEta[i]) < 1.479) ? m2EBWPTight : m2EEWPTight;
+                                                            v[i] = (eleSubTrkIdx[i] != -1 && class_with_max_score == 0 && eleM2IDMVAs[i][0] > wp) ? 1 : 0;
                                                         }
                                                         return v;
-                                                    }, {"eleSCEta", "nGsfMatchToReco", "eleM2IDMVAs"})
+                                                    }, {"eleSCEta", "eleSubTrkIdx", "eleM2IDMVAs"})
+                // .Define("isHEEPEle",            [ ](const ROOT::RVec<UShort_t>& eleIDbit){
+                //                                         auto v = ROOT::VecOps::Map(eleIDbit, [&](UShort_t idx){return (((eleIDbit[i] >> 4) & 1) == 1) ? (int) 1 : (int) 0; });
+                //                                         return v;
+                //                                     }, {"eleIDbit"})
+                .Define("isHggEle",             eleSel::HggPresel,          {"nEle", "eleSCEta", "eleSCPhi", "nPho", "rhoAll", "phoSCEta", "phoSCPhi", "phoPFChIso", "phoPFPhoIso", "phoTrkIsoHollowConeDR03", "phoR9Full5x5", "phoEt", "phoSigmaIEtaIEtaFull5x5", "phoHoverE"})
+                .Define("isPVTrk",              "(isEBEle && abs(eleD0) < 0.02 && abs(eleSubTrkD0) < 0.02 && abs(eleDz) < 0.1 && abs(eleSubTrkDz) < 0.1) || "
+                                                "(isEEEle && abs(eleD0) < 0.05 && abs(eleSubTrkD0) < 0.05 && abs(eleDz) < 0.2 && abs(eleSubTrkDz) < 0.2)")
+                .Define("isOppTrk",             "eleTrkCharge * eleSubTrkCharge < 0")
+                .Define("isNonCovTrk",          "eleConvVeto == 1 && eleSubTrkConvVeto == 1 && eleLostHits <= 1 && eleSubTrkLostHits <= 1")
+                .Define("isGoodM2Ele",          "(isEBEle || isEEEle) && isM2IDEle && isPVTrk && isNonCovTrk && isOppTrk && isHggEle")
+                .Filter("ROOT::VecOps::Sum(isGoodM2Ele) > 0", "event with good ele") //! End of electron selection
+
+                .Define("eleRegEBMVAVals",      Form("MakeMVAVals<%d, float>(%s)", (int)regVals_EB.size(),  regVals_EB_str.c_str())) // regression 
+                .Define("eleRegEEMVAVals",      Form("MakeMVAVals<%d, float>(%s)", (int)regVals_EB.size()+1,regVals_EE_str.c_str()))
                 .Define("eleHDALRegPt",         [&](const ROOT::RVec<float>& eleSCEta,
                                                     const ROOT::RVec<float>& elePt,
-                                                    const ROOT::RVec<int>& nGsfMatchToReco,
+                                                    const ROOT::RVec<int>& eleSubTrkIdx,
                                                     const ROOT::RVec<std::vector<float>>& eleRegEBMVAVals,
                                                     const ROOT::RVec<std::vector<float>>& eleRegEEMVAVals){
                                                         ROOT::RVec<float> pt(elePt.size());
                                                         for (size_t i = 0; i < elePt.size(); i++){
                                                             float regSF = 1.;
-                                                            if (nGsfMatchToReco[i] > 1){
+                                                            if (eleSubTrkIdx[i] != -1){
                                                                 if (fabs(eleSCEta[i]) < 1.479)
                                                                     regSF = regEBReader.Compute(eleRegEBMVAVals[i])[0];
                                                                 else
@@ -615,16 +614,7 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                                                             pt[i] = regSF * elePt[i];
                                                         }
                                                         return pt;
-                                                    }, {"eleSCEta", "elePt", "nGsfMatchToReco", "eleRegEBMVAVals", "eleRegEEMVAVals"})
-                // .Define("isHEEPEle",            [ ](const ROOT::RVec<UShort_t>& eleIDbit){
-                //                                         auto v = ROOT::VecOps::Map(eleIDbit, [&](UShort_t idx){return (((eleIDbit[i] >> 4) & 1) == 1) ? (int) 1 : (int) 0; });
-                //                                         return v;
-                //                                     }, {"eleIDbit"})
-                .Define("isHggEle",             eleSel::HggPresel,          {"nEle", "eleSCEta", "eleSCPhi", "nPho", "rhoAll", "phoSCEta", "phoSCPhi", "phoPFChIso", "phoPFPhoIso", "phoTrkIsoHollowConeDR03", "phoR9Full5x5", "phoEt", "phoSigmaIEtaIEtaFull5x5", "phoHoverE"})
-                .Define("isPVTrk",              "(isEBEle && abs(eleTrkD0) < 0.02 && abs(eleSubTrkD0) < 0.02 && abs(eleTrkDz) < 0.1 && abs(eleSubTrkDz) < 0.1) || (isEEEle && abs(eleTrkD0) < 0.05 && abs(eleSubTrkD0) < 0.05 && abs(eleTrkDz) < 0.2 && abs(eleSubTrkDz) < 0.2)")
-                .Define("isNonCovTrk",          "eleTrkMissHits < 1 && eleSubTrkMissHits < 1")
-                .Define("isGoodM2Ele",          "(isEBEle || isEEEle) && isM2IDEle && isHggEle && eleConvVeto == 1 && isPVTrk && isNonCovTrk")
-                .Filter("ROOT::VecOps::Sum(isGoodM2Ele) > 0", "event with good ele");
+                                                    }, {"eleSCEta", "elePt", "eleSubTrkIdx", "eleRegEBMVAVals", "eleRegEEMVAVals"});
 
     auto ef_scale = calib.GetScaleRDF(ef, isMC, "eleHDALRegPt", "eleSCEta", "eleHDALScalePt");
     auto ef_smear = calib.GetSmearRDF(ef_scale, isMC, "eleHDALScalePt", "eleSCEta", "eleHDALCalibPt");
@@ -698,9 +688,9 @@ bool xAna(std::string inpath, std::string outpath, int iset){
     //=======================================================//
     auto kf = ef_calib.Define("H",                "ele1 + pho")
                       .Filter("TMath::Max(phoCalibEt_Lead, eleHDALCalibPt_Lead) > 35 && TMath::Min(phoCalibEt_Lead, eleHDALCalibPt_Lead) > 25", "trigger threshold")
-                      .Filter("(gsf1+gsf2).M() < 50", "Mgg < 50 GeV")
-                      .Filter("(gsf1+gsf2).M() > 11 || (gsf1+gsf2).M() < 8", "reject Upsilon")
-                      .Filter("(gsf1+gsf2).M() > 3.5 || (gsf1+gsf2).M() < 2.5", "reject Jpsi")
+                      .Filter("ele1.M() < 50", "Mee < 50 GeV")
+                      .Filter("ele1.M() > 11  || ele1.M() < 8", "reject Upsilon")
+                      .Filter("ele1.M() > 3.5 || ele1.M() < 2.5", "reject Jpsi")
                       .Filter("(gsf1.Pt() + gsf2.Pt()) > 44", "gsfPtSum > 44 GeV")
                       .Filter("(ele1.Pt()/H.M()) > 0.3 && (pho.Pt()/H.M()) > 0.3", "pt mass ratio cut")
                       .Filter("ROOT::VecOps::DeltaR(ele1.Eta(), pho.Eta(), ele1.Phi(), pho.Phi()) > 1", "dR cut")
@@ -710,7 +700,7 @@ bool xAna(std::string inpath, std::string outpath, int iset){
     //=======================================================//
     //                      categorization                   //
     //=======================================================//
-    // DiJet tagged (VBF tagged) -> events with two jets passing:
+    // DiJet tagged (VBF tagged) -> events with two jets passing: defined in cat::VBFtag
     //*     VBF: Mass(jet1, jet2) > 500
     //*     1) Loose Jet ID, jetPt > 30, |jetEta| < 4.7 (per jet sel)
     //*     2) dR(jet, leps) > 0.4, dR(jet, pho) > 0.4 (per jet sel)
@@ -718,8 +708,7 @@ bool xAna(std::string inpath, std::string outpath, int iset){
     //*     4) Eta(eeg) - ((jetEta1 + jetEta2) * 0.5) < 2.5 (zeppen)
     //*     5) |dPhi(eeg, jj)| > 2.4
     // Boosted tagged: pT(eeg) > 60 GeV
-    // Untagged: EBHR9, EBLR9, EE
-    
+    // Untagged: EBHR9, EBLR9, EE    
     if (isMC){
         kf = kf.Define("jetSmearPt", "jetP4Smear * jetPt")
                .Define("jetSmearEn", "jetP4Smear * jetEn");
@@ -763,8 +752,6 @@ bool xAna(std::string inpath, std::string outpath, int iset){
         //                                 }, {"jetPt", "jetEn"}, {"test"}, "jet")
     }
     
-    float m2EBWPTight = cfg["external_files"]["mergedID_wp"]["M2EBTight"].as<float>();
-    float m2EEWPTight = cfg["external_files"]["mergedID_wp"]["M2EETight"].as<float>();  
     auto cf = kf.Define("dR_ele1_jet",          cat::dRVector,             {"ele1", "jetEta", "jetPhi"})
                 .Define("dR_pho_jet",           cat::dRVector,             {"pho", "jetEta", "jetPhi"})
                 .Define("passJetID",            cat::CutBasedJet,          {"nJet", "jetEta", "jetNHF", "jetNEF", "jetNNP", "jetNCH", "jetCHF", "jetCEF", "jetMUF", "era"})
@@ -777,22 +764,19 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                 .Define("isEBHR9",              "abs(phoSCEta[phoIdx1]) < 1.4442 && phoCorrR9Full5x5_Lead > 0.96")
                 .Define("isEBLR9",              "abs(phoSCEta[phoIdx1]) < 1.4442 && phoCorrR9Full5x5_Lead <= 0.96")
                 .Define("isEE",                 "abs(phoSCEta[phoIdx1]) > 1.566  && abs(phoSCEta[phoIdx1]) < 2.5")
-                .Define("isWPTight",            Form("(isEBEle[eleIdx1] && eleM2IDMVAs[eleIdx1][0] > %f) || (isEEEle[eleIdx1] && eleM2IDMVAs[eleIdx1][0] > %f)", m2EBWPTight, m2EEWPTight))
-                .Define("category",             [&](const bool isWPTight,
-                                                    const bool isVbf,
+                .Define("category",             [&](const bool isVbf,
                                                     const bool isBst,
                                                     const bool isEBHR9,
                                                     const bool isEBLR9,
                                                     const bool isEE){
                                                         int cat = 0;
-                                                        if (!isWPTight)     return cat = 1; // tag the events with relatively low quality of M2
-                                                        else if (isVbf)     return cat = 2;
-                                                        else if (isBst)     return cat = 3;
-                                                        else if (isEBHR9)   return cat = 4;
-                                                        else if (isEBLR9)   return cat = 5;
-                                                        else if (isEE)      return cat = 6;
+                                                        if (isVbf)                       return cat = 1;
+                                                        else if (isBst)                  return cat = 2;
+                                                        else if (isEBHR9)                return cat = 3;
+                                                        else if (isEBLR9)                return cat = 4;
+                                                        else if (isEE)                   return cat = 5;
                                                         else throw std::runtime_error("No proper category for M2");
-                                                    }, {"isWPTight", "isVbf", "isBst", "isEBHR9", "isEBLR9", "isEE"})
+                                                    }, {"isVbf", "isBst", "isEBHR9", "isEBLR9", "isEE"})
                 .Define("category_str",         [&](int category){return categories.at(category-1);},      {"category"});
 
     //=======================================================//
@@ -950,24 +934,12 @@ bool xAna(std::string inpath, std::string outpath, int iset){
         for (auto it = Weights_str.begin(); it != Weights_str.end(); it++){
             for (size_t i = 0; i < SFs.size(); i++){
                 std::string wei_str = Form(" * %s", SFs[i].c_str());
-                if (it->first == "HLTUp"   && (ba::contains(SFs[i], "DiPhoHLTSeedSF") || ba::contains(SFs[i], "DiPhoHLTUnSeedSF")))
-                    wei_str = Form(" * %s", SFsUp[i].c_str());
-                
-                if (it->first == "HLTDo"   && (ba::contains(SFs[i], "DiPhoHLTSeedSF") || ba::contains(SFs[i], "DiPhoHLTUnSeedSF")))
-                    wei_str = Form(" * %s", SFsDo[i].c_str());
-                
-                if (it->first == "EleIDUp" && (ba::contains(SFs[i], "Ele")  || ba::contains(SFs[i], "Trk")))
-                    wei_str = Form(" * %s", SFsUp[i].c_str());
-                
-                if (it->first == "EleIDDo" && (ba::contains(SFs[i], "Ele")  || ba::contains(SFs[i], "Trk")))
-                    wei_str = Form(" * %s", SFsDo[i].c_str());
-                
-                if (it->first == "PhoIDUp" && (ba::contains(SFs[i], "Pho")  && !ba::contains(SFs[i], "HLT")))
-                    wei_str = Form(" * %s", SFsUp[i].c_str());
-                
-                if (it->first == "PhoIDDo" && (ba::contains(SFs[i], "Pho")  && !ba::contains(SFs[i], "HLT")))
-                    wei_str = Form(" * %s", SFsDo[i].c_str());
-                
+                if (it->first == "HLTUp"   && (ba::contains(SFs[i], "DiPhoHLTSeedSF") || ba::contains(SFs[i], "DiPhoHLTUnSeedSF"))) wei_str = Form(" * %s", SFsUp[i].c_str());
+                if (it->first == "HLTDo"   && (ba::contains(SFs[i], "DiPhoHLTSeedSF") || ba::contains(SFs[i], "DiPhoHLTUnSeedSF"))) wei_str = Form(" * %s", SFsDo[i].c_str());
+                if (it->first == "EleIDUp" && (ba::contains(SFs[i], "Ele") || ba::contains(SFs[i], "Trk")))                         wei_str = Form(" * %s", SFsUp[i].c_str());
+                if (it->first == "EleIDDo" && (ba::contains(SFs[i], "Ele") || ba::contains(SFs[i], "Trk")))                         wei_str = Form(" * %s", SFsDo[i].c_str());
+                if (it->first == "PhoIDUp" && (ba::contains(SFs[i], "Pho") && !ba::contains(SFs[i], "HLT")))                        wei_str = Form(" * %s", SFsUp[i].c_str());
+                if (it->first == "PhoIDDo" && (ba::contains(SFs[i], "Pho") && !ba::contains(SFs[i], "HLT")))                        wei_str = Form(" * %s", SFsDo[i].c_str());
                 it->second += wei_str;
             }
         }
@@ -1034,6 +1006,7 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                        .Define("mcMomEtaForEle_Lead",       "if (genIdx_reco1 != -1) return mcMomEta[genIdx_reco1]; else return (float) 0;")
                        .Define("mcMomPhiForEle_Lead",       "if (genIdx_reco1 != -1) return mcMomPhi[genIdx_reco1]; else return (float) 0;")
                        .Define("mcGMomPIDForEle_Lead",      "if (genIdx_reco1 != -1) return mcGMomPID[genIdx_reco1]; else return (int) 0;")
+                       .Define("mcStatusFlagForEle_Lead",   "if (genIdx_reco1 != -1) return mcStatusFlag[genIdx_reco1]; else return (int) -99999999999;")
 
                        // gen photon 
                        .Define("genPhoIdx",                 gen::FindGenParticle,  {"pho", "nMC", "mcEta", "mcPhi", "mcPt"})
@@ -1047,7 +1020,8 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                        .Define("mcMomMassForPho_Lead",      "if (genPhoIdx != -1) return mcMomMass[genPhoIdx]; else return (float) 0;")
                        .Define("mcMomEtaForPho_Lead",       "if (genPhoIdx != -1) return mcMomEta[genPhoIdx]; else return (float) 0;")
                        .Define("mcMomPhiForPho_Lead",       "if (genPhoIdx != -1) return mcMomPhi[genPhoIdx]; else return (float) 0;")
-                       .Define("mcGMomPIDForPho_Lead",      "if (genPhoIdx != -1) return mcGMomPID[genPhoIdx]; else return (int) 0;");
+                       .Define("mcGMomPIDForPho_Lead",      "if (genPhoIdx != -1) return mcGMomPID[genPhoIdx]; else return (int) 0;")
+                       .Define("mcStatusFlagForPho_Lead",   "if (genPhoIdx != -1) return mcStatusFlag[genPhoIdx]; else return (int) -99999999999;");
     }
 
     //=======================================================//
@@ -1097,12 +1071,16 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                            .Define("eleTrkCharge_Lead",             "eleTrkCharge[eleIdx1]")
                            .Define("eleTrkLayers_Lead",             "eleTrkLayers[eleIdx1]")
                            .Define("eleTrkMissHits_Lead",           "eleTrkMissHits[eleIdx1]")
+                           .Define("eleTrkLostHits_Lead",           "eleTrkLostHits[eleIdx1]")
+                           .Define("eleTrkPixelHits_Lead",          "eleTrkPixelHits[eleIdx1]")
                            .Define("eleTrkD0_Lead",                 "eleTrkD0[eleIdx1]")
                            .Define("eleTrkDz_Lead",                 "eleTrkDz[eleIdx1]")
                            .Define("eleSubTrkPhi_Lead",             "eleSubTrkPhi[eleIdx1]")
                            .Define("eleSubTrkCharge_Lead",          "eleSubTrkCharge[eleIdx1]")
                            .Define("eleSubTrkLayers_Lead",          "eleSubTrkLayers[eleIdx1]")
                            .Define("eleSubTrkMissHits_Lead",        "eleSubTrkMissHits[eleIdx1]")
+                           .Define("eleSubTrkLostHits_Lead",        "eleSubTrkLostHits[eleIdx1]")
+                           .Define("eleSubTrkPixelHits_Lead",       "eleSubTrkPixelHits[eleIdx1]")
                            .Define("eleSubTrkD0_Lead",              "eleSubTrkD0[eleIdx1]")
                            .Define("eleSubTrkDz_Lead",              "eleSubTrkDz[eleIdx1]")
                            .Define("eleGsfDeltaR_Lead",             "gsfDeltaR[eleIdx1]")
@@ -1191,7 +1169,7 @@ bool xAna(std::string inpath, std::string outpath, int iset){
     }
 
     std::vector<std::string> defColNames = df_Final.GetDefinedColumnNames();
-    std::vector<std::string> Cols = {"category", "category_str", "run", "event", "rho", "nVtx", "CMS_higgs_mass"};
+    std::vector<std::string> Cols = {"category", "category_str", "run", "event", "rho", "nVtx", "lumis", "CMS_higgs_mass"};
     if (isSignalMC)
         Cols.emplace_back("isTrueM2");
     std::string p4Type = "ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> >";
@@ -1211,7 +1189,7 @@ bool xAna(std::string inpath, std::string outpath, int iset){
     if (!fs::exists(outDir.Data())){
         int status = gSystem->mkdir(outDir.Data(), true);
         if (status == -1)
-            throw::std::runtime_error(Form("Fail to create directory: %s", outDir.Data()));
+            throw std::runtime_error(Form("Fail to create directory: %s", outDir.Data()));
     }
     df_Final.Snapshot("miniTree", outpath.c_str(), Cols);    
 
