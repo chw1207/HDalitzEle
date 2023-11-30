@@ -1,0 +1,256 @@
+era: "UL2017"
+isMC: true
+luminosity: 41.48
+threads: 20
+
+# configuration for MergedAnalysis.cpp
+############################################################################################################
+#! NOTE: number of "ntuple_path",  "skimTree_path",  "miniTree_path", and "cross_section" should be the same.
+ntuple_path:
+  - "/data5/ggNtuples/V10_06_30_02/job_UL17_Dalitz_eeg_m125/*.root"
+  - "/data5/ggNtuples/V10_06_30_02/job_UL17_Dalitz_eeg_VBF_m125/*.root"
+  - "/data5/ggNtuples/V10_06_30_02/job_UL17_Dalitz_eeg_WH_m125/*.root"
+  - "/data5/ggNtuples/V10_06_30_02/job_UL17_Dalitz_eeg_ZH_m125/*.root"
+  - "/data5/ggNtuples/V10_06_30_02/job_UL17_Dalitz_eeg_ttH_m125/*.root"
+  - "/data5/ggNtuples/V10_06_30_02/job_UL17_Dalitz_eeg_bbH_m125/*.root"
+
+  - "/data5/ggNtuples/V10_06_30_02/job_UL17_Dalitz_eeg_m120/*.root"
+  - "/data5/ggNtuples/V10_06_30_02/job_UL17_Dalitz_eeg_VBF_m120/*.root"
+  - "/data5/ggNtuples/V10_06_30_02/job_UL17_Dalitz_eeg_WH_m120/*.root"
+  - "/data5/ggNtuples/V10_06_30_02/job_UL17_Dalitz_eeg_ZH_m120/*.root"
+  - "/data5/ggNtuples/V10_06_30_02/job_UL17_Dalitz_eeg_ttH_m120/*.root"
+  - "/data5/ggNtuples/V10_06_30_02/job_UL17_Dalitz_eeg_bbH_m120/*.root"
+
+  - "/data5/ggNtuples/V10_06_30_02/job_UL17_Dalitz_eeg_m130/*.root"
+  - "/data5/ggNtuples/V10_06_30_02/job_UL17_Dalitz_eeg_VBF_m130/*.root"
+  - "/data5/ggNtuples/V10_06_30_02/job_UL17_Dalitz_eeg_WH_m130/*.root"
+  - "/data5/ggNtuples/V10_06_30_02/job_UL17_Dalitz_eeg_ZH_m130/*.root"
+  - "/data5/ggNtuples/V10_06_30_02/job_UL17_Dalitz_eeg_ttH_m130/*.root"
+  - "/data5/ggNtuples/V10_06_30_02/job_UL17_Dalitz_eeg_bbH_m130/*.root"
+
+# skimTree_path:
+  # - "/data4/chenghan/electron/skimTree/20230522/job_UL17_Dalitz_eeg_VBF_m125.root"
+  # - "/data4/chenghan/electron/skimTree/20230522/job_UL17_Dalitz_eeg_WH_m125.root"
+  # - "/data4/chenghan/electron/skimTree/20230522/job_UL17_Dalitz_eeg_ZH_m125.root"
+  # - "/data4/chenghan/electron/skimTree/20230522/job_UL17_Dalitz_eeg_ttH_m125.root"
+  # - "/data4/chenghan/electron/skimTree/20230522/job_UL17_Dalitz_eeg_bbH_m125.root"
+
+  # - "/data4/chenghan/electron/skimTree/20230214/job_UL17_Dalitz_eeg_m120.root"
+  # - "/data4/chenghan/electron/skimTree/20230214/job_UL17_Dalitz_eeg_VBF_m120.root"
+  # - "/data4/chenghan/electron/skimTree/20230214/job_UL17_Dalitz_eeg_WH_m120.root"
+  # - "/data4/chenghan/electron/skimTree/20230214/job_UL17_Dalitz_eeg_ZH_m120.root"
+  # - "/data4/chenghan/electron/skimTree/20230214/job_UL17_Dalitz_eeg_ttH_m120.root"
+  # - "/data4/chenghan/electron/skimTree/20230214/job_UL17_Dalitz_eeg_bbH_m120.root"
+
+  # - "/data4/chenghan/electron/skimTree/20230214/job_UL17_Dalitz_eeg_m130.root"
+  # - "/data4/chenghan/electron/skimTree/20230214/job_UL17_Dalitz_eeg_VBF_m130.root"
+  # - "/data4/chenghan/electron/skimTree/20230214/job_UL17_Dalitz_eeg_WH_m130.root"
+  # - "/data4/chenghan/electron/skimTree/20230214/job_UL17_Dalitz_eeg_ZH_m130.root"
+  # - "/data4/chenghan/electron/skimTree/20230214/job_UL17_Dalitz_eeg_ttH_m130.root"
+  # - "/data4/chenghan/electron/skimTree/20230214/job_UL17_Dalitz_eeg_bbH_m130.root"
+
+miniTree_path:
+  - "/data4/chenghan/electron/miniTree_HGGCheck_WPLoose_merged_HLT/UL2017/miniTree_HDalitz_ggF_eeg_125_UL2017.root"
+  - "/data4/chenghan/electron/miniTree_HGGCheck_WPLoose_merged_HLT/UL2017/miniTree_HDalitz_VBF_eeg_125_UL2017.root"
+  - "/data4/chenghan/electron/miniTree_HGGCheck_WPLoose_merged_HLT/UL2017/miniTree_HDalitz_WH_eeg_125_UL2017.root"
+  - "/data4/chenghan/electron/miniTree_HGGCheck_WPLoose_merged_HLT/UL2017/miniTree_HDalitz_ZH_eeg_125_UL2017.root"
+  - "/data4/chenghan/electron/miniTree_HGGCheck_WPLoose_merged_HLT/UL2017/miniTree_HDalitz_ttH_eeg_125_UL2017.root"
+  - "/data4/chenghan/electron/miniTree_HGGCheck_WPLoose_merged_HLT/UL2017/miniTree_HDalitz_bbH_eeg_125_UL2017.root"
+
+  - "/data4/chenghan/electron/miniTree_HGGCheck_WPLoose_merged_HLT/UL2017/miniTree_HDalitz_ggF_eeg_120_UL2017.root"
+  - "/data4/chenghan/electron/miniTree_HGGCheck_WPLoose_merged_HLT/UL2017/miniTree_HDalitz_VBF_eeg_120_UL2017.root"
+  - "/data4/chenghan/electron/miniTree_HGGCheck_WPLoose_merged_HLT/UL2017/miniTree_HDalitz_WH_eeg_120_UL2017.root"
+  - "/data4/chenghan/electron/miniTree_HGGCheck_WPLoose_merged_HLT/UL2017/miniTree_HDalitz_ZH_eeg_120_UL2017.root"
+  - "/data4/chenghan/electron/miniTree_HGGCheck_WPLoose_merged_HLT/UL2017/miniTree_HDalitz_ttH_eeg_120_UL2017.root"
+  - "/data4/chenghan/electron/miniTree_HGGCheck_WPLoose_merged_HLT/UL2017/miniTree_HDalitz_bbH_eeg_120_UL2017.root"
+
+  - "/data4/chenghan/electron/miniTree_HGGCheck_WPLoose_merged_HLT/UL2017/miniTree_HDalitz_ggF_eeg_130_UL2017.root"
+  - "/data4/chenghan/electron/miniTree_HGGCheck_WPLoose_merged_HLT/UL2017/miniTree_HDalitz_VBF_eeg_130_UL2017.root"
+  - "/data4/chenghan/electron/miniTree_HGGCheck_WPLoose_merged_HLT/UL2017/miniTree_HDalitz_WH_eeg_130_UL2017.root"
+  - "/data4/chenghan/electron/miniTree_HGGCheck_WPLoose_merged_HLT/UL2017/miniTree_HDalitz_ZH_eeg_130_UL2017.root"
+  - "/data4/chenghan/electron/miniTree_HGGCheck_WPLoose_merged_HLT/UL2017/miniTree_HDalitz_ttH_eeg_130_UL2017.root"
+  - "/data4/chenghan/electron/miniTree_HGGCheck_WPLoose_merged_HLT/UL2017/miniTree_HDalitz_bbH_eeg_130_UL2017.root"
+
+# SM Higgs XS: https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt13TeV
+cross_section:
+  - 3.9301220  # (48.58  * 1000) * 8.09E-5
+  - 0.30596380 # (3.782  * 1000) * 8.09E-5
+  - 0.11107570 # (1.373  * 1000) * 8.09E-5
+  - 0.07150751 # (0.8839 * 1000) * 8.09E-5
+  - 0.04102439 # (0.5071 * 1000) * 8.09E-5
+  - 0.03947920 # (0.4880 * 1000) * 8.09E-5
+
+  - 4.1097140  # (52.22  * 1000) * 7.87E-5
+  - 0.30968450 # (3.935  * 1000) * 7.87E-5
+  - 0.12316550 # (1.565  * 1000) * 7.87E-5
+  - 0.07821993 # (0.9939 * 1000) * 7.87E-5
+  - 0.04483539 # (0.5697 * 1000) * 7.87E-5
+  - 0.04355258 # (0.5534 * 1000) * 7.87E-5
+
+  - 3.6338620  # (45.31  * 1000) * 8.02E-5
+  - 0.29168740 # (3.637  * 1000) * 8.02E-5
+  - 0.09696180 # (1.209  * 1000) * 8.02E-5
+  - 0.06334998 # (0.7899 * 1000) * 8.02E-5
+  - 0.03640278 # (0.4539 * 1000) * 8.02E-5
+  - 0.03451808 # (0.4304 * 1000) * 8.02E-5
+
+# https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaMiniAODV2#Applying_the_Energy_Scale_and_sm
+# "PhiUp" and "PhiDown" are currently identical so only "RhoUp", "RhoDown" and "PhiUp" are needed for smearing
+# Applying the systematic variations only to the MC
+# comment the variation to skip the systematic variations
+# jet energy variations are only needed for VBF category
+variation:
+  - "JERUp"
+  - "JERDo"
+  - "JECUp"
+  - "JECDo"
+  - "PhoNoR9Corr"
+  - "PhoScaleStatUp"
+  - "PhoScaleSystUp"
+  - "PhoScaleGainUp"
+  - "PhoScaleStatDo"
+  - "PhoScaleSystDo"
+  - "PhoScaleGainDo"
+  - "PhoSigmaPhiUp"
+  - "PhoSigmaRhoUp"
+  - "PhoSigmaRhoDo"
+  - "EleHDALScaleUp"
+  - "EleHDALScaleDo"
+  - "EleHDALSmearUp"
+  - "EleHDALSmearDo"
+
+external_files:
+  mergedID_model: # XGBReader (xgboost/c_api.h)
+    M2EB: "/data4/chenghan/external/MergedID/Output_Merged2GsfID_hyperTune_FullRun2ULWPPtWeiFinal_EB/XGB/XGB_modelXGB.txt"
+    M2EE: "/data4/chenghan/external/MergedID/Output_Merged2GsfID_hyperTune_FullRun2ULWPPtWeiFinal_EE/XGB/XGB_modelXGB.txt"
+    # M1EB: "/data4/chenghan/external/MergedID/Output_Merged1GsfID_hyperTune_FullRun2ULWPPtWeiFinal_EB/XGB/XGB_modelXGB.txt"
+    # M1EE: "/data4/chenghan/external/MergedID/Output_Merged1GsfID_hyperTune_FullRun2ULWPPtWeiFinal_EE/XGB/XGB_modelXGB.txt"
+  mergedID_wp:
+    M2EBTight: 0.810 # 70% sig eff 
+    M2EETight: 0.720 # 55% sig eff 
+    M2EBLoose: 0.4283
+    M2EELoose: 0.4479
+    # M1EB: 0.4390
+    # M1EE: 0.4381
+
+  mergedReg_model: # XGBReader (xgboost/c_api.h)
+    M2EB: "/data4/chenghan/external/RegressionFinal/XGBRegression_NoRobustScaling_EGMRegTarget_EB/XGB_Regression.txt"
+    M2EE: "/data4/chenghan/external/RegressionFinal/XGBRegression_NoRobustScaling_EGMRegTarget_EE/XGB_Regression.txt"
+
+  energy_correction: 
+    energy_reg: # EnCalibrater and XGBReader (xgboost/c_api.h)
+      - "/data4/chenghan/external/RegressionFinal/XGBRegression_NoRobustScaling_EGMRegTarget_EB/XGB_Regression.txt"
+      - "/data4/chenghan/external/RegressionFinal/XGBRegression_NoRobustScaling_EGMRegTarget_EE/XGB_Regression.txt"
+    resi_scale: 
+      - "/data4/chenghan/external/Correction/EnScale_xgb_final_EB.root"
+      - "/data4/chenghan/external/Correction/EnScale_xgb_final_EE.root"
+    resi_smear: 
+      - "/data4/chenghan/external/Correction/EnSmear_xgb_final_EB.root"
+      - "/data4/chenghan/external/Correction/EnSmear_xgb_final_EE.root"
+
+  HggPhoID_model: # XGBReader (xgboost/c_api.h)
+    EB: "../external/tmva-to-xgboost/HggPhoID/PhoID_barrel_UL2017_GJetMC_SATrain_nTree2k_LR_0p1_13052020_BDTG.weights.json"
+    EE: "../external/tmva-to-xgboost/HggPhoID/PhoID_endcap_UL2017_GJetMC_SATrain_nTree2k_LR_0p1_13052020_BDTG.weights.json"
+
+  pileup_rewei: # PUWeightCalculator
+    nominal:  "/data4/cmkuo/tools/pileup/UL2017/PUreweight/PUreweight_13TeV_2017_GoldenJSON_69200nb.root"
+    up:       "/data4/cmkuo/tools/pileup/UL2017/PUreweight/PUreweight_13TeV_2017_GoldenJSON_72383nb.root"
+    down:     "/data4/cmkuo/tools/pileup/UL2017/PUreweight/PUreweight_13TeV_2017_GoldenJSON_66016nb.root"
+
+  # https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018
+  # https://github.com/cms-analysis/flashgg/blob/dev_legacy_runII/Systematics/python/flashggDiPhotonSystematics2017_Legacy_cfi.py#L14-L24
+  scale_factors: # WeightHandler
+    RecoEleGt20: # greater than 20
+      file: "/data4/chenghan/external/ScaleFactor/RecoEleGt20/egammaEffi_ptAbove20.txt_EGM2D_UL2017.root"
+      hist: "EGamma_SF2D"
+    MissHitsTrk:
+      file: "/data4/chenghan/external/ScaleFactor/MissHits/UL2017/egammaEffi.txt_EGM2D.root"
+      hist: "EGamma_SF2D"
+    MissHitsSubTrk:
+      file: "/data4/chenghan/external/ScaleFactor/MissHits/UL2017/egammaEffi.txt_EGM2D.root"
+      hist: "EGamma_SF2D"
+    ConvVetoTrk:
+      file: "/data4/chenghan/external/ScaleFactor/ConvVeto/UL2017/egammaEffi.txt_EGM2D.root"
+      hist: "EGamma_SF2D"
+    MergedEleID: # note that this scale factors are measured in bins of abs(sceta) and pt 
+      file: "/data4/chenghan/external/ScaleFactor/MergedID/MergedIDSFs_combined.root"
+      hist: "hSF_2D"
+    # DiPhoHLTSeedForEle:
+    #   file: "/data4/chenghan/external/ScaleFactor/DiPhoHLT/UL2017-Seed/egammaEffi.txt_EGM2D.root"
+    #   hist: "EGamma_EffData2D"
+    # DiPhoHLTUnSeedForEle:
+    #   file: "/data4/chenghan/external/ScaleFactor/DiPhoHLT/UL2017/egammaEffi.txt_EGM2D.root"
+    #   hist: "EGamma_EffData2D"
+    # HggPreselForEle:
+    #   absEta: [0.0, 1.5, 6]
+    #   fullR9: [[0.0, 0.85, 999.], [0.0, 0.9, 999.]]
+    #   values: [[0.9961, 0.9981], [1.0054 , 1.0061]]
+    #   uncert: [[0.0307, 0.0057], [0.0129, 0.0018]]
+    # HggPreselForPho:
+    #   absEta: [0.0, 1.5, 6]
+    #   fullR9: [[0.0, 0.85, 999.], [0.0, 0.9, 999.]]
+    #   values: [[0.9961, 0.9981], [1.0054 , 1.0061]]
+    #   uncert: [[0.0307, 0.0057], [0.0129, 0.0018]]
+    HggPhoCSEV:
+      absEta: [0.0, 1.5, 6]
+      fullR9: [[0.0, 0.85, 999.], [0.0, 0.9, 999.]]
+      values: [[0.9838, 0.9913], [0.9777 , 0.9777]]
+      uncert: [[0.0024, 0.0009], [0.0180, 0.0026]]
+    HggPhoID:
+      absEta: [0.0, 1.5, 6]
+      fullR9: [[0.0, 0.85, 999.], [0.0, 0.9, 999.]]
+      values: [[1.0021, 1.0001], [1.0061 , 1.0016]]
+      uncert: [[0.0014, 0.0038], [0.0014, 0.0023]]
+    # DiPhoHLTSeedForPho:
+    #   absEta: [0.0, 1.5, 3]
+    #   fullR9: [[0.0, 0.56, 0.85, 999], [0.0, 0.85, 0.90, 999]]
+    #   pt:     [0, 35, 37, 40, 45, 50, 60, 70, 90, 99999999]
+    #   values: [
+    #     [ 
+    #       [0.5962935611, 0.7301764945, 0.7481329080, 0.7715837809, 0.7885084282, 0.8106800401, 0.8403040278, 0.8403394687, 0.9294116662], 
+    #       [0.8185203301, 0.9430487014, 0.9502315420, 0.9569881714, 0.9607761449, 0.9667723989, 0.9735556426, 0.9779985569, 0.9846204583], 
+    #       [0.8487571377, 0.9553428958, 0.9624070784, 0.9693638237, 0.9755313942, 0.9777963391, 0.9812161610, 0.9845542680, 0.9902588867]
+    #     ],
+    #     [ 
+    #       [0.6297968504, 0.8049372754, 0.8314952358, 0.8544229767, 0.8875746672, 0.9033407955, 0.9207605401, 0.9410420565, 0.9586907211],
+    #       [0.7816089799, 0.9601546944, 0.9728943976, 0.9787293111, 0.9836865868, 0.9845440645, 0.9863780801, 0.9913050524, 0.9969391106],
+    #       [0.7758811194, 0.9592830235, 0.9692856214, 0.9763703079, 0.9814613177, 0.9825431442, 0.9857720941, 0.9904181104, 0.9923572396]
+    #     ]]
+    #   uncert: [
+    #     [ 
+    #       [0.0042802276, 0.0027047543, 0.0022497019, 0.0026773882, 0.0034204121, 0.0151426244, 0.0186715085, 0.0226546537, 0.0267241583], 
+    #       [0.0018669979, 0.0010776168, 0.0010044933, 0.0010923803, 0.0010009792, 0.0020609352, 0.0019261782, 0.0014640275, 0.0013325485], 
+    #       [0.0091110904, 0.0023887880, 0.0029732333, 0.0010306645, 0.0010351271, 0.0021733865, 0.0046656885, 0.0010262855, 0.0010973696]
+    #     ],
+    #     [ 
+    #       [0.0026339183, 0.0026759022, 0.0021738261, 0.0015238071, 0.0028254297, 0.0081161238, 0.0071133392, 0.0075500652, 0.0063473795],
+    #       [0.0022876326, 0.0013852381, 0.0010225346, 0.0010733513, 0.0011665271, 0.0022443143, 0.0026256553, 0.0017879421, 0.0021466622],
+    #       [0.0026613486, 0.0022454963, 0.0010260476, 0.0010260476, 0.0010759694, 0.0015912280, 0.0015265344, 0.0010792083, 0.0036468351]
+    #     ]]
+
+    # DiPhoHLTUnSeedForPho:
+    #   absEta: [0.0, 1.5, 3]
+    #   fullR9: [[0.0, 0.56, 0.85, 999], [0.0, 0.85, 0.90, 999]]
+    #   pt:     [0, 28, 31, 35, 40, 45, 50, 60, 70, 90, 99999999]
+    #   values: [
+    #     [ 
+    #       [0.6155988939, 0.7165819087, 0.7381962831, 0.7671925006, 0.7999358222, 0.8254675016, 0.8297030540, 0.8451584417, 0.8522482004, 0.8871193652], 
+    #       [0.9028486970, 0.9739174387, 0.9756211698, 0.9756211698, 0.9814869681, 0.9814869681, 0.9808533747, 0.9788313651, 0.9766053770, 0.9667617117], 
+    #       [0.8933536854, 0.9973958724, 0.9980479262, 0.9987289490, 0.9992636424, 0.9994686970, 0.9995552559, 0.9992541003, 0.9996086647, 0.9996779894]
+    #     ],
+    #     [ 
+    #       [0.6100544113, 0.7427840769, 0.7761341323, 0.8117452882, 0.8319088440, 0.8583582498, 0.8736432627, 0.8907409748, 0.9046665266, 0.9190711276],
+    #       [0.8283101205, 0.9538552575, 0.9597166341, 0.9617373097, 0.9624428298, 0.9581303007, 0.9621293579, 0.9670262230, 0.9721855102, 0.9753380476],
+    #       [0.8582078363, 0.9911788518, 0.9961663139, 0.9974520554, 0.9983872590, 0.9988958563, 0.9987919975, 0.9992790060, 0.9994720350, 0.9995989436]
+    #     ]]
+    #   uncert: [
+    #     [ 
+    #       [0.0058060921, 0.0035125975, 0.0032428598, 0.0030303634, 0.0021626971, 0.0035699597, 0.0112021484, 0.0161493893, 0.0194779109, 0.0296562368], 
+    #       [0.0010278544, 0.0018686864, 0.0010128057, 0.0010379176, 0.0010275549, 0.0011650567, 0.0010012441, 0.0024188585, 0.0012890816, 0.0022197084], 
+    #       [0.0065966201, 0.0017666493, 0.0010860510, 0.0010000106, 0.0010000660, 0.0010000824, 0.0010000075, 0.0010531353, 0.0010000525, 0.0010000001]
+    #     ],
+    #     [ 
+    #       [0.0044630622, 0.0041193336, 0.0023197541, 0.0018272149, 0.0017371369, 0.0029028382, 0.0067434212, 0.0088928808, 0.0083321492, 0.0092567264],
+    #       [0.0043867136, 0.0024484718, 0.0012894149, 0.0016910488, 0.0010003997, 0.0015842487, 0.0015842487, 0.0039064632, 0.0031524223, 0.0031751105],
+    #       [0.0010432162, 0.0018317715, 0.0011267834, 0.0010005390, 0.0011367326, 0.0010000889, 0.0010002577, 0.0010406890, 0.0010003602, 0.0010000015]
+    #     ]]
