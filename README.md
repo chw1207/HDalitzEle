@@ -36,10 +36,10 @@ The computations are carried out by two key executables.
 The **MergedAnalysis** and **ResolvedAnalysis** can be invoked with
 ```bash
 ./MergedAnalysis --config ../config_check/configuration_files files --range number [--skipSS]
-# eg. ./MergedAnalysis --config ../config_check/UL2017_SignalMC_test_Merged.yaml --skipSS
+# ./MergedAnalysis --config ../config_check/UL2017_SignalMC_test_Merged.yaml --skipSS
 
 ./ResolvedAnalysis  --config ../config_check/configuration_files files --range number 
-# eg. ./ResolvedAnalysis --config ../config_check/UL2017_SignalMC_test_Resolved.yaml
+# ./ResolvedAnalysis --config ../config_check/UL2017_SignalMC_test_Resolved.yaml
 ```
 - `-c --config`: To specify the configuration file which contains global settings such as the N-tuple paths and paths to store the mini trees.
 - `-r --range`: To decide the maximal number of events to process. If it is not specified, process all the events by default.
