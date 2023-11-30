@@ -74,6 +74,20 @@ namespace gsf{
     );
 
 
+    //! NEW: Function to Find the second gsf track Idx (dR min with several cuts on IP)
+    ROOT::RVec<int> FindSubGSF_dRMinWithCuts(
+        const int nEle,
+        const ROOT::RVec<float>& eleSCEta,
+        const ROOT::RVec<ROOT::RVec<int>>& ambGSF, // branch added by the gsf::TrkEleAssociation
+        const ROOT::RVec<float>& gsfEta,
+        const ROOT::RVec<float>& gsfPhi,
+        const ROOT::RVec<int>& gsfCharge,
+        const ROOT::RVec<float>& gsfD0,
+        const ROOT::RVec<float>& gsfDz,
+        const ROOT::RVec<int>& gsfMissHits
+    );
+
+
     // Function to match the gsf variable to the electron based on the track index
     //* Description:
     //*     1) eleTrkPt = MatchIdex(eleTrkIdx, gsfPt)
@@ -120,7 +134,7 @@ namespace gsf{
     // Function to get the deltaR between electron trak and sub-track
     ROOT::RVec<float> GetTrkRelPtRatio(
         const int nEle,
-        const ROOT::RVec<float>& eleCalibPt,
+        const ROOT::RVec<float>& eleSCRawEn,
         const ROOT::RVec<int>& nGsfMatchToReco,
         const ROOT::RVec<ROOT::Math::PtEtaPhiMVector>& eleTrk1,
         const ROOT::RVec<ROOT::Math::PtEtaPhiMVector>& eleTrk2
