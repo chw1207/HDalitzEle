@@ -1,0 +1,535 @@
+Starting job on  Thu Nov 30 10:48:03 CST 2023
+Running on: Linux chip02.cms.phy.ncu.edu.tw 3.10.0-1160.59.1.el7.x86_64 #1 SMP Wed Feb 23 16:47:03 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
+System software: CentOS Linux release 7.9.2009 (Core) 
+******************************************************
+                  Common parameters                   
+******************************************************
+config files: ../config_check/UL2016preVFP_Data_Resolved.yaml
+era: UL2016preVFP
+nthreads: 20
+max events: -1 (-1 means all)
+******************************************************
+
+[0;32mProcess the following ntuples sequentially
+[0m[0;32m 1. /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2016B_UL/*.root
+[0m[0;32m 2. /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2016C_UL/*.root
+[0m[0;32m 3. /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2016D_UL/*.root
+[0m[0;32m 4. /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2016E_UL/*.root
+[0m[0;32m 5. /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2016F1_UL/*.root
+[0m
+*************************  1  ************************
+ [+] Read ggNtuple from:
+     - /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2016B_UL/*.root
+ [+] Find out the merged events in :
+     - /data4/chenghan/electron/miniTree_merged/UL2016preVFP/miniTree_DoubleEG_Run2016B_UL2016preVFP.root
+     - 290 events are found
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_resolved/UL2016preVFP/miniTree_SingleEle_Run2016B_UL2016preVFP.root
+ [+] Cut flow report
+     - remove merged events : pass = 240399168 all = 240399393 eff = 100.00% 
+     - trigger cut          : pass = 98572344  all = 240399168 eff = 41.00% 
+     - Good Vtx             : pass = 98193575  all = 98572344  eff = 99.62% 
+     - 2 eles, 1 pho        : pass = 29725684  all = 98193575  eff = 30.27% 
+     - event with good pho  : pass = 5958328   all = 29725684  eff = 20.04% 
+     - event with good eles : pass = 501290    all = 5958328   eff = 8.41% 
+     - pho pt cut           : pass = 467792    all = 501290    eff = 93.32% 
+     - trigger threshold    : pass = 355878    all = 467792    eff = 76.08% 
+     - opposite charge      : pass = 346378    all = 355878    eff = 97.33% 
+     - Mee < 50 GeV         : pass = 9809      all = 346378    eff = 2.83% 
+     - reject Upsilon       : pass = 9218      all = 9809      eff = 93.97% 
+     - reject Jpsi          : pass = 9196      all = 9218      eff = 99.76% 
+     - pt mass ratio cut    : pass = 7877      all = 9196      eff = 85.66% 
+     - dR(e1,pho) > 1       : pass = 2693      all = 7877      eff = 34.19% 
+     - dR(e2,pho) > 1       : pass = 760       all = 2693      eff = 28.22% 
+     - three body mass cut  : pass = 82        all = 760       eff = 10.79% 
+ [+] Job's done:
+     - Total time: 0 hours, 14 mins, 18 secs
+*************************  2  ************************
+ [+] Read ggNtuple from:
+     - /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2016C_UL/*.root
+ [+] Find out the merged events in :
+     - /data4/chenghan/electron/miniTree_merged/UL2016preVFP/miniTree_DoubleEG_Run2016C_UL2016preVFP.root
+     - 108 events are found
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_resolved/UL2016preVFP/miniTree_SingleEle_Run2016C_UL2016preVFP.root
+ [+] Cut flow report
+     - remove merged events : pass = 93452160  all = 93452226  eff = 100.00% 
+     - trigger cut          : pass = 43695157  all = 93452160  eff = 46.76% 
+     - Good Vtx             : pass = 43497138  all = 43695157  eff = 99.55% 
+     - 2 eles, 1 pho        : pass = 13817840  all = 43497138  eff = 31.77% 
+     - event with good pho  : pass = 2873008   all = 13817840  eff = 20.79% 
+     - event with good eles : pass = 232844    all = 2873008   eff = 8.10% 
+     - pho pt cut           : pass = 218596    all = 232844    eff = 93.88% 
+     - trigger threshold    : pass = 167584    all = 218596    eff = 76.66% 
+     - opposite charge      : pass = 163340    all = 167584    eff = 97.47% 
+     - Mee < 50 GeV         : pass = 4261      all = 163340    eff = 2.61% 
+     - reject Upsilon       : pass = 4011      all = 4261      eff = 94.13% 
+     - reject Jpsi          : pass = 3998      all = 4011      eff = 99.68% 
+     - pt mass ratio cut    : pass = 3459      all = 3998      eff = 86.52% 
+     - dR(e1,pho) > 1       : pass = 1082      all = 3459      eff = 31.28% 
+     - dR(e2,pho) > 1       : pass = 301       all = 1082      eff = 27.82% 
+     - three body mass cut  : pass = 28        all = 301       eff = 9.30% 
+ [+] Job's done:
+     - Total time: 0 hours, 6 mins, 1 secs
+*************************  3  ************************
+ [+] Read ggNtuple from:
+     - /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2016D_UL/*.root
+ [+] Find out the merged events in :
+     - /data4/chenghan/electron/miniTree_merged/UL2016preVFP/miniTree_DoubleEG_Run2016D_UL2016preVFP.root
+     - 187 events are found
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_resolved/UL2016preVFP/miniTree_SingleEle_Run2016D_UL2016preVFP.root
+ [+] Cut flow report
+     - remove merged events : pass = 146844413 all = 146844546 eff = 100.00% 
+     - trigger cut          : pass = 70895165  all = 146844413 eff = 48.28% 
+     - Good Vtx             : pass = 70586045  all = 70895165  eff = 99.56% 
+     - 2 eles, 1 pho        : pass = 22271042  all = 70586045  eff = 31.55% 
+     - event with good pho  : pass = 4540394   all = 22271042  eff = 20.39% 
+     - event with good eles : pass = 398390    all = 4540394   eff = 8.77% 
+     - pho pt cut           : pass = 375028    all = 398390    eff = 94.14% 
+     - trigger threshold    : pass = 289160    all = 375028    eff = 77.10% 
+     - opposite charge      : pass = 282127    all = 289160    eff = 97.57% 
+     - Mee < 50 GeV         : pass = 7708      all = 282127    eff = 2.73% 
+     - reject Upsilon       : pass = 7144      all = 7708      eff = 92.68% 
+     - reject Jpsi          : pass = 7126      all = 7144      eff = 99.75% 
+     - pt mass ratio cut    : pass = 6191      all = 7126      eff = 86.88% 
+     - dR(e1,pho) > 1       : pass = 1871      all = 6191      eff = 30.22% 
+     - dR(e2,pho) > 1       : pass = 554       all = 1871      eff = 29.61% 
+     - three body mass cut  : pass = 68        all = 554       eff = 12.27% 
+ [+] Job's done:
+     - Total time: 0 hours, 8 mins, 43 secs
+*************************  4  ************************
+ [+] Read ggNtuple from:
+     - /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2016E_UL/*.root
+ [+] Find out the merged events in :
+     - /data4/chenghan/electron/miniTree_merged/UL2016preVFP/miniTree_DoubleEG_Run2016E_UL2016preVFP.root
+     - 186 events are found
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_resolved/UL2016preVFP/miniTree_SingleEle_Run2016E_UL2016preVFP.root
+ [+] Cut flow report
+     - remove merged events : pass = 111428627 all = 111428744 eff = 100.00% 
+     - trigger cut          : pass = 54286168  all = 111428627 eff = 48.72% 
+     - Good Vtx             : pass = 53972766  all = 54286168  eff = 99.42% 
+     - 2 eles, 1 pho        : pass = 18699455  all = 53972766  eff = 34.65% 
+     - event with good pho  : pass = 3903426   all = 18699455  eff = 20.87% 
+     - event with good eles : pass = 388118    all = 3903426   eff = 9.94% 
+     - pho pt cut           : pass = 367419    all = 388118    eff = 94.67% 
+     - trigger threshold    : pass = 287240    all = 367419    eff = 78.18% 
+     - opposite charge      : pass = 280791    all = 287240    eff = 97.75% 
+     - Mee < 50 GeV         : pass = 7039      all = 280791    eff = 2.51% 
+     - reject Upsilon       : pass = 6482      all = 7039      eff = 92.09% 
+     - reject Jpsi          : pass = 6464      all = 6482      eff = 99.72% 
+     - pt mass ratio cut    : pass = 5728      all = 6464      eff = 88.61% 
+     - dR(e1,pho) > 1       : pass = 1571      all = 5728      eff = 27.43% 
+     - dR(e2,pho) > 1       : pass = 421       all = 1571      eff = 26.80% 
+     - three body mass cut  : pass = 45        all = 421       eff = 10.69% 
+ [+] Job's done:
+     - Total time: 0 hours, 6 mins, 17 secs
+*************************  5  ************************
+ [+] Read ggNtuple from:
+     - /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2016F1_UL/*.root
+ [+] Find out the merged events in :
+     - /data4/chenghan/electron/miniTree_merged/UL2016preVFP/miniTree_DoubleEG_Run2016F1_UL2016preVFP.root
+     - 132 events are found
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_resolved/UL2016preVFP/miniTree_SingleEle_Run2016F1_UL2016preVFP.root
+ [+] Cut flow report
+     - remove merged events : pass = 61307346  all = 61307438  eff = 100.00% 
+     - trigger cut          : pass = 32066604  all = 61307346  eff = 52.30% 
+     - Good Vtx             : pass = 31843615  all = 32066604  eff = 99.30% 
+     - 2 eles, 1 pho        : pass = 11385619  all = 31843615  eff = 35.75% 
+     - event with good pho  : pass = 2552640   all = 11385619  eff = 22.42% 
+     - event with good eles : pass = 255693    all = 2552640   eff = 10.02% 
+     - pho pt cut           : pass = 242281    all = 255693    eff = 94.75% 
+     - trigger threshold    : pass = 190265    all = 242281    eff = 78.53% 
+     - opposite charge      : pass = 186018    all = 190265    eff = 97.77% 
+     - Mee < 50 GeV         : pass = 4425      all = 186018    eff = 2.38% 
+     - reject Upsilon       : pass = 4108      all = 4425      eff = 92.84% 
+     - reject Jpsi          : pass = 4099      all = 4108      eff = 99.78% 
+     - pt mass ratio cut    : pass = 3621      all = 4099      eff = 88.34% 
+     - dR(e1,pho) > 1       : pass = 1002      all = 3621      eff = 27.67% 
+     - dR(e2,pho) > 1       : pass = 276       all = 1002      eff = 27.54% 
+     - three body mass cut  : pass = 32        all = 276       eff = 11.59% 
+ [+] Job's done:
+     - Total time: 0 hours, 3 mins, 17 secs
+******************************************************
+All done: 0 hours, 38 mins, 42 secs
+
+******************************************************
+                  Common parameters                   
+******************************************************
+config files: ../config_check/UL2016postVFP_Data_Resolved.yaml
+era: UL2016postVFP
+nthreads: 20
+max events: -1 (-1 means all)
+******************************************************
+
+[0;32mProcess the following ntuples sequentially
+[0m[0;32m 1. /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2016F2_UL/*.root
+[0m[0;32m 2. /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2016G_UL/*.root
+[0m[0;32m 3. /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2016H_UL/*.root
+[0m
+*************************  1  ************************
+ [+] Read ggNtuple from:
+     - /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2016F2_UL/*.root
+ [+] Find out the merged events in :
+     - /data4/chenghan/electron/miniTree_merged/UL2016postVFP/miniTree_DoubleEG_Run2016F2_UL2016postVFP.root
+     - 24 events are found
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_resolved/UL2016postVFP/miniTree_SingleEle_Run2016F2_UL2016postVFP.root
+ [+] Cut flow report
+     - remove merged events : pass = 8835862   all = 8835883   eff = 100.00% 
+     - trigger cut          : pass = 4915815   all = 8835862   eff = 55.63% 
+     - Good Vtx             : pass = 4897423   all = 4915815   eff = 99.63% 
+     - 2 eles, 1 pho        : pass = 1683186   all = 4897423   eff = 34.37% 
+     - event with good pho  : pass = 410470    all = 1683186   eff = 24.39% 
+     - event with good eles : pass = 46301     all = 410470    eff = 11.28% 
+     - pho pt cut           : pass = 43957     all = 46301     eff = 94.94% 
+     - trigger threshold    : pass = 34856     all = 43957     eff = 79.30% 
+     - opposite charge      : pass = 34059     all = 34856     eff = 97.71% 
+     - Mee < 50 GeV         : pass = 805       all = 34059     eff = 2.36% 
+     - reject Upsilon       : pass = 754       all = 805       eff = 93.66% 
+     - reject Jpsi          : pass = 753       all = 754       eff = 99.87% 
+     - pt mass ratio cut    : pass = 660       all = 753       eff = 87.65% 
+     - dR(e1,pho) > 1       : pass = 182       all = 660       eff = 27.58% 
+     - dR(e2,pho) > 1       : pass = 45        all = 182       eff = 24.73% 
+     - three body mass cut  : pass = 3         all = 45        eff = 6.67% 
+ [+] Job's done:
+     - Total time: 0 hours, 0 mins, 42 secs
+*************************  2  ************************
+ [+] Read ggNtuple from:
+     - /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2016G_UL/*.root
+ [+] Find out the merged events in :
+     - /data4/chenghan/electron/miniTree_merged/UL2016postVFP/miniTree_DoubleEG_Run2016G_UL2016postVFP.root
+     - 393 events are found
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_resolved/UL2016postVFP/miniTree_SingleEle_Run2016G_UL2016postVFP.root
+ [+] Cut flow report
+     - remove merged events : pass = 152098343 all = 152098617 eff = 100.00% 
+     - trigger cut          : pass = 85067371  all = 152098343 eff = 55.93% 
+     - Good Vtx             : pass = 84740699  all = 85067371  eff = 99.62% 
+     - 2 eles, 1 pho        : pass = 29851447  all = 84740699  eff = 35.23% 
+     - event with good pho  : pass = 7325465   all = 29851447  eff = 24.54% 
+     - event with good eles : pass = 864297    all = 7325465   eff = 11.80% 
+     - pho pt cut           : pass = 823621    all = 864297    eff = 95.29% 
+     - trigger threshold    : pass = 661079    all = 823621    eff = 80.26% 
+     - opposite charge      : pass = 646680    all = 661079    eff = 97.82% 
+     - Mee < 50 GeV         : pass = 14953     all = 646680    eff = 2.31% 
+     - reject Upsilon       : pass = 13910     all = 14953     eff = 93.02% 
+     - reject Jpsi          : pass = 13901     all = 13910     eff = 99.94% 
+     - pt mass ratio cut    : pass = 12310     all = 13901     eff = 88.55% 
+     - dR(e1,pho) > 1       : pass = 3130      all = 12310     eff = 25.43% 
+     - dR(e2,pho) > 1       : pass = 827       all = 3130      eff = 26.42% 
+     - three body mass cut  : pass = 78        all = 827       eff = 9.43% 
+ [+] Job's done:
+     - Total time: 0 hours, 8 mins, 42 secs
+*************************  3  ************************
+ [+] Read ggNtuple from:
+     - /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2016H_UL/*.root
+ [+] Find out the merged events in :
+     - /data4/chenghan/electron/miniTree_merged/UL2016postVFP/miniTree_DoubleEG_Run2016H_UL2016postVFP.root
+     - 486 events are found
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_resolved/UL2016postVFP/miniTree_SingleEle_Run2016H_UL2016postVFP.root
+ [+] Cut flow report
+     - remove merged events : pass = 127093514 all = 127093812 eff = 100.00% 
+     - trigger cut          : pass = 95442143  all = 127093514 eff = 75.10% 
+     - Good Vtx             : pass = 95018001  all = 95442143  eff = 99.56% 
+     - 2 eles, 1 pho        : pass = 34413302  all = 95018001  eff = 36.22% 
+     - event with good pho  : pass = 8774261   all = 34413302  eff = 25.50% 
+     - event with good eles : pass = 1095808   all = 8774261   eff = 12.49% 
+     - pho pt cut           : pass = 1050899   all = 1095808   eff = 95.90% 
+     - trigger threshold    : pass = 861132    all = 1050899   eff = 81.94% 
+     - opposite charge      : pass = 843638    all = 861132    eff = 97.97% 
+     - Mee < 50 GeV         : pass = 18980     all = 843638    eff = 2.25% 
+     - reject Upsilon       : pass = 17540     all = 18980     eff = 92.41% 
+     - reject Jpsi          : pass = 17531     all = 17540     eff = 99.95% 
+     - pt mass ratio cut    : pass = 15745     all = 17531     eff = 89.81% 
+     - dR(e1,pho) > 1       : pass = 3726      all = 15745     eff = 23.66% 
+     - dR(e2,pho) > 1       : pass = 1027      all = 3726      eff = 27.56% 
+     - three body mass cut  : pass = 119       all = 1027      eff = 11.59% 
+ [+] Job's done:
+     - Total time: 0 hours, 7 mins, 17 secs
+******************************************************
+All done: 0 hours, 16 mins, 45 secs
+
+******************************************************
+                  Common parameters                   
+******************************************************
+config files: ../config_check/UL2017_Data_Resolved.yaml
+era: UL2017
+nthreads: 30
+max events: -1 (-1 means all)
+******************************************************
+
+[0;32mProcess the following ntuples sequentially
+[0m[0;32m 1. /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2017B_UL/*.root
+[0m[0;32m 2. /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2017C_UL/*.root
+[0m[0;32m 3. /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2017D_UL/*.root
+[0m[0;32m 4. /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2017E_UL/*.root
+[0m[0;32m 5. /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2017F_UL/*.root
+[0m
+*************************  1  ************************
+ [+] Read ggNtuple from:
+     - /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2017B_UL/*.root
+ [+] Find out the merged events in :
+     - /data4/chenghan/electron/miniTree_merged/UL2017/miniTree_DoubleEG_Run2017B_UL2017.root
+     - 317 events are found
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_resolved/UL2017/miniTree_SingleEle_Run2017B_UL2017.root
+ [+] Cut flow report
+     - remove merged events : pass = 56594940  all = 56595110  eff = 100.00% 
+     - trigger cut          : pass = 42822366  all = 56594940  eff = 75.66% 
+     - Good Vtx             : pass = 42673222  all = 42822366  eff = 99.65% 
+     - 2 eles, 1 pho        : pass = 16120417  all = 42673222  eff = 37.78% 
+     - event with good pho  : pass = 2483853   all = 16120417  eff = 15.41% 
+     - event with good eles : pass = 350143    all = 2483853   eff = 14.10% 
+     - pho pt cut           : pass = 325047    all = 350143    eff = 92.83% 
+     - trigger threshold    : pass = 276850    all = 325047    eff = 85.17% 
+     - opposite charge      : pass = 271500    all = 276850    eff = 98.07% 
+     - Mee < 50 GeV         : pass = 7422      all = 271500    eff = 2.73% 
+     - reject Upsilon       : pass = 6961      all = 7422      eff = 93.79% 
+     - reject Jpsi          : pass = 6952      all = 6961      eff = 99.87% 
+     - pt mass ratio cut    : pass = 5978      all = 6952      eff = 85.99% 
+     - dR(e1,pho) > 1       : pass = 1973      all = 5978      eff = 33.00% 
+     - dR(e2,pho) > 1       : pass = 499       all = 1973      eff = 25.29% 
+     - three body mass cut  : pass = 61        all = 499       eff = 12.22% 
+ [+] Job's done:
+     - Total time: 0 hours, 2 mins, 58 secs
+*************************  2  ************************
+ [+] Read ggNtuple from:
+     - /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2017C_UL/*.root
+ [+] Find out the merged events in :
+     - /data4/chenghan/electron/miniTree_merged/UL2017/miniTree_DoubleEG_Run2017C_UL2017.root
+     - 672 events are found
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_resolved/UL2017/miniTree_SingleEle_Run2017C_UL2017.root
+ [+] Cut flow report
+     - remove merged events : pass = 126584247 all = 126584724 eff = 100.00% 
+     - trigger cut          : pass = 85353543  all = 126584247 eff = 67.43% 
+     - Good Vtx             : pass = 85104813  all = 85353543  eff = 99.71% 
+     - 2 eles, 1 pho        : pass = 32973725  all = 85104813  eff = 38.74% 
+     - event with good pho  : pass = 4326612   all = 32973725  eff = 13.12% 
+     - event with good eles : pass = 567707    all = 4326612   eff = 13.12% 
+     - pho pt cut           : pass = 509640    all = 567707    eff = 89.77% 
+     - trigger threshold    : pass = 417459    all = 509640    eff = 81.91% 
+     - opposite charge      : pass = 407119    all = 417459    eff = 97.52% 
+     - Mee < 50 GeV         : pass = 14013     all = 407119    eff = 3.44% 
+     - reject Upsilon       : pass = 13209     all = 14013     eff = 94.26% 
+     - reject Jpsi          : pass = 13204     all = 13209     eff = 99.96% 
+     - pt mass ratio cut    : pass = 10804     all = 13204     eff = 81.82% 
+     - dR(e1,pho) > 1       : pass = 4606      all = 10804     eff = 42.63% 
+     - dR(e2,pho) > 1       : pass = 1286      all = 4606      eff = 27.92% 
+     - three body mass cut  : pass = 128       all = 1286      eff = 9.95% 
+ [+] Job's done:
+     - Total time: 0 hours, 6 mins, 49 secs
+*************************  3  ************************
+ [+] Read ggNtuple from:
+     - /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2017D_UL/*.root
+ [+] Find out the merged events in :
+     - /data4/chenghan/electron/miniTree_merged/UL2017/miniTree_DoubleEG_Run2017D_UL2017.root
+     - 278 events are found
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_resolved/UL2017/miniTree_SingleEle_Run2017D_UL2017.root
+ [+] Cut flow report
+     - remove merged events : pass = 50610147  all = 50610320  eff = 100.00% 
+     - trigger cut          : pass = 34112958  all = 50610147  eff = 67.40% 
+     - Good Vtx             : pass = 34007013  all = 34112958  eff = 99.69% 
+     - 2 eles, 1 pho        : pass = 13020525  all = 34007013  eff = 38.29% 
+     - event with good pho  : pass = 1732635   all = 13020525  eff = 13.31% 
+     - event with good eles : pass = 256677    all = 1732635   eff = 14.81% 
+     - pho pt cut           : pass = 231138    all = 256677    eff = 90.05% 
+     - trigger threshold    : pass = 191122    all = 231138    eff = 82.69% 
+     - opposite charge      : pass = 186560    all = 191122    eff = 97.61% 
+     - Mee < 50 GeV         : pass = 6411      all = 186560    eff = 3.44% 
+     - reject Upsilon       : pass = 5998      all = 6411      eff = 93.56% 
+     - reject Jpsi          : pass = 5994      all = 5998      eff = 99.93% 
+     - pt mass ratio cut    : pass = 4919      all = 5994      eff = 82.07% 
+     - dR(e1,pho) > 1       : pass = 2084      all = 4919      eff = 42.37% 
+     - dR(e2,pho) > 1       : pass = 595       all = 2084      eff = 28.55% 
+     - three body mass cut  : pass = 56        all = 595       eff = 9.41% 
+ [+] Job's done:
+     - Total time: 0 hours, 2 mins, 35 secs
+*************************  4  ************************
+ [+] Read ggNtuple from:
+     - /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2017E_UL/*.root
+ [+] Find out the merged events in :
+     - /data4/chenghan/electron/miniTree_merged/UL2017/miniTree_DoubleEG_Run2017E_UL2017.root
+     - 596 events are found
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_resolved/UL2017/miniTree_SingleEle_Run2017E_UL2017.root
+ [+] Cut flow report
+     - remove merged events : pass = 99603451  all = 99603808  eff = 100.00% 
+     - trigger cut          : pass = 71058669  all = 99603451  eff = 71.34% 
+     - Good Vtx             : pass = 70790624  all = 71058669  eff = 99.62% 
+     - 2 eles, 1 pho        : pass = 31163681  all = 70790624  eff = 44.02% 
+     - event with good pho  : pass = 4741309   all = 31163681  eff = 15.21% 
+     - event with good eles : pass = 752687    all = 4741309   eff = 15.88% 
+     - pho pt cut           : pass = 698423    all = 752687    eff = 92.79% 
+     - trigger threshold    : pass = 599366    all = 698423    eff = 85.82% 
+     - opposite charge      : pass = 588213    all = 599366    eff = 98.14% 
+     - Mee < 50 GeV         : pass = 15672     all = 588213    eff = 2.66% 
+     - reject Upsilon       : pass = 14543     all = 15672     eff = 92.80% 
+     - reject Jpsi          : pass = 14537     all = 14543     eff = 99.96% 
+     - pt mass ratio cut    : pass = 12457     all = 14537     eff = 85.69% 
+     - dR(e1,pho) > 1       : pass = 4082      all = 12457     eff = 32.77% 
+     - dR(e2,pho) > 1       : pass = 1168      all = 4082      eff = 28.61% 
+     - three body mass cut  : pass = 100       all = 1168      eff = 8.56% 
+ [+] Job's done:
+     - Total time: 0 hours, 5 mins, 55 secs
+*************************  5  ************************
+ [+] Read ggNtuple from:
+     - /data3/ggNtuples/V10_06_30_01/job_SingleEle_Run2017F_UL/*.root
+ [+] Find out the merged events in :
+     - /data4/chenghan/electron/miniTree_merged/UL2017/miniTree_DoubleEG_Run2017F_UL2017.root
+     - 769 events are found
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_resolved/UL2017/miniTree_SingleEle_Run2017F_UL2017.root
+ [+] Cut flow report
+     - remove merged events : pass = 126059138 all = 126059593 eff = 100.00% 
+     - trigger cut          : pass = 91812312  all = 126059138 eff = 72.83% 
+     - Good Vtx             : pass = 91382509  all = 91812312  eff = 99.53% 
+     - 2 eles, 1 pho        : pass = 42387133  all = 91382509  eff = 46.38% 
+     - event with good pho  : pass = 7089500   all = 42387133  eff = 16.73% 
+     - event with good eles : pass = 1152998   all = 7089500   eff = 16.26% 
+     - pho pt cut           : pass = 1085343   all = 1152998   eff = 94.13% 
+     - trigger threshold    : pass = 954433    all = 1085343   eff = 87.94% 
+     - opposite charge      : pass = 938454    all = 954433    eff = 98.33% 
+     - Mee < 50 GeV         : pass = 21746     all = 938454    eff = 2.32% 
+     - reject Upsilon       : pass = 20233     all = 21746     eff = 93.04% 
+     - reject Jpsi          : pass = 20209     all = 20233     eff = 99.88% 
+     - pt mass ratio cut    : pass = 17675     all = 20209     eff = 87.46% 
+     - dR(e1,pho) > 1       : pass = 5048      all = 17675     eff = 28.56% 
+     - dR(e2,pho) > 1       : pass = 1328      all = 5048      eff = 26.31% 
+     - three body mass cut  : pass = 134       all = 1328      eff = 10.09% 
+ [+] Job's done:
+     - Total time: 0 hours, 7 mins, 37 secs
+******************************************************
+All done: 0 hours, 25 mins, 58 secs
+
+******************************************************
+                  Common parameters                   
+******************************************************
+config files: ../config_check/UL2018_Data_Resolved.yaml
+era: UL2018
+nthreads: 30
+max events: -1 (-1 means all)
+******************************************************
+
+[0;32mProcess the following ntuples sequentially
+[0m[0;32m 1. /data3/ggNtuples/V10_06_30_00/job_EGamma_Run2018A_UL/*.root
+[0m[0;32m 2. /data3/ggNtuples/V10_06_30_00/job_EGamma_Run2018B_UL/*.root
+[0m[0;32m 3. /data3/ggNtuples/V10_06_30_00/job_EGamma_Run2018C_UL/*.root
+[0m[0;32m 4. /data3/ggNtuples/V10_06_30_00/job_EGamma_Run2018D_UL/*.root
+[0m
+*************************  1  ************************
+ [+] Read ggNtuple from:
+     - /data3/ggNtuples/V10_06_30_00/job_EGamma_Run2018A_UL/*.root
+ [+] Find out the merged events in :
+     - /data4/chenghan/electron/miniTree_merged/UL2018/miniTree_EGamma_Run2018A_UL2018.root
+     - 992 events are found
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_resolved/UL2018/miniTree_EGamma_Run2018A_UL2018.root
+ [+] Cut flow report
+     - remove merged events : pass = 319394493 all = 319395793 eff = 100.00% 
+     - trigger cut          : pass = 173703491 all = 319394493 eff = 54.39% 
+     - Good Vtx             : pass = 173074011 all = 173703491 eff = 99.64% 
+     - 2 eles, 1 pho        : pass = 68872640  all = 173074011 eff = 39.79% 
+     - event with good pho  : pass = 10233150  all = 68872640  eff = 14.86% 
+     - event with good eles : pass = 1208003   all = 10233150  eff = 11.80% 
+     - pho pt cut           : pass = 1131188   all = 1208003   eff = 93.64% 
+     - trigger threshold    : pass = 981813    all = 1131188   eff = 86.79% 
+     - opposite charge      : pass = 962729    all = 981813    eff = 98.06% 
+     - Mee < 50 GeV         : pass = 24538     all = 962729    eff = 2.55% 
+     - reject Upsilon       : pass = 22818     all = 24538     eff = 92.99% 
+     - reject Jpsi          : pass = 22801     all = 22818     eff = 99.93% 
+     - pt mass ratio cut    : pass = 19758     all = 22801     eff = 86.65% 
+     - dR(e1,pho) > 1       : pass = 5912      all = 19758     eff = 29.92% 
+     - dR(e2,pho) > 1       : pass = 1614      all = 5912      eff = 27.30% 
+     - three body mass cut  : pass = 146       all = 1614      eff = 9.05% 
+ [+] Job's done:
+     - Total time: 0 hours, 18 mins, 18 secs
+*************************  2  ************************
+ [+] Read ggNtuple from:
+     - /data3/ggNtuples/V10_06_30_00/job_EGamma_Run2018B_UL/*.root
+ [+] Find out the merged events in :
+     - /data4/chenghan/electron/miniTree_merged/UL2018/miniTree_EGamma_Run2018B_UL2018.root
+     - 470 events are found
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_resolved/UL2018/miniTree_EGamma_Run2018B_UL2018.root
+ [+] Cut flow report
+     - remove merged events : pass = 139143626 all = 139144140 eff = 100.00% 
+     - trigger cut          : pass = 63552164  all = 139143626 eff = 45.67% 
+     - Good Vtx             : pass = 63289611  all = 63552164  eff = 99.59% 
+     - 2 eles, 1 pho        : pass = 24947338  all = 63289611  eff = 39.42% 
+     - event with good pho  : pass = 3563464   all = 24947338  eff = 14.28% 
+     - event with good eles : pass = 521126    all = 3563464   eff = 14.62% 
+     - pho pt cut           : pass = 482979    all = 521126    eff = 92.68% 
+     - trigger threshold    : pass = 417222    all = 482979    eff = 86.39% 
+     - opposite charge      : pass = 409020    all = 417222    eff = 98.03% 
+     - Mee < 50 GeV         : pass = 11419     all = 409020    eff = 2.79% 
+     - reject Upsilon       : pass = 10677     all = 11419     eff = 93.50% 
+     - reject Jpsi          : pass = 10671     all = 10677     eff = 99.94% 
+     - pt mass ratio cut    : pass = 9156      all = 10671     eff = 85.80% 
+     - dR(e1,pho) > 1       : pass = 3023      all = 9156      eff = 33.02% 
+     - dR(e2,pho) > 1       : pass = 840       all = 3023      eff = 27.79% 
+     - three body mass cut  : pass = 81        all = 840       eff = 9.64% 
+ [+] Job's done:
+     - Total time: 0 hours, 7 mins, 46 secs
+*************************  3  ************************
+ [+] Read ggNtuple from:
+     - /data3/ggNtuples/V10_06_30_00/job_EGamma_Run2018C_UL/*.root
+ [+] Find out the merged events in :
+     - /data4/chenghan/electron/miniTree_merged/UL2018/miniTree_EGamma_Run2018C_UL2018.root
+     - 919 events are found
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_resolved/UL2018/miniTree_EGamma_Run2018C_UL2018.root
+ [+] Cut flow report
+     - remove merged events : pass = 143780603 all = 143781609 eff = 100.00% 
+     - trigger cut          : pass = 64122708  all = 143780603 eff = 44.60% 
+     - Good Vtx             : pass = 63860805  all = 64122708  eff = 99.59% 
+     - 2 eles, 1 pho        : pass = 26009589  all = 63860805  eff = 40.73% 
+     - event with good pho  : pass = 3579671   all = 26009589  eff = 13.76% 
+     - event with good eles : pass = 492802    all = 3579671   eff = 13.77% 
+     - pho pt cut           : pass = 455135    all = 492802    eff = 92.36% 
+     - trigger threshold    : pass = 391034    all = 455135    eff = 85.92% 
+     - opposite charge      : pass = 383070    all = 391034    eff = 97.96% 
+     - Mee < 50 GeV         : pass = 10583     all = 383070    eff = 2.76% 
+     - reject Upsilon       : pass = 9872      all = 10583     eff = 93.28% 
+     - reject Jpsi          : pass = 9866      all = 9872      eff = 99.94% 
+     - pt mass ratio cut    : pass = 8480      all = 9866      eff = 85.95% 
+     - dR(e1,pho) > 1       : pass = 2871      all = 8480      eff = 33.86% 
+     - dR(e2,pho) > 1       : pass = 857       all = 2871      eff = 29.85% 
+     - three body mass cut  : pass = 86        all = 857       eff = 10.04% 
+ [+] Job's done:
+     - Total time: 0 hours, 8 mins, 27 secs
+*************************  4  ************************
+ [+] Read ggNtuple from:
+     - /data3/ggNtuples/V10_06_30_00/job_EGamma_Run2018D_UL/*.root
+ [+] Find out the merged events in :
+     - /data4/chenghan/electron/miniTree_merged/UL2018/miniTree_EGamma_Run2018D_UL2018.root
+     - 4182 events are found
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_resolved/UL2018/miniTree_EGamma_Run2018D_UL2018.root
+ [+] Cut flow report
+     - remove merged events : pass = 726841212 all = 726847278 eff = 100.00% 
+     - trigger cut          : pass = 301592480 all = 726841212 eff = 41.49% 
+     - Good Vtx             : pass = 300439208 all = 301592480 eff = 99.62% 
+     - 2 eles, 1 pho        : pass = 117234006 all = 300439208 eff = 39.02% 
+     - event with good pho  : pass = 16835974  all = 117234006 eff = 14.36% 
+     - event with good eles : pass = 2434612   all = 16835974  eff = 14.46% 
+     - pho pt cut           : pass = 2268213   all = 2434612   eff = 93.17% 
+     - trigger threshold    : pass = 1954194   all = 2268213   eff = 86.16% 
+     - opposite charge      : pass = 1914964   all = 1954194   eff = 97.99% 
+     - Mee < 50 GeV         : pass = 52655     all = 1914964   eff = 2.75% 
+     - reject Upsilon       : pass = 49012     all = 52655     eff = 93.08% 
+     - reject Jpsi          : pass = 48978     all = 49012     eff = 99.93% 
+     - pt mass ratio cut    : pass = 42026     all = 48978     eff = 85.81% 
+     - dR(e1,pho) > 1       : pass = 13464     all = 42026     eff = 32.04% 
+     - dR(e2,pho) > 1       : pass = 3890      all = 13464     eff = 28.89% 
+     - three body mass cut  : pass = 385       all = 3890      eff = 9.90% 
+ [+] Job's done:
+     - Total time: 0 hours, 42 mins, 46 secs
+******************************************************
+All done: 1 hours, 17 mins, 20 secs
+

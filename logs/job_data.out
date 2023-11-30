@@ -1,0 +1,433 @@
+Starting job on  Wed Nov 29 16:33:27 CST 2023
+Running on: Linux chip02.cms.phy.ncu.edu.tw 3.10.0-1160.59.1.el7.x86_64 #1 SMP Wed Feb 23 16:47:03 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
+System software: CentOS Linux release 7.9.2009 (Core) 
+******************************************************
+                  Common parameters                   
+******************************************************
+config files: ../config_check/UL2016preVFP_Data_Merged.yaml
+era: UL2016preVFP
+nthreads: 30
+max events: -1 (-1 means all)
+******************************************************
+
+[0;32mProcess the following ntuples sequentially
+[0m[0;32m 1. /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2016B_UL/*.root
+[0m[0;32m 2. /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2016C_UL/*.root
+[0m[0;32m 3. /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2016D_UL/*.root
+[0m[0;32m 4. /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2016E_UL/*.root
+[0m[0;32m 5. /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2016F1_UL/*.root
+[0m
+*************************  1  ************************
+ [+] Read ggNtuple from:
+     - /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2016B_UL/*.root
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_merged/UL2016preVFP/miniTree_DoubleEG_Run2016B_UL2016preVFP.root
+ [+] Cut flow report
+     - trigger cut          : pass = 13683607  all = 136667457 eff = 10.01% 
+     - Good Vtx             : pass = 13657765  all = 13683607  eff = 99.81% 
+     - 1 ele, 1 pho         : pass = 10366534  all = 13657765  eff = 75.90% 
+     - event with good pho  : pass = 2409947   all = 10366534  eff = 23.25% 
+     - event with good ele  : pass = 3737      all = 2409947   eff = 0.16% 
+     - trigger threshold    : pass = 2946      all = 3737      eff = 78.83% 
+     - Mee < 50 GeV         : pass = 2946      all = 2946      eff = 100.00% 
+     - reject Upsilon       : pass = 2946      all = 2946      eff = 100.00% 
+     - reject Jpsi          : pass = 2940      all = 2946      eff = 99.80% 
+     - gsfPtSum > 44 GeV    : pass = 2081      all = 2940      eff = 70.78% 
+     - pt mass ratio cut    : pass = 1747      all = 2081      eff = 83.95% 
+     - dR cut               : pass = 607       all = 1747      eff = 34.75% 
+     - three body mass cut  : pass = 290       all = 607       eff = 47.78% 
+ [+] Job's done:
+     - Total time: 0 hours, 5 mins, 56 secs
+*************************  2  ************************
+ [+] Read ggNtuple from:
+     - /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2016C_UL/*.root
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_merged/UL2016preVFP/miniTree_DoubleEG_Run2016C_UL2016preVFP.root
+ [+] Cut flow report
+     - trigger cut          : pass = 6456619   all = 45599155  eff = 14.16% 
+     - Good Vtx             : pass = 6440424   all = 6456619   eff = 99.75% 
+     - 1 ele, 1 pho         : pass = 4941897   all = 6440424   eff = 76.73% 
+     - event with good pho  : pass = 1195208   all = 4941897   eff = 24.19% 
+     - event with good ele  : pass = 1689      all = 1195208   eff = 0.14% 
+     - trigger threshold    : pass = 1334      all = 1689      eff = 78.98% 
+     - Mee < 50 GeV         : pass = 1334      all = 1334      eff = 100.00% 
+     - reject Upsilon       : pass = 1334      all = 1334      eff = 100.00% 
+     - reject Jpsi          : pass = 1331      all = 1334      eff = 99.78% 
+     - gsfPtSum > 44 GeV    : pass = 976       all = 1331      eff = 73.33% 
+     - pt mass ratio cut    : pass = 804       all = 976       eff = 82.38% 
+     - dR cut               : pass = 274       all = 804       eff = 34.08% 
+     - three body mass cut  : pass = 108       all = 274       eff = 39.42% 
+ [+] Job's done:
+     - Total time: 0 hours, 1 mins, 54 secs
+*************************  3  ************************
+ [+] Read ggNtuple from:
+     - /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2016D_UL/*.root
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_merged/UL2016preVFP/miniTree_DoubleEG_Run2016D_UL2016preVFP.root
+ [+] Cut flow report
+     - trigger cut          : pass = 10448798  all = 52423951  eff = 19.93% 
+     - Good Vtx             : pass = 10424636  all = 10448798  eff = 99.77% 
+     - 1 ele, 1 pho         : pass = 7971278   all = 10424636  eff = 76.47% 
+     - event with good pho  : pass = 1918350   all = 7971278   eff = 24.07% 
+     - event with good ele  : pass = 2674      all = 1918350   eff = 0.14% 
+     - trigger threshold    : pass = 2103      all = 2674      eff = 78.65% 
+     - Mee < 50 GeV         : pass = 2103      all = 2103      eff = 100.00% 
+     - reject Upsilon       : pass = 2103      all = 2103      eff = 100.00% 
+     - reject Jpsi          : pass = 2103      all = 2103      eff = 100.00% 
+     - gsfPtSum > 44 GeV    : pass = 1560      all = 2103      eff = 74.18% 
+     - pt mass ratio cut    : pass = 1304      all = 1560      eff = 83.59% 
+     - dR cut               : pass = 468       all = 1304      eff = 35.89% 
+     - three body mass cut  : pass = 187       all = 468       eff = 39.96% 
+ [+] Job's done:
+     - Total time: 0 hours, 2 mins, 14 secs
+*************************  4  ************************
+ [+] Read ggNtuple from:
+     - /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2016E_UL/*.root
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_merged/UL2016preVFP/miniTree_DoubleEG_Run2016E_UL2016preVFP.root
+ [+] Cut flow report
+     - trigger cut          : pass = 9881126   all = 47328841  eff = 20.88% 
+     - Good Vtx             : pass = 9846226   all = 9881126   eff = 99.65% 
+     - 1 ele, 1 pho         : pass = 7632307   all = 9846226   eff = 77.52% 
+     - event with good pho  : pass = 1941742   all = 7632307   eff = 25.44% 
+     - event with good ele  : pass = 2404      all = 1941742   eff = 0.12% 
+     - trigger threshold    : pass = 1862      all = 2404      eff = 77.45% 
+     - Mee < 50 GeV         : pass = 1862      all = 1862      eff = 100.00% 
+     - reject Upsilon       : pass = 1862      all = 1862      eff = 100.00% 
+     - reject Jpsi          : pass = 1855      all = 1862      eff = 99.62% 
+     - gsfPtSum > 44 GeV    : pass = 1327      all = 1855      eff = 71.54% 
+     - pt mass ratio cut    : pass = 1111      all = 1327      eff = 83.72% 
+     - dR cut               : pass = 408       all = 1111      eff = 36.72% 
+     - three body mass cut  : pass = 186       all = 408       eff = 45.59% 
+ [+] Job's done:
+     - Total time: 0 hours, 2 mins, 6 secs
+*************************  5  ************************
+ [+] Read ggNtuple from:
+     - /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2016F1_UL/*.root
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_merged/UL2016preVFP/miniTree_DoubleEG_Run2016F1_UL2016preVFP.root
+ [+] Cut flow report
+     - trigger cut          : pass = 6502644   all = 29650118  eff = 21.93% 
+     - Good Vtx             : pass = 6473227   all = 6502644   eff = 99.55% 
+     - 1 ele, 1 pho         : pass = 5031225   all = 6473227   eff = 77.72% 
+     - event with good pho  : pass = 1319847   all = 5031225   eff = 26.23% 
+     - event with good ele  : pass = 1639      all = 1319847   eff = 0.12% 
+     - trigger threshold    : pass = 1279      all = 1639      eff = 78.04% 
+     - Mee < 50 GeV         : pass = 1279      all = 1279      eff = 100.00% 
+     - reject Upsilon       : pass = 1279      all = 1279      eff = 100.00% 
+     - reject Jpsi          : pass = 1278      all = 1279      eff = 99.92% 
+     - gsfPtSum > 44 GeV    : pass = 955       all = 1278      eff = 74.73% 
+     - pt mass ratio cut    : pass = 809       all = 955       eff = 84.71% 
+     - dR cut               : pass = 287       all = 809       eff = 35.48% 
+     - three body mass cut  : pass = 132       all = 287       eff = 45.99% 
+ [+] Job's done:
+     - Total time: 0 hours, 1 mins, 15 secs
+******************************************************
+All done: 0 hours, 13 mins, 30 secs
+
+******************************************************
+                  Common parameters                   
+******************************************************
+config files: ../config_check/UL2016postVFP_Data_Merged.yaml
+era: UL2016postVFP
+nthreads: 30
+max events: -1 (-1 means all)
+******************************************************
+
+[0;32mProcess the following ntuples sequentially
+[0m[0;32m 1. /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2016F2_UL/*.root
+[0m[0;32m 2. /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2016G_UL/*.root
+[0m[0;32m 3. /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2016H_UL/*.root
+[0m
+*************************  1  ************************
+ [+] Read ggNtuple from:
+     - /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2016F2_UL/*.root
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_merged/UL2016postVFP/miniTree_DoubleEG_Run2016F2_UL2016postVFP.root
+ [+] Cut flow report
+     - trigger cut          : pass = 1006000   all = 4321960   eff = 23.28% 
+     - Good Vtx             : pass = 1004410   all = 1006000   eff = 99.84% 
+     - 1 ele, 1 pho         : pass = 781705    all = 1004410   eff = 77.83% 
+     - event with good pho  : pass = 200125    all = 781705    eff = 25.60% 
+     - event with good ele  : pass = 307       all = 200125    eff = 0.15% 
+     - trigger threshold    : pass = 240       all = 307       eff = 78.18% 
+     - Mee < 50 GeV         : pass = 240       all = 240       eff = 100.00% 
+     - reject Upsilon       : pass = 240       all = 240       eff = 100.00% 
+     - reject Jpsi          : pass = 240       all = 240       eff = 100.00% 
+     - gsfPtSum > 44 GeV    : pass = 185       all = 240       eff = 77.08% 
+     - pt mass ratio cut    : pass = 155       all = 185       eff = 83.78% 
+     - dR cut               : pass = 62        all = 155       eff = 40.00% 
+     - three body mass cut  : pass = 24        all = 62        eff = 38.71% 
+ [+] Job's done:
+     - Total time: 0 hours, 0 mins, 30 secs
+*************************  2  ************************
+ [+] Read ggNtuple from:
+     - /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2016G_UL/*.root
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_merged/UL2016postVFP/miniTree_DoubleEG_Run2016G_UL2016postVFP.root
+ [+] Cut flow report
+     - trigger cut          : pass = 17465644  all = 76538906  eff = 22.82% 
+     - Good Vtx             : pass = 17436886  all = 17465644  eff = 99.84% 
+     - 1 ele, 1 pho         : pass = 13603120  all = 17436886  eff = 78.01% 
+     - event with good pho  : pass = 3541016   all = 13603120  eff = 26.03% 
+     - event with good ele  : pass = 5416      all = 3541016   eff = 0.15% 
+     - trigger threshold    : pass = 4280      all = 5416      eff = 79.03% 
+     - Mee < 50 GeV         : pass = 4280      all = 4280      eff = 100.00% 
+     - reject Upsilon       : pass = 4280      all = 4280      eff = 100.00% 
+     - reject Jpsi          : pass = 4277      all = 4280      eff = 99.93% 
+     - gsfPtSum > 44 GeV    : pass = 3217      all = 4277      eff = 75.22% 
+     - pt mass ratio cut    : pass = 2672      all = 3217      eff = 83.06% 
+     - dR cut               : pass = 973       all = 2672      eff = 36.41% 
+     - three body mass cut  : pass = 393       all = 973       eff = 40.39% 
+ [+] Job's done:
+     - Total time: 0 hours, 3 mins, 29 secs
+*************************  3  ************************
+ [+] Read ggNtuple from:
+     - /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2016H_UL/*.root
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_merged/UL2016postVFP/miniTree_DoubleEG_Run2016H_UL2016postVFP.root
+ [+] Cut flow report
+     - trigger cut          : pass = 19376409  all = 82569064  eff = 23.47% 
+     - Good Vtx             : pass = 19335343  all = 19376409  eff = 99.79% 
+     - 1 ele, 1 pho         : pass = 15156515  all = 19335343  eff = 78.39% 
+     - event with good pho  : pass = 3981275   all = 15156515  eff = 26.27% 
+     - event with good ele  : pass = 5793      all = 3981275   eff = 0.15% 
+     - trigger threshold    : pass = 4653      all = 5793      eff = 80.32% 
+     - Mee < 50 GeV         : pass = 4653      all = 4653      eff = 100.00% 
+     - reject Upsilon       : pass = 4653      all = 4653      eff = 100.00% 
+     - reject Jpsi          : pass = 4642      all = 4653      eff = 99.76% 
+     - gsfPtSum > 44 GeV    : pass = 3520      all = 4642      eff = 75.83% 
+     - pt mass ratio cut    : pass = 2967      all = 3520      eff = 84.29% 
+     - dR cut               : pass = 1019      all = 2967      eff = 34.34% 
+     - three body mass cut  : pass = 486       all = 1019      eff = 47.69% 
+ [+] Job's done:
+     - Total time: 0 hours, 4 mins, 20 secs
+******************************************************
+All done: 0 hours, 8 mins, 26 secs
+
+******************************************************
+                  Common parameters                   
+******************************************************
+config files: ../config_check/UL2017_Data_Merged.yaml
+era: UL2017
+nthreads: 30
+max events: -1 (-1 means all)
+******************************************************
+
+[0;32mProcess the following ntuples sequentially
+[0m[0;32m 1. /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2017B_UL/*.root
+[0m[0;32m 2. /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2017C_UL/*.root
+[0m[0;32m 3. /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2017D_UL/*.root
+[0m[0;32m 4. /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2017E_UL/*.root
+[0m[0;32m 5. /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2017F_UL/*.root
+[0m
+*************************  1  ************************
+ [+] Read ggNtuple from:
+     - /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2017B_UL/*.root
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_merged/UL2017/miniTree_DoubleEG_Run2017B_UL2017.root
+ [+] Cut flow report
+     - trigger cut          : pass = 9413524   all = 54206718  eff = 17.37% 
+     - Good Vtx             : pass = 9399421   all = 9413524   eff = 99.85% 
+     - 1 ele, 1 pho         : pass = 7343064   all = 9399421   eff = 78.12% 
+     - event with good pho  : pass = 1590398   all = 7343064   eff = 21.66% 
+     - event with good ele  : pass = 2942      all = 1590398   eff = 0.18% 
+     - trigger threshold    : pass = 2487      all = 2942      eff = 84.53% 
+     - Mee < 50 GeV         : pass = 2487      all = 2487      eff = 100.00% 
+     - reject Upsilon       : pass = 2487      all = 2487      eff = 100.00% 
+     - reject Jpsi          : pass = 2480      all = 2487      eff = 99.72% 
+     - gsfPtSum > 44 GeV    : pass = 1791      all = 2480      eff = 72.22% 
+     - pt mass ratio cut    : pass = 1317      all = 1791      eff = 73.53% 
+     - dR cut               : pass = 652       all = 1317      eff = 49.51% 
+     - three body mass cut  : pass = 317       all = 652       eff = 48.62% 
+ [+] Job's done:
+     - Total time: 0 hours, 2 mins, 8 secs
+*************************  2  ************************
+ [+] Read ggNtuple from:
+     - /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2017C_UL/*.root
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_merged/UL2017/miniTree_DoubleEG_Run2017C_UL2017.root
+ [+] Cut flow report
+     - trigger cut          : pass = 19186193  all = 59675381  eff = 32.15% 
+     - Good Vtx             : pass = 19165179  all = 19186193  eff = 99.89% 
+     - 1 ele, 1 pho         : pass = 15019938  all = 19165179  eff = 78.37% 
+     - event with good pho  : pass = 3135364   all = 15019938  eff = 20.87% 
+     - event with good ele  : pass = 5942      all = 3135364   eff = 0.19% 
+     - trigger threshold    : pass = 5031      all = 5942      eff = 84.67% 
+     - Mee < 50 GeV         : pass = 5031      all = 5031      eff = 100.00% 
+     - reject Upsilon       : pass = 5031      all = 5031      eff = 100.00% 
+     - reject Jpsi          : pass = 5019      all = 5031      eff = 99.76% 
+     - gsfPtSum > 44 GeV    : pass = 3686      all = 5019      eff = 73.44% 
+     - pt mass ratio cut    : pass = 2801      all = 3686      eff = 75.99% 
+     - dR cut               : pass = 1465      all = 2801      eff = 52.30% 
+     - three body mass cut  : pass = 672       all = 1465      eff = 45.87% 
+ [+] Job's done:
+     - Total time: 0 hours, 2 mins, 47 secs
+*************************  3  ************************
+ [+] Read ggNtuple from:
+     - /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2017D_UL/*.root
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_merged/UL2017/miniTree_DoubleEG_Run2017D_UL2017.root
+ [+] Cut flow report
+     - trigger cut          : pass = 8496069   all = 25209987  eff = 33.70% 
+     - Good Vtx             : pass = 8486891   all = 8496069   eff = 99.89% 
+     - 1 ele, 1 pho         : pass = 6629745   all = 8486891   eff = 78.12% 
+     - event with good pho  : pass = 1392316   all = 6629745   eff = 21.00% 
+     - event with good ele  : pass = 2662      all = 1392316   eff = 0.19% 
+     - trigger threshold    : pass = 2234      all = 2662      eff = 83.92% 
+     - Mee < 50 GeV         : pass = 2234      all = 2234      eff = 100.00% 
+     - reject Upsilon       : pass = 2234      all = 2234      eff = 100.00% 
+     - reject Jpsi          : pass = 2230      all = 2234      eff = 99.82% 
+     - gsfPtSum > 44 GeV    : pass = 1667      all = 2230      eff = 74.75% 
+     - pt mass ratio cut    : pass = 1276      all = 1667      eff = 76.54% 
+     - dR cut               : pass = 614       all = 1276      eff = 48.12% 
+     - three body mass cut  : pass = 278       all = 614       eff = 45.28% 
+ [+] Job's done:
+     - Total time: 0 hours, 1 mins, 16 secs
+*************************  4  ************************
+ [+] Read ggNtuple from:
+     - /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2017E_UL/*.root
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_merged/UL2017/miniTree_DoubleEG_Run2017E_UL2017.root
+ [+] Cut flow report
+     - trigger cut          : pass = 16742391  all = 54624312  eff = 30.65% 
+     - Good Vtx             : pass = 16715942  all = 16742391  eff = 99.84% 
+     - 1 ele, 1 pho         : pass = 13367956  all = 16715942  eff = 79.97% 
+     - event with good pho  : pass = 3081738   all = 13367956  eff = 23.05% 
+     - event with good ele  : pass = 5341      all = 3081738   eff = 0.17% 
+     - trigger threshold    : pass = 4580      all = 5341      eff = 85.75% 
+     - Mee < 50 GeV         : pass = 4579      all = 4580      eff = 99.98% 
+     - reject Upsilon       : pass = 4579      all = 4579      eff = 100.00% 
+     - reject Jpsi          : pass = 4573      all = 4579      eff = 99.87% 
+     - gsfPtSum > 44 GeV    : pass = 3356      all = 4573      eff = 73.39% 
+     - pt mass ratio cut    : pass = 2622      all = 3356      eff = 78.13% 
+     - dR cut               : pass = 1250      all = 2622      eff = 47.67% 
+     - three body mass cut  : pass = 596       all = 1250      eff = 47.68% 
+ [+] Job's done:
+     - Total time: 0 hours, 2 mins, 39 secs
+*************************  5  ************************
+ [+] Read ggNtuple from:
+     - /data1/ggNtuples/V10_06_30_03/job_DoubleEG_Run2017F_UL/*.root
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_merged/UL2017/miniTree_DoubleEG_Run2017F_UL2017.root
+ [+] Cut flow report
+     - trigger cut          : pass = 21479861  all = 72351214  eff = 29.69% 
+     - Good Vtx             : pass = 21429438  all = 21479861  eff = 99.77% 
+     - 1 ele, 1 pho         : pass = 17128270  all = 21429438  eff = 79.93% 
+     - event with good pho  : pass = 4093535   all = 17128270  eff = 23.90% 
+     - event with good ele  : pass = 6219      all = 4093535   eff = 0.15% 
+     - trigger threshold    : pass = 5518      all = 6219      eff = 88.73% 
+     - Mee < 50 GeV         : pass = 5518      all = 5518      eff = 100.00% 
+     - reject Upsilon       : pass = 5518      all = 5518      eff = 100.00% 
+     - reject Jpsi          : pass = 5503      all = 5518      eff = 99.73% 
+     - gsfPtSum > 44 GeV    : pass = 4187      all = 5503      eff = 76.09% 
+     - pt mass ratio cut    : pass = 3290      all = 4187      eff = 78.58% 
+     - dR cut               : pass = 1522      all = 3290      eff = 46.26% 
+     - three body mass cut  : pass = 769       all = 1522      eff = 50.53% 
+ [+] Job's done:
+     - Total time: 0 hours, 3 mins, 38 secs
+******************************************************
+All done: 0 hours, 12 mins, 31 secs
+
+******************************************************
+                  Common parameters                   
+******************************************************
+config files: ../config_check/UL2018_Data_Merged.yaml
+era: UL2018
+nthreads: 30
+max events: -1 (-1 means all)
+******************************************************
+
+[0;32mProcess the following ntuples sequentially
+[0m[0;32m 1. /data1/ggNtuples/V10_06_30_03/job_EGamma_Run2018A_UL/*.root
+[0m[0;32m 2. /data1/ggNtuples/V10_06_30_03/job_EGamma_Run2018B_UL/*.root
+[0m[0;32m 3. /data1/ggNtuples/V10_06_30_03/job_EGamma_Run2018C_UL/*.root
+[0m[0;32m 4. /data1/ggNtuples/V10_06_30_03/job_EGamma_Run2018D_UL/*.root
+[0m
+*************************  1  ************************
+ [+] Read ggNtuple from:
+     - /data1/ggNtuples/V10_06_30_03/job_EGamma_Run2018A_UL/*.root
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_merged/UL2018/miniTree_EGamma_Run2018A_UL2018.root
+ [+] Cut flow report
+     - trigger cut          : pass = 30395036  all = 316247751 eff = 9.61% 
+     - Good Vtx             : pass = 30342378  all = 30395036  eff = 99.83% 
+     - 1 ele, 1 pho         : pass = 24157021  all = 30342378  eff = 79.61% 
+     - event with good pho  : pass = 5313947   all = 24157021  eff = 22.00% 
+     - event with good ele  : pass = 9247      all = 5313947   eff = 0.17% 
+     - trigger threshold    : pass = 7930      all = 9247      eff = 85.76% 
+     - Mee < 50 GeV         : pass = 7930      all = 7930      eff = 100.00% 
+     - reject Upsilon       : pass = 7928      all = 7930      eff = 99.97% 
+     - reject Jpsi          : pass = 7915      all = 7928      eff = 99.84% 
+     - gsfPtSum > 44 GeV    : pass = 5774      all = 7915      eff = 72.95% 
+     - pt mass ratio cut    : pass = 4505      all = 5774      eff = 78.02% 
+     - dR cut               : pass = 2012      all = 4505      eff = 44.66% 
+     - three body mass cut  : pass = 992       all = 2012      eff = 49.30% 
+ [+] Job's done:
+     - Total time: 0 hours, 13 mins, 39 secs
+*************************  2  ************************
+ [+] Read ggNtuple from:
+     - /data1/ggNtuples/V10_06_30_03/job_EGamma_Run2018B_UL/*.root
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_merged/UL2018/miniTree_EGamma_Run2018B_UL2018.root
+ [+] Cut flow report
+     - trigger cut          : pass = 15615849  all = 139144140 eff = 11.22% 
+     - Good Vtx             : pass = 15589035  all = 15615849  eff = 99.83% 
+     - 1 ele, 1 pho         : pass = 12334354  all = 15589035  eff = 79.12% 
+     - event with good pho  : pass = 2626740   all = 12334354  eff = 21.30% 
+     - event with good ele  : pass = 4464      all = 2626740   eff = 0.17% 
+     - trigger threshold    : pass = 3809      all = 4464      eff = 85.33% 
+     - Mee < 50 GeV         : pass = 3809      all = 3809      eff = 100.00% 
+     - reject Upsilon       : pass = 3806      all = 3809      eff = 99.92% 
+     - reject Jpsi          : pass = 3802      all = 3806      eff = 99.89% 
+     - gsfPtSum > 44 GeV    : pass = 2787      all = 3802      eff = 73.30% 
+     - pt mass ratio cut    : pass = 2121      all = 2787      eff = 76.10% 
+     - dR cut               : pass = 1030      all = 2121      eff = 48.56% 
+     - three body mass cut  : pass = 470       all = 1030      eff = 45.63% 
+ [+] Job's done:
+     - Total time: 0 hours, 5 mins, 43 secs
+*************************  3  ************************
+ [+] Read ggNtuple from:
+     - /data1/ggNtuples/V10_06_30_03/job_EGamma_Run2018C_UL/*.root
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_merged/UL2018/miniTree_EGamma_Run2018C_UL2018.root
+ [+] Cut flow report
+     - trigger cut          : pass = 16536031  all = 143781609 eff = 11.50% 
+     - Good Vtx             : pass = 16506642  all = 16536031  eff = 99.82% 
+     - 1 ele, 1 pho         : pass = 13255216  all = 16506642  eff = 80.30% 
+     - event with good pho  : pass = 2714464   all = 13255216  eff = 20.48% 
+     - event with good ele  : pass = 8913      all = 2714464   eff = 0.33% 
+     - trigger threshold    : pass = 7301      all = 8913      eff = 81.91% 
+     - Mee < 50 GeV         : pass = 7301      all = 7301      eff = 100.00% 
+     - reject Upsilon       : pass = 7298      all = 7301      eff = 99.96% 
+     - reject Jpsi          : pass = 7247      all = 7298      eff = 99.30% 
+     - gsfPtSum > 44 GeV    : pass = 5605      all = 7247      eff = 77.34% 
+     - pt mass ratio cut    : pass = 3086      all = 5605      eff = 55.06% 
+     - dR cut               : pass = 1919      all = 3086      eff = 62.18% 
+     - three body mass cut  : pass = 919       all = 1919      eff = 47.89% 
+ [+] Job's done:
+     - Total time: 0 hours, 6 mins, 31 secs
+*************************  4  ************************
+ [+] Read ggNtuple from:
+     - /data1/ggNtuples/V10_06_30_03/job_EGamma_Run2018D_UL/*.root
+ [+] Save miniTree in:
+     - /data4/chenghan/electron/miniTree_merged/UL2018/miniTree_EGamma_Run2018D_UL2018.root
+ [+] Cut flow report
+     - trigger cut          : pass = 76735861  all = 726847278 eff = 10.56% 
+     - Good Vtx             : pass = 76614845  all = 76735861  eff = 99.84% 
+     - 1 ele, 1 pho         : pass = 60894081  all = 76614845  eff = 79.48% 
+     - event with good pho  : pass = 12415659  all = 60894081  eff = 20.39% 
+     - event with good ele  : pass = 41137     all = 12415659  eff = 0.33% 
+     - trigger threshold    : pass = 33212     all = 41137     eff = 80.74% 
+     - Mee < 50 GeV         : pass = 33211     all = 33212     eff = 100.00% 
+     - reject Upsilon       : pass = 33207     all = 33211     eff = 99.99% 
+     - reject Jpsi          : pass = 32973     all = 33207     eff = 99.30% 
+     - gsfPtSum > 44 GeV    : pass = 25298     all = 32973     eff = 76.72% 
+     - pt mass ratio cut    : pass = 13939     all = 25298     eff = 55.10% 
+     - dR cut               : pass = 8645      all = 13939     eff = 62.02% 
+     - three body mass cut  : pass = 4182      all = 8645      eff = 48.37% 
+ [+] Job's done:
+     - Total time: 0 hours, 29 mins, 13 secs
+******************************************************
+All done: 0 hours, 55 mins, 10 secs
+

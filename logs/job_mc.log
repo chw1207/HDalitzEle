@@ -1,0 +1,46 @@
+000 (4000.000.000) 2023-11-29 15:59:09 Job submitted from host: <140.115.32.12:9618?addrs=140.115.32.12-9618+[2001-288-3001-32-e47-6457-b6c2-68d7]-9618&alias=chip02.cms.phy.ncu.edu.tw&noUDP&sock=schedd_899507_900c>
+...
+040 (4000.000.000) 2023-11-29 15:59:10 Started transferring input files
+	Transferring to host: <140.115.32.14:9618?addrs=140.115.32.14-9618+[2001-288-3001-32-3d37-c48b-9577-f03d]-9618&alias=chip04.cms.phy.ncu.edu.tw&noUDP&sock=slot1_3_3629_b56d_89>
+...
+040 (4000.000.000) 2023-11-29 15:59:10 Finished transferring input files
+...
+001 (4000.000.000) 2023-11-29 15:59:11 Job executing on host: <140.115.32.14:9618?addrs=140.115.32.14-9618+[2001-288-3001-32-3d37-c48b-9577-f03d]-9618&alias=chip04.cms.phy.ncu.edu.tw&noUDP&sock=startd_3474_7419>
+...
+006 (4000.000.000) 2023-11-29 15:59:19 Image size of job updated: 246472
+	223  -  MemoryUsage of job (MB)
+	227748  -  ResidentSetSize of job (KB)
+...
+006 (4000.000.000) 2023-11-29 16:04:19 Image size of job updated: 27804460
+	3645  -  MemoryUsage of job (MB)
+	3731980  -  ResidentSetSize of job (KB)
+...
+006 (4000.000.000) 2023-11-29 16:09:19 Image size of job updated: 27947460
+	3645  -  MemoryUsage of job (MB)
+	3731980  -  ResidentSetSize of job (KB)
+...
+006 (4000.000.000) 2023-11-29 16:34:22 Image size of job updated: 28067396
+	3698  -  MemoryUsage of job (MB)
+	3786484  -  ResidentSetSize of job (KB)
+...
+040 (4000.000.000) 2023-11-29 17:07:03 Started transferring output files
+...
+040 (4000.000.000) 2023-11-29 17:07:03 Finished transferring output files
+...
+005 (4000.000.000) 2023-11-29 17:07:03 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 14:41:19, Sys 0 01:34:05  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 14:41:19, Sys 0 01:34:05  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	313258  -  Run Bytes Sent By Job
+	520  -  Run Bytes Received By Job
+	313258  -  Total Bytes Sent By Job
+	520  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :    18.02       20        20 
+	   Disk (KB)            :   323           1     18199 
+	   Memory (MB)          :  3698           1       128 
+
+	Job terminated of its own accord at 2023-11-29T09:07:03Z.
+...

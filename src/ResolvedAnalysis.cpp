@@ -102,9 +102,9 @@ std::vector<std::string> scale_factors = { // required scale factors, if values 
     "RecoEleLt20",
     "Fall17EleID",
     "SingleEleHLT",
-    "HggPreselForPho",
+    // "HggPreselForPho",
     "HggPhoCSEV",
-    "HggPhoID"
+    "Fall17PhoID"
 };
 
 int N_merged_cat = 5; //! number of merged categories 
@@ -192,7 +192,11 @@ std::vector<Long64_t> GetMergedEvents(std::string repath){
     std::vector<Long64_t> v; 
     TString MergedDir = gSystem->GetDirName(MergedPath.Data());
     if (!fs::exists(MergedDir.Data())){
-        Warn(Form("Fail to find the root files for merged category: %s\n", MergedDir.Data()));
+        Warn(Form(" [+] Fail to find the root files for merged category: %s\n", MergedDir.Data()));
+        return v;
+    }
+    if (!fs::exists(MergedPath.Data()) && !MergedPath.EndsWith("*.root")){
+        Warn(Form(" [+] Fail to find the root files for merged category: %s\n", MergedPath.Data()));
         return v;
     }
         
@@ -383,70 +387,68 @@ bool xAna(std::string inpath, std::string outpath, int iset){
     //=======================================================//
     // official photon ID WP
     //https://github.com/cms-sw/cmssw/blob/809c232871e781eff61634dfb284c2611032fb43/RecoEgamma/PhotonIdentification/python/Identification/mvaPhotonID_Fall17_94X_V2_cff.py#L22
-    std::vector<std::unique_ptr<TMVASafeReader>> hggReader(2); // Hgg ID readers (only need for data or bkg mc) 
-    std::vector<std::string> hggvals_EB;
-    std::vector<std::string> hggvals_EE;
+    // std::vector<std::unique_ptr<TMVASafeReader>> hggReader(2); // Hgg ID readers (only need for data or bkg mc) 
+    // std::vector<std::string> hggvals_EB;
+    // std::vector<std::string> hggvals_EE;
     if (!isSignalMC){
-        auto hggModelFiles = cfg["external_files"]["HggPhoID_model"].as<std::map<std::string, std::string>>();
-        hggReader[0] = std::make_unique<TMVASafeReader>(hggModelFiles["EB"], nthreads);
-        hggvals_EB = {
-            "phoSCRawE",
-            "phoR9Full5x5",
-            "phoSigmaIEtaIEtaFull5x5",
-            "phoSCEtaWidth",
-            "phoSCPhiWidth",
-            "phoSigmaIEtaIPhiFull5x5",
-            "phoS4Full5x5",
-            "phoPFPhoIso",
-            "phoPFChIso",
-            "phoPFChWorstIso",
-            "phoSCEta",
-            "phoRho"
-        };
-        std::string hggvals_EB_str = ba::join(hggvals_EB, ", ");
+        // auto hggModelFiles = cfg["external_files"]["HggPhoID_model"].as<std::map<std::string, std::string>>();
+        // hggReader[0] = std::make_unique<TMVASafeReader>(hggModelFiles["EB"], nthreads);
+        // hggvals_EB = {
+        //     "phoSCRawE",
+        //     "phoR9Full5x5",
+        //     "phoSigmaIEtaIEtaFull5x5",
+        //     "phoSCEtaWidth",
+        //     "phoSCPhiWidth",
+        //     "phoSigmaIEtaIPhiFull5x5",
+        //     "phoS4Full5x5",
+        //     "phoPFPhoIso",
+        //     "phoPFChIso",
+        //     "phoPFChWorstIso",
+        //     "phoSCEta",
+        //     "phoRho"
+        // };
+        // std::string hggvals_EB_str = ba::join(hggvals_EB, ", ");
 
-        hggReader[1] = std::make_unique<TMVASafeReader>(hggModelFiles["EE"], nthreads);
-        hggvals_EE = {
-            "phoSCRawE",
-            "phoR9Full5x5",
-            "phoSigmaIEtaIEtaFull5x5",
-            "phoSCEtaWidth",
-            "phoSCPhiWidth",
-            "phoSigmaIEtaIPhiFull5x5",
-            "phoS4Full5x5",
-            "phoPFPhoIso",
-            "phoPFChIso",
-            "phoPFChWorstIso",
-            "phoSCEta",
-            "phoRho",
-            "phoESEffSigmaRR",
-            "phoESEnToRawE"
-        };
-        std::string hggvals_EE_str = ba::join(hggvals_EE, ", ");
-        mf = mf.Define("phoRho",                "ROOT::RVec<float> v(nPho, rho); return v;")
+        // hggReader[1] = std::make_unique<TMVASafeReader>(hggModelFiles["EE"], nthreads);
+        // hggvals_EE = {
+        //     "phoSCRawE",
+        //     "phoR9Full5x5",
+        //     "phoSigmaIEtaIEtaFull5x5",
+        //     "phoSCEtaWidth",
+        //     "phoSCPhiWidth",
+        //     "phoSigmaIEtaIPhiFull5x5",
+        //     "phoS4Full5x5",
+        //     "phoPFPhoIso",
+        //     "phoPFChIso",
+        //     "phoPFChWorstIso",
+        //     "phoSCEta",
+        //     "phoRho",
+        //     "phoESEffSigmaRR",
+        //     "phoESEnToRawE"
+        // };
+        // std::string hggvals_EE_str = ba::join(hggvals_EE, ", ");
+        mf = mf.Define("phoRho",                "ROOT::RVec<float>(nPho, rho)")
                .Define("phoCorrIDMVA",          "phoIDMVA")   
-               .Define("phoCorrR9Full5x5",      "phoR9Full5x5")  
-               .Define("phoMVAEEVals",          Form("MakeMVAVals<%d, float>(%s)", (int)hggvals_EE.size(), hggvals_EE_str.c_str()))  
-               .Define("phoMVAEBVals",          Form("MakeMVAVals<%d, float>(%s)", (int)hggvals_EB.size(), hggvals_EB_str.c_str()))
-               .DefineSlot("phoCorrHggIDMVA",   [&](unsigned int slot,
-                                                    const ROOT::RVec<float>& phoSCEta,
-                                                    const ROOT::RVec<std::vector<float>>& phoMVAEBVals,
-                                                    const ROOT::RVec<std::vector<float>>& phoMVAEEVals){
-                                                        ROOT::RVec<float> mva(phoSCEta.size());
-                                                        for (size_t i = 0; i < phoSCEta.size(); i++){
-                                                            if (fabs(phoSCEta[i]) < 1.479)
-                                                                mva[i] = hggReader[0]->Compute(phoMVAEBVals[i], slot)[0];
-                                                            else
-                                                                mva[i] = hggReader[1]->Compute(phoMVAEEVals[i], slot)[0];
-                                                        }
-                                                        return mva;
-                                                    }, {"phoSCEta", "phoMVAEBVals", "phoMVAEEVals"});
+               .Define("phoCorrR9Full5x5",      "phoR9Full5x5");  
+            //    .Define("phoMVAEEVals",          Form("MakeMVAVals<%d, float>(%s)", (int)hggvals_EE.size(), hggvals_EE_str.c_str()))  
+            //    .Define("phoMVAEBVals",          Form("MakeMVAVals<%d, float>(%s)", (int)hggvals_EB.size(), hggvals_EB_str.c_str()))
+            //    .DefineSlot("phoCorrHggIDMVA",   [&](unsigned int slot,
+            //                                         const ROOT::RVec<float>& phoSCEta,
+            //                                         const ROOT::RVec<std::vector<float>>& phoMVAEBVals,
+            //                                         const ROOT::RVec<std::vector<float>>& phoMVAEEVals){
+            //                                             ROOT::RVec<float> mva(phoSCEta.size());
+            //                                             for (size_t i = 0; i < phoSCEta.size(); i++){
+            //                                                 mva[i] = (fabs(phoSCEta[i]) < 1.479) ? hggReader[0]->Compute(phoMVAEBVals[i], slot)[0]
+            //                                                                                      : hggReader[1]->Compute(phoMVAEEVals[i], slot)[0];
+            //                                             }
+            //                                             return mva;
+            //                                         }, {"phoSCEta", "phoMVAEBVals", "phoMVAEEVals"});
     }
     auto pf = mf.Define("isEBPho",                  "abs(phoSCEta) < 1.4442")
                 .Define("isEEPho",                  "abs(phoSCEta) > 1.566 && abs(phoSCEta) < 2.5")  
                 .Define("isHggPho",                 phoSel::HggPresel,  {"nPho", "rhoAll", "phoSCEta", "phoPFChIso", "phoPFPhoIso", "phoTrkIsoHollowConeDR03", "phoR9Full5x5", "phoEt", "phoSigmaIEtaIEtaFull5x5", "phoHoverE"})
-                .Define("isGoodPho",                "(isEBPho || isEEPho) && phoEleVeto == 1 && isHggPho && phoCorrHggIDMVA > -0.9")
-                // .Define("isGoodPho",                "phoEleVeto == 1 && ((phoCorrIDMVA > -0.02 && isEBPho) || (phoCorrIDMVA > -0.26 && isEEPho))")
+                // .Define("isGoodPho",                "(isEBPho || isEEPho) && phoEleVeto == 1 && isHggPho && phoCorrHggIDMVA > -0.9")
+                .Define("isGoodPho",                "phoEleVeto == 1 && ((phoIDMVA > -0.02 && isEBPho) || (phoIDMVA > -0.26 && isEEPho))")
                 .Filter("ROOT::VecOps::Sum(isGoodPho) > 0", "event with good pho")
                 .Define("phoIdx1",                  [ ](const ROOT::RVec<int>& isGoodPho,
                                                         const ROOT::RVec<float>& phoCalibEt){
@@ -456,7 +458,7 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                 .Define("phoCalibEt_Lead",          "phoCalibEt[phoIdx1]")
                 .Define("phoSCEta_Lead",            "phoSCEta[phoIdx1]")
                 .Define("phoCorrR9Full5x5_Lead",    "phoCorrR9Full5x5[phoIdx1]")
-                .Define("phoCorrHggIDMVA_Lead",     "phoCorrHggIDMVA[phoIdx1]")
+                // .Define("phoCorrHggIDMVA_Lead",     "phoCorrHggIDMVA[phoIdx1]")
                 .Define("phoEt_Lead",               "phoEt[phoIdx1]");
 
     // systematic variations for photon et
@@ -489,7 +491,7 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                 pf = pf.Vary("phoCorrR9Full5x5_Lead", Form("ROOT::RVec<float> v = {%s}; return v;", r9sys_bra.c_str()), {r9sys}, "pho");
         }
     }
-    pf = pf.Define("pho", "ROOT::Math::PtEtaPhiMVector v(phoCalibEt_Lead, phoEta[phoIdx1], phoPhi[phoIdx1], 0.); return v;");  
+    pf = pf.Define("pho", "ROOT::Math::PtEtaPhiMVector(phoCalibEt_Lead, phoEta[phoIdx1], phoPhi[phoIdx1], 0.)");  
 
     //=======================================================//
     //                electron selections                    //
@@ -535,8 +537,8 @@ bool xAna(std::string inpath, std::string outpath, int iset){
             ef = ef.Vary({"eleCalibPt_Lead", "eleCalibPt_subLead"}, varied_str, ele_sys, "ele");
         }
     }
-    ef = ef.Define("ele1",  "ROOT::Math::PtEtaPhiMVector v(eleCalibPt_Lead, eleEta[eleIdx1], elePhi[eleIdx1], 0.000511); return v;")
-           .Define("ele2",  "ROOT::Math::PtEtaPhiMVector v(eleCalibPt_subLead, eleEta[eleIdx2], elePhi[eleIdx2], 0.000511); return v;");
+    ef = ef.Define("ele1",  "ROOT::Math::PtEtaPhiMVector(eleCalibPt_Lead, eleEta[eleIdx1], elePhi[eleIdx1], 0.000511)")
+           .Define("ele2",  "ROOT::Math::PtEtaPhiMVector(eleCalibPt_subLead, eleEta[eleIdx2], elePhi[eleIdx2], 0.000511)");
 
     //=======================================================//
     //             kinematic event selections                //
@@ -564,12 +566,12 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                 .Define("category",             [&](const bool isEBHR9,
                                                     const bool isEBLR9,
                                                     const bool isEE){
-                                                        int cat = (N_merged_cat+1);
+                                                        // int cat = (N_merged_cat+1);
                                                         // if (isEBHR9)        return cat;
                                                         // else if (isEBLR9)   return cat + 1;
                                                         // else if (isEE)      return cat + 2;
                                                         // else throw std::runtime_error("No proper category for Re");
-                                                        // int cat = (N_merged_cat+1);
+                                                        int cat = (N_merged_cat+1);
                                                         return cat;
                                                     }, {"isEBHR9", "isEBLR9", "isEE"})
                 .Define("category_str",         [&](int category){return categories.at(category-(N_merged_cat+1));},      {"category"});
@@ -603,18 +605,24 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                     continue;
 
                 if (ba::contains(it->first, "Ele")){ 
-                    df_sfs = it->second->GetRDF(df_sfs, it->first+"SF_Lead", it->first+"SFErr_Lead", {"elePt_Lead", "eleSCEta_Lead"});
-                    df_sfs = it->second->GetRDF(df_sfs, it->first+"SF_subLead", it->first+"SFErr_subLead", {"elePt_subLead", "eleSCEta_subLead"});
-                    printf("     - %-21s: in bins of %-22s && %-22s\n", (it->first).c_str(), "elePt_(sub)Lead", "eleSCEta_(sub)Lead");
+                    df_sfs = it->second->GetRDF(df_sfs, it->first+"SF_Lead", it->first+"SFErr_Lead", {"eleSCEta_Lead", "elePt_Lead"});
+                    df_sfs = it->second->GetRDF(df_sfs, it->first+"SF_subLead", it->first+"SFErr_subLead", {"eleSCEta_subLead", "elePt_subLead"});
+                    printf("     - %-21s: in bins of %-22s && %-22s\n", (it->first).c_str(), "eleSCEta_(sub)Lead", "elePt_(sub)Lead");
 
                     SFs.emplace_back(it->first+"SF_Lead");
                     SFs.emplace_back(it->first+"SF_subLead");
                 }
                 if (ba::contains(it->first, "Pho")){ // in bins of sceta and pt
-                    df_sfs = it->second->GetRDF(df_sfs, it->first+"SF_Lead", it->first+"SFErr_Lead", {"phoSCEta_Lead", "phoCorrR9Full5x5_Lead"});
-
-                    printf("     - %-21s: in bins of %-22s && %-22s\n", (it->first).c_str(), "phoSCEta_Lead", "phoCorrR9Full5x5_Lead");
-                    SFs.emplace_back(it->first+"SF_Lead");
+                    if (ba::contains(it->first, "Hgg")){
+                        df_sfs = it->second->GetRDF(df_sfs, it->first+"SF_Lead", it->first+"SFErr_Lead", {"phoSCEta_Lead", "phoCorrR9Full5x5_Lead"});
+                        printf("     - %-21s: in bins of %-22s && %-22s\n", (it->first).c_str(), "phoSCEta_Lead", "phoCorrR9Full5x5_Lead");
+                        SFs.emplace_back(it->first+"SF_Lead");
+                    }
+                    else{
+                        df_sfs = it->second->GetRDF(df_sfs, it->first+"SF_Lead", it->first+"SFErr_Lead", {"phoSCEta_Lead", "phoCalibEt_Lead"});
+                        printf("     - %-21s: in bins of %-22s && %-22s\n", (it->first).c_str(), "phoSCEta_Lead", "phoCalibEt_Lead");
+                        SFs.emplace_back(it->first+"SF_Lead");
+                    }
                 }
             }
             else{
@@ -626,40 +634,28 @@ bool xAna(std::string inpath, std::string outpath, int iset){
         if (Weis["RecoEleGt20"] && Weis["RecoEleLt20"]){
             df_sfs = df_sfs.Define("RecoEleSF_Lead",            [&](const float elePt_Lead,
                                                                     const float eleSCEta_Lead){
-                                                                    float SF = 1.;
-                                                                    if (elePt_Lead > 20)
-                                                                        SF = Weis["RecoEleGt20"]->GetSFFromEGM(eleSCEta_Lead, elePt_Lead);
-                                                                    else
-                                                                        SF = Weis["RecoEleLt20"]->GetSFFromEGM(eleSCEta_Lead, elePt_Lead);
+                                                                    float SF = (elePt_Lead > 20) ? Weis["RecoEleGt20"]->GetSFFromEGM(eleSCEta_Lead, elePt_Lead)
+                                                                                                 : Weis["RecoEleLt20"]->GetSFFromEGM(eleSCEta_Lead, elePt_Lead);
                                                                     return SF;
-                                                                }, {"elePt_Lead", "eleSCEta_Lead"})
+                                                                }, {"eleSCEta_Lead", "elePt_Lead"})
                            .Define("RecoEleSFErr_Lead",         [&](const float elePt_Lead,
                                                                     const float eleSCEta_Lead){
-                                                                    float SFerr = 0;
-                                                                    if (elePt_Lead > 20)
-                                                                        SFerr = Weis["RecoEleGt20"]->GetSFErrFromEGM(eleSCEta_Lead, elePt_Lead);
-                                                                    else
-                                                                        SFerr = Weis["RecoEleLt20"]->GetSFErrFromEGM(eleSCEta_Lead, elePt_Lead);
+                                                                    float SFerr = (elePt_Lead > 20) ? Weis["RecoEleGt20"]->GetSFErrFromEGM(eleSCEta_Lead, elePt_Lead)
+                                                                                                    : Weis["RecoEleLt20"]->GetSFErrFromEGM(eleSCEta_Lead, elePt_Lead);
                                                                     return SFerr;
-                                                                }, {"elePt_Lead", "eleSCEta_Lead"})
+                                                                }, {"eleSCEta_Lead", "elePt_Lead"})
                            .Define("RecoEleSF_subLead",         [&](const float elePt_subLead,
                                                                     const float eleSCEta_subLead){
-                                                                    float SF = 1.;
-                                                                    if (elePt_subLead > 20)
-                                                                        SF = Weis["RecoEleGt20"]->GetSFFromEGM(eleSCEta_subLead, elePt_subLead);
-                                                                    else
-                                                                        SF = Weis["RecoEleLt20"]->GetSFFromEGM(eleSCEta_subLead, elePt_subLead);
+                                                                    float SF = (elePt_subLead > 20) ? Weis["RecoEleGt20"]->GetSFFromEGM(eleSCEta_subLead, elePt_subLead)
+                                                                                                    : Weis["RecoEleLt20"]->GetSFFromEGM(eleSCEta_subLead, elePt_subLead);
                                                                     return SF;
-                                                                }, {"elePt_subLead", "eleSCEta_subLead"})
+                                                                }, {"eleSCEta_subLead", "elePt_subLead"})
                            .Define("RecoEleSFErr_subLead",      [&](const float elePt_subLead,
                                                                     const float eleSCEta_subLead){
-                                                                    float SFerr = 0;
-                                                                    if (elePt_subLead > 20)
-                                                                        SFerr = Weis["RecoEleGt20"]->GetSFErrFromEGM(eleSCEta_subLead, elePt_subLead);
-                                                                    else
-                                                                        SFerr = Weis["RecoEleLt20"]->GetSFErrFromEGM(eleSCEta_subLead, elePt_subLead);
+                                                                    float SFerr = (elePt_subLead > 20) ? Weis["RecoEleGt20"]->GetSFErrFromEGM(eleSCEta_subLead, elePt_subLead)
+                                                                                                       : Weis["RecoEleLt20"]->GetSFErrFromEGM(eleSCEta_subLead, elePt_subLead);
                                                                     return SFerr;
-                                                                }, {"elePt_subLead", "eleSCEta_subLead"});
+                                                                }, {"eleSCEta_subLead", "elePt_subLead"});
             printf("     - %-21s: in bins of electron pt and sceta\n", "RecoEle");
             SFs.emplace_back("RecoEleSF_Lead");
             SFs.emplace_back("RecoEleSF_subLead");

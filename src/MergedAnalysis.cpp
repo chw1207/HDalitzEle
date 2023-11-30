@@ -105,23 +105,27 @@ std::map<std::string, std::string> allowed_variations = {
     {"JECDo",           " - jetJECUnc"},
 };
 std::vector<std::string> categories = {
-    "Merged-2Gsf-VBF", 
-    "Merged-2Gsf-BST", 
-    "Merged-2Gsf-EBHR9", 
-    "Merged-2Gsf-EBLR9", 
-    "Merged-2Gsf-EE"
+    "Merged-VBF", 
+    "Merged-BST", 
+    "Merged-EBHR9", 
+    "Merged-EBLR9", 
+    "Merged-EE"
+    // "Merged-EB-EBHR9", 
+    // "Merged-EB-EBLR9", 
+    // "Merged-EB-EE",
+    // "Merged-EE-EBHR9", 
+    // "Merged-EE-EBLR9", 
+    // "Merged-EE-EE"
 };
 std::vector<std::string> scale_factors = { // required scale factors, if values are not provided by config, they will be assigned as 1.  
     "RecoEleGt20",
-    "MissHitsTrk",
-    "MissHitsSubTrk",
-    "ConvVetoTrk",
-    "ConvVetoSubTrk",
+    "ConvMissIPTrk",
+    "ConvMissIPSubTrk",
     "MergedEleID",
     "HggPreselForEle",
     "HggPreselForPho",
     "HggPhoCSEV",
-    "HggPhoID",
+    "Fall17PhoID",
     "DiPhoHLTSeedForEle",
     "DiPhoHLTUnSeedForEle",
     "DiPhoHLTSeedForPho",
@@ -366,69 +370,68 @@ bool xAna(std::string inpath, std::string outpath, int iset){
     //* 1. Hgg preselection -> mimic diphoton trigger (phoSel::HggPresel)
     //* 2. Hgg photon ID -> select prompt photon
     //* 3. CSEV: veto the electron
-    std::vector<std::unique_ptr<TMVASafeReader>> hggReader(2); // Hgg ID readers (only need for data or bkg mc) 
-    std::vector<std::string> hggvals_EB;
-    std::vector<std::string> hggvals_EE;
+    // std::vector<std::unique_ptr<TMVASafeReader>> hggReader(2); // Hgg ID readers (only need for data or bkg mc) 
+    // std::vector<std::string> hggvals_EB;
+    // std::vector<std::string> hggvals_EE;
 
     if (!isSignalMC || skipSS){
-        auto hggModelFiles = cfg["external_files"]["HggPhoID_model"].as<std::map<std::string, std::string>>();
-        hggReader[0] = std::make_unique<TMVASafeReader>(hggModelFiles["EB"], nthreads);
-        hggvals_EB = {
-            "phoSCRawE",
-            "phoR9Full5x5",
-            "phoSigmaIEtaIEtaFull5x5",
-            "phoSCEtaWidth",
-            "phoSCPhiWidth",
-            "phoSigmaIEtaIPhiFull5x5",
-            "phoS4Full5x5",
-            "phoPFPhoIso",
-            "phoPFChIso",
-            "phoPFChWorstIso",
-            "phoSCEta",
-            "phoRho"
-        };
-        std::string hggvals_EB_str = ba::join(hggvals_EB, ", ");
+    //     auto hggModelFiles = cfg["external_files"]["HggPhoID_model"].as<std::map<std::string, std::string>>();
+    //     hggReader[0] = std::make_unique<TMVASafeReader>(hggModelFiles["EB"], nthreads);
+    //     hggvals_EB = {
+    //         "phoSCRawE",
+    //         "phoR9Full5x5",
+    //         "phoSigmaIEtaIEtaFull5x5",
+    //         "phoSCEtaWidth",
+    //         "phoSCPhiWidth",
+    //         "phoSigmaIEtaIPhiFull5x5",
+    //         "phoS4Full5x5",
+    //         "phoPFPhoIso",
+    //         "phoPFChIso",
+    //         "phoPFChWorstIso",
+    //         "phoSCEta",
+    //         "phoRho"
+    //     };
+    //     std::string hggvals_EB_str = ba::join(hggvals_EB, ", ");
 
-        hggReader[1] = std::make_unique<TMVASafeReader>(hggModelFiles["EE"], nthreads);
-        hggvals_EE = {
-            "phoSCRawE",
-            "phoR9Full5x5",
-            "phoSigmaIEtaIEtaFull5x5",
-            "phoSCEtaWidth",
-            "phoSCPhiWidth",
-            "phoSigmaIEtaIPhiFull5x5",
-            "phoS4Full5x5",
-            "phoPFPhoIso",
-            "phoPFChIso",
-            "phoPFChWorstIso",
-            "phoSCEta",
-            "phoRho",
-            "phoESEffSigmaRR",
-            "phoESEnToRawE"
-        };
-        std::string hggvals_EE_str = ba::join(hggvals_EE, ", ");
-        mf = mf.Define("phoRho",                "ROOT::RVec<float> v(nPho, rho); return v;")
-               .Define("phoCorrR9Full5x5",      "phoR9Full5x5")     
-               .Define("phoMVAEBVals",          Form("MakeMVAVals<%d, float>(%s)", (int)hggvals_EB.size(), hggvals_EB_str.c_str()))
-               .Define("phoMVAEEVals",          Form("MakeMVAVals<%d, float>(%s)", (int)hggvals_EE.size(), hggvals_EE_str.c_str()))
-               .DefineSlot("phoCorrHggIDMVA",   [&](unsigned int slot,
-                                                    const ROOT::RVec<float>& phoSCEta,
-                                                    const ROOT::RVec<std::vector<float>>& phoMVAEBVals,
-                                                    const ROOT::RVec<std::vector<float>>& phoMVAEEVals){
-                                                        ROOT::RVec<float> mva(phoSCEta.size());
-                                                        for (size_t i = 0; i < phoSCEta.size(); i++){
-                                                            if (fabs(phoSCEta[i]) < 1.479)
-                                                                mva[i] = hggReader[0]->Compute(phoMVAEBVals[i], slot)[0];
-                                                            else
-                                                                mva[i] = hggReader[1]->Compute(phoMVAEEVals[i], slot)[0];
-                                                        }
-                                                        return mva;
-                                                    }, {"phoSCEta", "phoMVAEBVals", "phoMVAEEVals"});
+    //     hggReader[1] = std::make_unique<TMVASafeReader>(hggModelFiles["EE"], nthreads);
+    //     hggvals_EE = {
+    //         "phoSCRawE",
+    //         "phoR9Full5x5",
+    //         "phoSigmaIEtaIEtaFull5x5",
+    //         "phoSCEtaWidth",
+    //         "phoSCPhiWidth",
+    //         "phoSigmaIEtaIPhiFull5x5",
+    //         "phoS4Full5x5",
+    //         "phoPFPhoIso",
+    //         "phoPFChIso",
+    //         "phoPFChWorstIso",
+    //         "phoSCEta",
+    //         "phoRho",
+    //         "phoESEffSigmaRR",
+    //         "phoESEnToRawE"
+    //     };
+        // std::string hggvals_EE_str = ba::join(hggvals_EE, ", ");
+        mf = mf.Define("phoRho",                "ROOT::RVec<float>(nPho, rho)")
+               .Define("phoCorrR9Full5x5",      "phoR9Full5x5");     
+            //    .Define("phoMVAEBVals",          Form("MakeMVAVals<%d, float>(%s)", (int)hggvals_EB.size(), hggvals_EB_str.c_str()))
+            //    .Define("phoMVAEEVals",          Form("MakeMVAVals<%d, float>(%s)", (int)hggvals_EE.size(), hggvals_EE_str.c_str()))
+            //    .DefineSlot("phoCorrHggIDMVA",   [&](unsigned int slot,
+            //                                         const ROOT::RVec<float>& phoSCEta,
+            //                                         const ROOT::RVec<std::vector<float>>& phoMVAEBVals,
+            //                                         const ROOT::RVec<std::vector<float>>& phoMVAEEVals){
+            //                                             ROOT::RVec<float> mva(phoSCEta.size());
+            //                                             for (size_t i = 0; i < phoSCEta.size(); i++){
+            //                                                 mva[i] = (fabs(phoSCEta[i]) < 1.479) ? hggReader[0]->Compute(phoMVAEBVals[i], slot)[0]
+            //                                                                                      : hggReader[1]->Compute(phoMVAEEVals[i], slot)[0];
+            //                                             }
+            //                                             return mva;
+            //                                         }, {"phoSCEta", "phoMVAEBVals", "phoMVAEEVals"});
     }
     auto pf = mf.Define("isEBPho",                  "abs(phoSCEta) < 1.4442")
                 .Define("isEEPho",                  "abs(phoSCEta) > 1.566 && abs(phoSCEta) < 2.5")  
                 .Define("isHggPho",                 phoSel::HggPresel,  {"nPho", "rhoAll", "phoSCEta", "phoPFChIso", "phoPFPhoIso", "phoTrkIsoHollowConeDR03", "phoR9Full5x5", "phoEt", "phoSigmaIEtaIEtaFull5x5", "phoHoverE"})
-                .Define("isGoodPho",                "(isEBPho || isEEPho) && phoEleVeto == 1 && isHggPho && phoCorrHggIDMVA > -0.9")
+                // .Define("isGoodPho",                "(isEBPho || isEEPho) && phoEleVeto == 1 && isHggPho && phoCorrHggIDMVA > -0.9")
+                .Define("isGoodPho",                "((isEBPho && phoIDMVA > -0.02) || (isEEPho && phoIDMVA > -0.26)) && phoEleVeto == 1 && isHggPho")
                 .Filter("ROOT::VecOps::Sum(isGoodPho) > 0", "event with good pho") //! End of photon selection
                 .Define("phoIdx1",                  [ ](const ROOT::RVec<int>& isGoodPho,
                                                         const ROOT::RVec<float>& phoCalibEt){
@@ -438,7 +441,7 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                 .Define("phoCalibEt_Lead",          "phoCalibEt[phoIdx1]")
                 .Define("phoSCEta_Lead",            "phoSCEta[phoIdx1]")
                 .Define("phoCorrR9Full5x5_Lead",    "phoCorrR9Full5x5[phoIdx1]")
-                .Define("phoCorrHggIDMVA_Lead",     "phoCorrHggIDMVA[phoIdx1]")
+                // .Define("phoCorrHggIDMVA_Lead",     "phoCorrHggIDMVA[phoIdx1]")
                 .Define("phoEt_Lead",               "phoEt[phoIdx1]");
 
     // systematic variations for photon et and r9
@@ -471,7 +474,7 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                 pf = pf.Vary("phoCorrR9Full5x5_Lead", Form("ROOT::RVec<float> v = {%s}; return v;", r9sys_bra.c_str()), {r9sys}, "pho");
         }
     }
-    pf = pf.Define("pho", "ROOT::Math::PtEtaPhiMVector v(phoCalibEt_Lead, phoEta[phoIdx1], phoPhi[phoIdx1], 0.); return v;");  
+    pf = pf.Define("pho", "ROOT::Math::PtEtaPhiMVector(phoCalibEt_Lead, phoEta[phoIdx1], phoPhi[phoIdx1], 0.)");  
 
 
     //=======================================================//
@@ -552,8 +555,8 @@ bool xAna(std::string inpath, std::string outpath, int iset){
 
     auto ef = gf.Define("isEBEle",              "abs(eleSCEta) < 1.4442")
                 .Define("isEEEle",              "abs(eleSCEta) > 1.566 && abs(eleSCEta) < 2.5")
-                .Define("eleRho",               "ROOT::RVec<float> v(nEle, rho); return v;")
-                .Define("eleNVtx",              "ROOT::RVec<float> v(nEle, nVtx); return v;")
+                .Define("eleRho",               "ROOT::RVec<float>(nEle, rho)")
+                .Define("eleNVtx",              "ROOT::RVec<float>(nEle, nVtx)")
                 .Define("eleESEnToRawE",        "(eleESEnP1 + eleESEnP2) / eleSCRawEn")
                 .Define("eleM2MVAVals",         Form("MakeMVAVals<%d, float>(%s)", (int)m2vals.size(),      m2vals_str.c_str()))
                 .Define("eleM2IDMVAs",          [&](const ROOT::RVec<float>& eleSCEta,
@@ -563,10 +566,8 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                                                         for (size_t i = 0; i < eleSCEta.size(); i++){
                                                             std::vector<float> scores(3, -999);
                                                             if (eleSubTrkIdx[i] != -1){
-                                                                if (fabs(eleSCEta[i]) < 1.479)
-                                                                    scores = m2EBReader.Compute(eleM2MVAVals[i]);
-                                                                else
-                                                                    scores = m2EEReader.Compute(eleM2MVAVals[i]);
+                                                                scores = (fabs(eleSCEta[i]) < 1.479) ? m2EBReader.Compute(eleM2MVAVals[i])
+                                                                                                     : m2EEReader.Compute(eleM2MVAVals[i]);
                                                             }
                                                             mvas.emplace_back(scores);
                                                         }
@@ -583,10 +584,7 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                                                         }
                                                         return v;
                                                     }, {"eleSCEta", "eleSubTrkIdx", "eleM2IDMVAs"})
-                // .Define("isHEEPEle",            [ ](const ROOT::RVec<UShort_t>& eleIDbit){
-                //                                         auto v = ROOT::VecOps::Map(eleIDbit, [&](UShort_t idx){return (((eleIDbit[i] >> 4) & 1) == 1) ? (int) 1 : (int) 0; });
-                //                                         return v;
-                //                                     }, {"eleIDbit"})
+                // .Define("isHEEPEle",            "(eleIDbit/16) & 1") // RVec does not have >> operator, meaning eleIDbit >> 4 & 1 doesn't work. (>> 4 is equivalent to / 2^4)
                 .Define("isHggEle",             eleSel::HggPresel,          {"nEle", "eleSCEta", "eleSCPhi", "nPho", "rhoAll", "phoSCEta", "phoSCPhi", "phoPFChIso", "phoPFPhoIso", "phoTrkIsoHollowConeDR03", "phoR9Full5x5", "phoEt", "phoSigmaIEtaIEtaFull5x5", "phoHoverE"})
                 .Define("isPVTrk",              "(isEBEle && abs(eleD0) < 0.02 && abs(eleSubTrkD0) < 0.02 && abs(eleDz) < 0.1 && abs(eleSubTrkDz) < 0.1) || "
                                                 "(isEEEle && abs(eleD0) < 0.05 && abs(eleSubTrkD0) < 0.05 && abs(eleDz) < 0.2 && abs(eleSubTrkDz) < 0.2)")
@@ -606,10 +604,8 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                                                         for (size_t i = 0; i < elePt.size(); i++){
                                                             float regSF = 1.;
                                                             if (eleSubTrkIdx[i] != -1){
-                                                                if (fabs(eleSCEta[i]) < 1.479)
-                                                                    regSF = regEBReader.Compute(eleRegEBMVAVals[i])[0];
-                                                                else
-                                                                    regSF = regEEReader.Compute(eleRegEEMVAVals[i])[0];
+                                                                regSF = (fabs(eleSCEta[i]) < 1.479) ? regEBReader.Compute(eleRegEBMVAVals[i])[0]
+                                                                                                    : regEEReader.Compute(eleRegEEMVAVals[i])[0];
                                                             }
                                                             pt[i] = regSF * elePt[i];
                                                         }
@@ -627,14 +623,9 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                                                                     const ROOT::RVec<float> eleSCPhi,
                                                                     const ROOT::RVec<float> phoSCEta,
                                                                     const ROOT::RVec<float> phoSCPhi){
-                                                                        int idx = -1;
-                                                                        for (size_t i = 0; i < phoSCEta.size(); i++){
-                                                                            if ((eleSCEta[eleIdx1] == phoSCEta[i]) && (eleSCPhi[eleIdx1] == phoSCPhi[i])){
-                                                                                idx = i;
-                                                                                break;
-                                                                            }
-                                                                        }
-                                                                        return idx;
+                                                                        auto matched = ROOT::VecOps::Nonzero((phoSCEta == eleSCEta[eleIdx1]) && (phoSCPhi == eleSCPhi[eleIdx1]));
+                                                                        int idx = (matched.size() > 0) ? matched[0] : -1;
+                                                                        return idx; // photon idex
                                                                     }, {"eleIdx1", "eleSCEta", "eleSCPhi", "phoSCEta", "phoSCPhi"})
                             .Define("eleMatchPhoCorrR9_Lead",   "phoCorrR9Full5x5[eleMathcedPhoIdx1]") // in order to apply the hgg preselected sf
                             .Define("eleMatchPhoSCEta_Lead",    "phoSCEta[eleMathcedPhoIdx1]")         // in order to apply the hgg preselected sf
@@ -681,13 +672,14 @@ bool xAna(std::string inpath, std::string outpath, int iset){
     // use the mass reconstructed by two gsf track to be merged electron mass
     ef_calib =  ef_calib.Define("gsf1",                     "eleTrk1[eleIdx1]")
                         .Define("gsf2",                     "eleTrk2[eleIdx1]")
-                        .Define("ele1",                     "ROOT::Math::PtEtaPhiMVector v(eleHDALCalibPt_Lead, eleEta[eleIdx1], elePhi[eleIdx1], (float) (gsf1+gsf2).M()); return v;");
+                        .Define("ele1",                     "ROOT::Math::PtEtaPhiMVector(eleHDALCalibPt_Lead, eleEta[eleIdx1], elePhi[eleIdx1], (float) (gsf1+gsf2).M())");
 
     //=======================================================//
     //            kinematic event selections                 //
     //=======================================================//
     auto kf = ef_calib.Define("H",                "ele1 + pho")
-                      .Filter("TMath::Max(phoCalibEt_Lead, eleHDALCalibPt_Lead) > 35 && TMath::Min(phoCalibEt_Lead, eleHDALCalibPt_Lead) > 25", "trigger threshold")
+                      .Filter("TMath::Max(phoCalibEt_Lead, eleHDALCalibPt_Lead) > 35 &&"
+                              "TMath::Min(phoCalibEt_Lead, eleHDALCalibPt_Lead) > 25", "trigger threshold")
                       .Filter("ele1.M() < 50", "Mee < 50 GeV")
                       .Filter("ele1.M() > 11  || ele1.M() < 8", "reject Upsilon")
                       .Filter("ele1.M() > 3.5 || ele1.M() < 2.5", "reject Jpsi")
@@ -764,19 +756,31 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                 .Define("isEBHR9",              "abs(phoSCEta[phoIdx1]) < 1.4442 && phoCorrR9Full5x5_Lead > 0.96")
                 .Define("isEBLR9",              "abs(phoSCEta[phoIdx1]) < 1.4442 && phoCorrR9Full5x5_Lead <= 0.96")
                 .Define("isEE",                 "abs(phoSCEta[phoIdx1]) > 1.566  && abs(phoSCEta[phoIdx1]) < 2.5")
+                .Define("isEBMerged",           "(bool) isEBEle[eleIdx1]")
+                .Define("isEEMerged",           "(bool) isEEEle[eleIdx1]")
                 .Define("category",             [&](const bool isVbf,
                                                     const bool isBst,
                                                     const bool isEBHR9,
                                                     const bool isEBLR9,
-                                                    const bool isEE){
+                                                    const bool isEE,
+                                                    const bool isEBMerged,
+                                                    const bool isEEMerged){
                                                         int cat = 0;
-                                                        if (isVbf)                       return cat = 1;
-                                                        else if (isBst)                  return cat = 2;
-                                                        else if (isEBHR9)                return cat = 3;
-                                                        else if (isEBLR9)                return cat = 4;
-                                                        else if (isEE)                   return cat = 5;
+                                                        if (isVbf)         return cat = 1;
+                                                        else if (isBst)    return cat = 2;
+                                                        else if (isEBHR9)  return cat = 3;
+                                                        else if (isEBLR9)  return cat = 4;
+                                                        else if (isEE   )  return cat = 5;
+
+                                                        // else if (isBst)                  return cat = 2;
+                                                        // else if (isEBHR9 && isEBMerged)  return cat = 3;
+                                                        // else if (isEBLR9 && isEBMerged)  return cat = 4;
+                                                        // else if (isEE    && isEBMerged)  return cat = 5;
+                                                        // else if (isEBHR9 && isEEMerged)  return cat = 6;
+                                                        // else if (isEBLR9 && isEEMerged)  return cat = 7;
+                                                        // else if (isEE    && isEEMerged)  return cat = 8;
                                                         else throw std::runtime_error("No proper category for M2");
-                                                    }, {"isVbf", "isBst", "isEBHR9", "isEBLR9", "isEE"})
+                                                    }, {"isVbf", "isBst", "isEBHR9", "isEBLR9", "isEE", "isEBMerged", "isEEMerged"})
                 .Define("category_str",         [&](int category){return categories.at(category-1);},      {"category"});
 
     //=======================================================//
@@ -808,18 +812,18 @@ bool xAna(std::string inpath, std::string outpath, int iset){
             
             if (it->second){
                 if (ba::contains(it->first, "Trk")){ // in bins of trk pt and trk eta
-                    std::string xbin = (ba::contains(it->first, "SubTrk")) ? "eleSubTrkPt_Lead"  : "eleTrkPt_Lead";
-                    std::string ybin = (ba::contains(it->first, "SubTrk")) ? "eleSubTrkEta_Lead" : "eleTrkEta_Lead";
+                    std::string xbin = (ba::contains(it->first, "SubTrk")) ? "eleSubTrkEta_Lead" : "eleTrkEta_Lead";
+                    std::string ybin = (ba::contains(it->first, "SubTrk")) ? "eleSubTrkPt_Lead"  : "eleTrkPt_Lead";
                     df_sfs = it->second->GetRDF(df_sfs, it->first+"SF_Lead", it->first+"SFErr_Lead", {xbin, ybin});
                     
                     printf("     - %-21s: in bins of %-22s && %-22s\n", (it->first).c_str(), xbin.c_str(), ybin.c_str());
                 }
                 if (ba::contains(it->first, "Ele")){ 
-                    std::string xbin = "elePt_Lead";    // in bins of sceta and pt
-                    std::string ybin = "eleSCEta_Lead";
+                    std::string xbin = "eleSCEta_Lead"; // in bins of sceta and pt
+                    std::string ybin = "elePt_Lead";    
                     if (ba::contains(it->first, "Merged")) { 
-                        xbin = "eleCalibPt_Lead";
-                        ybin = "eleAbsSCEta_Lead";
+                        xbin = "eleAbsSCEta_Lead";
+                        ybin = "eleCalibPt_Lead";
                     }
                     if (ba::contains(it->first, "HggPresel")) {
                         xbin = "eleMatchPhoSCEta_Lead";
@@ -831,7 +835,11 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                 }
                 if (ba::contains(it->first, "Pho")){ // in bins of sceta and pt
                     std::string xbin = "phoSCEta_Lead";
-                    std::string ybin = "phoCorrR9Full5x5_Lead";
+                    std::string ybin = "phoCalibEt_Lead";
+                    if (ba::contains(it->first, "Hgg")){
+                        xbin = "phoSCEta_Lead";
+                        ybin = "phoCorrR9Full5x5_Lead";
+                    }
                     df_sfs = it->second->GetRDF(df_sfs, it->first+"SF_Lead", it->first+"SFErr_Lead", {xbin, ybin});
 
                     printf("     - %-21s: in bins of %-22s && %-22s\n", (it->first).c_str(), xbin.c_str(), ybin.c_str());
@@ -850,11 +858,8 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                                                                     const float phoCorrR9Full5x5_Lead,
                                                                     const float elePt_Lead,
                                                                     const float eleSCEta_Lead){
-                                                                        float SF = 1.;
-                                                                        if (phoEt_Lead > elePt_Lead)
-                                                                            SF = Weis["DiPhoHLTSeedForPho"]->GetSFFromHgg(phoSCEta_Lead, phoCorrR9Full5x5_Lead, phoEt_Lead);
-                                                                        else
-                                                                            SF = Weis["DiPhoHLTSeedForEle"]->GetSFFromEGM(eleSCEta_Lead, elePt_Lead);
+                                                                        float SF = (phoEt_Lead > elePt_Lead) ? Weis["DiPhoHLTSeedForPho"]->GetSFFromHgg(phoSCEta_Lead, phoCorrR9Full5x5_Lead, phoEt_Lead)
+                                                                                                             : Weis["DiPhoHLTSeedForEle"]->GetSFFromEGM(eleSCEta_Lead, elePt_Lead);
                                                                         return SF;
                                                                     }, {"phoEt_Lead", "phoSCEta_Lead", "phoCorrR9Full5x5_Lead", "elePt_Lead", "eleSCEta_Lead"})
                         .Define("DiPhoHLTSeedSFErr_Lead",       [&](const float phoEt_Lead,
@@ -862,11 +867,8 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                                                                     const float phoCorrR9Full5x5_Lead,
                                                                     const float elePt_Lead,
                                                                     const float eleSCEta_Lead){
-                                                                        float SFerr = 0;
-                                                                        if (phoEt_Lead > elePt_Lead)
-                                                                            SFerr = Weis["DiPhoHLTSeedForPho"]->GetSFErrFromHgg(phoSCEta_Lead, phoCorrR9Full5x5_Lead, phoEt_Lead);
-                                                                        else
-                                                                            SFerr = Weis["DiPhoHLTSeedForEle"]->GetSFErrFromEGM(eleSCEta_Lead, elePt_Lead);
+                                                                        float SFerr = (phoEt_Lead > elePt_Lead) ? Weis["DiPhoHLTSeedForPho"]->GetSFErrFromHgg(phoSCEta_Lead, phoCorrR9Full5x5_Lead, phoEt_Lead)
+                                                                                                                : Weis["DiPhoHLTSeedForEle"]->GetSFErrFromEGM(eleSCEta_Lead, elePt_Lead);
                                                                         return SFerr;
                                                                     }, {"phoEt_Lead", "phoSCEta_Lead", "phoCorrR9Full5x5_Lead", "elePt_Lead", "eleSCEta_Lead"})
                         .Define("DiPhoHLTUnSeedSF_Lead",        [&](const float phoEt_Lead,
@@ -874,11 +876,9 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                                                                     const float phoCorrR9Full5x5_Lead,
                                                                     const float elePt_Lead,
                                                                     const float eleSCEta_Lead){
-                                                                        float SF = 1.;
-                                                                        if (phoEt_Lead < elePt_Lead)
-                                                                            SF = Weis["DiPhoHLTUnSeedForPho"]->GetSFFromHgg(phoSCEta_Lead, phoCorrR9Full5x5_Lead, phoEt_Lead);
-                                                                        else
-                                                                            SF = Weis["DiPhoHLTUnSeedForEle"]->GetSFFromEGM(eleSCEta_Lead, elePt_Lead);
+                                                                        float SF = (phoEt_Lead < elePt_Lead) ? Weis["DiPhoHLTUnSeedForPho"]->GetSFFromHgg(phoSCEta_Lead, phoCorrR9Full5x5_Lead, phoEt_Lead)
+                                                                                                             : Weis["DiPhoHLTUnSeedForEle"]->GetSFFromEGM(eleSCEta_Lead, elePt_Lead);
+
                                                                         return SF;
                                                                     }, {"phoEt_Lead", "phoSCEta_Lead", "phoCorrR9Full5x5_Lead", "elePt_Lead", "eleSCEta_Lead"})
                         .Define("DiPhoHLTUnSeedSFErr_Lead",     [&](const float phoEt_Lead,
@@ -886,11 +886,8 @@ bool xAna(std::string inpath, std::string outpath, int iset){
                                                                     const float phoCorrR9Full5x5_Lead,
                                                                     const float elePt_Lead,
                                                                     const float eleSCEta_Lead){
-                                                                        float SFerr = 0;
-                                                                        if (phoEt_Lead < elePt_Lead)
-                                                                            SFerr = Weis["DiPhoHLTUnSeedForPho"]->GetSFErrFromHgg(phoSCEta_Lead, phoCorrR9Full5x5_Lead, phoEt_Lead);
-                                                                        else
-                                                                            SFerr = Weis["DiPhoHLTUnSeedForEle"]->GetSFErrFromEGM(eleSCEta_Lead, elePt_Lead);
+                                                                        float SFerr = (phoEt_Lead < elePt_Lead) ? Weis["DiPhoHLTUnSeedForPho"]->GetSFErrFromHgg(phoSCEta_Lead, phoCorrR9Full5x5_Lead, phoEt_Lead)
+                                                                                                                : Weis["DiPhoHLTUnSeedForEle"]->GetSFErrFromEGM(eleSCEta_Lead, elePt_Lead);
                                                                         return SFerr;
                                                                     }, {"phoEt_Lead", "phoSCEta_Lead", "phoCorrR9Full5x5_Lead", "elePt_Lead", "eleSCEta_Lead"});
             printf("     - %-21s: in bins of photon and electron pt eta r9\n", "DiPhoHLTSeed");
@@ -1213,6 +1210,7 @@ bool xAna(std::string inpath, std::string outpath, int iset){
             }
         }
     }
+    ROOT::RDF::SaveGraph(df_Final, "./mydot.dot");
 
     time_iset.Stop();
     auto htime_iset = utils::GetHumanTime(time_iset.RealTime());

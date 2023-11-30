@@ -1,0 +1,9 @@
+executable = submit.sh
+output     = ./logs/job_mc.out
+error      = ./logs/job_mc.err
+log        = ./logs/job_mc.log
+
+request_cpus = 20
+requirements = (Machine == "chip04.cms.phy.ncu.edu.tw")
+
+queue

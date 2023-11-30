@@ -11,7 +11,7 @@ add_compile_options(-O3 -Wall -Wextra)
 # execute 'root-config --libs' in command line to check
 # TMVA is also needed (not in the root-config)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-find_package(ROOT CONFIG REQUIRED COMPONENTS TMVA XMLIO)
+find_package(ROOT CONFIG REQUIRED COMPONENTS TMVA XMLIO RooFit RooFitCore)
 find_package(Boost REQUIRED COMPONENTS program_options)
 find_package(fmt CONFIG REQUIRED) # txt format
 find_package(yaml-cpp REQUIRED)
@@ -35,11 +35,8 @@ add_library(HDalitzEle
         src/XGBReader.cpp
         src/GsfTracks.cpp
         src/WeightHandler.cpp
-        src/MergedIDPred.cpp
-        src/MergedEnCorrector.cpp
         src/ElectronSel.cpp
         src/PhotonSel.cpp
-        src/PhoR9SSCorrection.cpp
         src/Categorizer.cpp
         src/Generator.cpp
         src/TMVASafeReader.cpp
@@ -91,6 +88,3 @@ if (NOT MAKE_DEVELOPE)
             HDalitzEle
     )
 endif()
-
-
-

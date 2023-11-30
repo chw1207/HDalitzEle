@@ -1,0 +1,9 @@
+executable = submit_mc_resolved.sh
+output     = ../logs/job_mc_resolved.out
+error      = ../logs/job_mc_resolved.err
+log        = ../logs/job_mc_resolved.log
+
+request_cpus = 20
+requirements = (Machine == "chip04.cms.phy.ncu.edu.tw")
+
+queue

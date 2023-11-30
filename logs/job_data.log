@@ -1,0 +1,105 @@
+000 (4001.000.000) 2023-11-29 16:26:34 Job submitted from host: <140.115.32.12:9618?addrs=140.115.32.12-9618+[2001-288-3001-32-e47-6457-b6c2-68d7]-9618&alias=chip02.cms.phy.ncu.edu.tw&noUDP&sock=schedd_899507_900c>
+...
+001 (4001.000.000) 2023-11-29 16:26:34 Job executing on host: <140.115.32.12:9618?addrs=140.115.32.12-9618+[2001-288-3001-32-e47-6457-b6c2-68d7]-9618&alias=chip02.cms.phy.ncu.edu.tw&noUDP&sock=startd_899507_900c>
+...
+007 (4001.000.000) 2023-11-29 16:26:34 Shadow exception!
+	Error from slot1@chip02.cms.phy.ncu.edu.tw: Failed to execute '/home/chenghan/HDalitzEle/bin/submit_data.sh': (errno=13: 'Permission denied')
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+...
+012 (4001.000.000) 2023-11-29 16:26:34 Job was held.
+	Error from slot1@chip02.cms.phy.ncu.edu.tw: Failed to execute '/home/chenghan/HDalitzEle/bin/submit_data.sh': (errno=13: 'Permission denied')
+	Code 6 Subcode 13
+...
+009 (4001.000.000) 2023-11-29 16:32:24 Job was aborted.
+	via condor_rm (by user chenghan)
+...
+000 (4002.000.000) 2023-11-29 16:33:25 Job submitted from host: <140.115.32.12:9618?addrs=140.115.32.12-9618+[2001-288-3001-32-e47-6457-b6c2-68d7]-9618&alias=chip02.cms.phy.ncu.edu.tw&noUDP&sock=schedd_899507_900c>
+...
+001 (4002.000.000) 2023-11-29 16:33:25 Job executing on host: <140.115.32.12:9618?addrs=140.115.32.12-9618+[2001-288-3001-32-e47-6457-b6c2-68d7]-9618&alias=chip02.cms.phy.ncu.edu.tw&noUDP&sock=startd_899507_900c>
+...
+006 (4002.000.000) 2023-11-29 16:33:34 Image size of job updated: 896928
+	876  -  MemoryUsage of job (MB)
+	896928  -  ResidentSetSize of job (KB)
+...
+006 (4002.000.000) 2023-11-29 16:36:34 Image size of job updated: 17564020
+	4385  -  MemoryUsage of job (MB)
+	4489648  -  ResidentSetSize of job (KB)
+...
+006 (4002.000.000) 2023-11-29 16:39:34 Image size of job updated: 17592796
+	4386  -  MemoryUsage of job (MB)
+	4490408  -  ResidentSetSize of job (KB)
+...
+006 (4002.000.000) 2023-11-29 16:42:34 Image size of job updated: 17613124
+	4575  -  MemoryUsage of job (MB)
+	4684416  -  ResidentSetSize of job (KB)
+...
+006 (4002.000.000) 2023-11-29 16:45:35 Image size of job updated: 17673276
+	4708  -  MemoryUsage of job (MB)
+	4820380  -  ResidentSetSize of job (KB)
+...
+006 (4002.000.000) 2023-11-29 16:48:36 Image size of job updated: 17735412
+	4708  -  MemoryUsage of job (MB)
+	4820380  -  ResidentSetSize of job (KB)
+...
+006 (4002.000.000) 2023-11-29 16:51:37 Image size of job updated: 17865624
+	4708  -  MemoryUsage of job (MB)
+	4820380  -  ResidentSetSize of job (KB)
+...
+006 (4002.000.000) 2023-11-29 16:57:37 Image size of job updated: 17969276
+	4708  -  MemoryUsage of job (MB)
+	4820380  -  ResidentSetSize of job (KB)
+...
+006 (4002.000.000) 2023-11-29 17:12:40 Image size of job updated: 17995288
+	4708  -  MemoryUsage of job (MB)
+	4820380  -  ResidentSetSize of job (KB)
+...
+006 (4002.000.000) 2023-11-29 17:15:40 Image size of job updated: 17995288
+	4776  -  MemoryUsage of job (MB)
+	4890368  -  ResidentSetSize of job (KB)
+...
+006 (4002.000.000) 2023-11-29 17:18:40 Image size of job updated: 18023352
+	4776  -  MemoryUsage of job (MB)
+	4890368  -  ResidentSetSize of job (KB)
+...
+006 (4002.000.000) 2023-11-29 17:24:42 Image size of job updated: 18023352
+	4781  -  MemoryUsage of job (MB)
+	4894956  -  ResidentSetSize of job (KB)
+...
+006 (4002.000.000) 2023-11-29 17:30:43 Image size of job updated: 18038132
+	4887  -  MemoryUsage of job (MB)
+	5003876  -  ResidentSetSize of job (KB)
+...
+006 (4002.000.000) 2023-11-29 17:36:43 Image size of job updated: 18038132
+	4892  -  MemoryUsage of job (MB)
+	5009048  -  ResidentSetSize of job (KB)
+...
+006 (4002.000.000) 2023-11-29 17:39:44 Image size of job updated: 18038132
+	4965  -  MemoryUsage of job (MB)
+	5083140  -  ResidentSetSize of job (KB)
+...
+006 (4002.000.000) 2023-11-29 17:45:46 Image size of job updated: 18044788
+	4965  -  MemoryUsage of job (MB)
+	5083140  -  ResidentSetSize of job (KB)
+...
+006 (4002.000.000) 2023-11-29 17:51:46 Image size of job updated: 18151788
+	4965  -  MemoryUsage of job (MB)
+	5083140  -  ResidentSetSize of job (KB)
+...
+005 (4002.000.000) 2023-11-29 18:03:11 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 12:29:46, Sys 0 03:31:25  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 12:29:46, Sys 0 03:31:25  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :     9.33       30        30 
+	   Disk (KB)            :     1           1      1035 
+	   Memory (MB)          :  4965           1       128 
+
+	Job terminated of its own accord at 2023-11-29T10:03:11Z.
+...
