@@ -29,6 +29,9 @@ ROOT::RDF::RNode gsf::DefineGSFColumns(ROOT::RDF::RNode df){
                 .Define("eleTrkMissHits",       gsf::MatchIndexI,           {"nEle", "eleTrkIdx", "gsfMissHits"})
                 .Define("eleTrkD0",             gsf::MatchIndexF,           {"nEle", "eleTrkIdx", "gsfD0"})
                 .Define("eleTrkDz",             gsf::MatchIndexF,           {"nEle", "eleTrkIdx", "gsfDz"})
+                .Define("eleTrkConvVeto",       gsf::MatchIndexI,           {"nEle", "eleTrkIdx", "gsfConvVeto"})
+                .Define("eleTrkLostHits",       gsf::MatchIndexI,           {"nEle", "eleTrkIdx", "gsfLostHits"})
+                .Define("eleTrkPixelHits",      gsf::MatchIndexI,           {"nEle", "eleTrkIdx", "gsfPixelHits"})
 
                 .Define("eleSubTrkPt",          gsf::MatchIndexF,           {"nEle", "eleSubTrkIdx", "gsfPt"})
                 .Define("eleSubTrkEta",         gsf::MatchIndexF,           {"nEle", "eleSubTrkIdx", "gsfEta"})
@@ -38,6 +41,9 @@ ROOT::RDF::RNode gsf::DefineGSFColumns(ROOT::RDF::RNode df){
                 .Define("eleSubTrkMissHits",    gsf::MatchIndexI,           {"nEle", "eleSubTrkIdx", "gsfMissHits"})
                 .Define("eleSubTrkD0",          gsf::MatchIndexF,           {"nEle", "eleSubTrkIdx", "gsfD0"})
                 .Define("eleSubTrkDz",          gsf::MatchIndexF,           {"nEle", "eleSubTrkIdx", "gsfDz"})
+                .Define("eleSubTrkConvVeto",    gsf::MatchIndexI,           {"nEle", "eleTrkIdx", "gsfConvVeto"})
+                .Define("eleSubTrkLostHits",    gsf::MatchIndexI,           {"nEle", "eleSubTrkIdx", "gsfLostHits"})
+                .Define("eleSubTrkPixelHits",   gsf::MatchIndexI,           {"nEle", "eleSubTrkIdx", "gsfPixelHits"})
 
                 .Define("eleTrk1",              utils::P4Vector,            {"eleTrkPt", "eleTrkEta", "eleTrkPhi", "M_GSF"})
                 .Define("eleTrk2",              utils::P4Vector,            {"eleSubTrkPt", "eleSubTrkEta", "eleSubTrkPhi", "M_GSF"})
@@ -166,10 +172,6 @@ ROOT::RVec<int> gsf::FindSubGSF_PtMax(
         float tmp = -999.;
         int eleSubTrkIdx = -1;
         for (int j = 1; j < nGsfMatchToReco; j++){// start from 1, beacause 0 is main gsf track
-            // require the opposite sign of two gsf tracks  
-            if (gsfCharge[ambGSF[i][j]] * gsfCharge[ambGSF[i][0]] > 0)
-                continue; 
-            
             if (gsfPt[ambGSF[i][j]] > tmp){
                 tmp = gsfPt[ambGSF[i][j]];
                 eleSubTrkIdx = ambGSF[i][j];
@@ -195,9 +197,46 @@ ROOT::RVec<int> gsf::FindSubGSF_dRMin(
         const int eleTrkIdx = ambGSF[i][0];
         float tmp = 999.;
         int eleSubTrkIdx = -1;
-        for (int j = 1; j < nGsfMatchToReco; j++){
-            // require the opposite sign of two gsf tracks  
-            if (gsfCharge[ambGSF[i][j]] * gsfCharge[ambGSF[i][0]] > 0)
+        for (int j = 1; j < nGsfMatchToReco; j++){ // j = 0 is main gsf track
+            const float dR = ROOT::VecOps::DeltaR(gsfEta[eleTrkIdx], gsfEta[ambGSF[i][j]], gsfPhi[eleTrkIdx], gsfPhi[ambGSF[i][j]]);
+            if (dR < tmp){
+                tmp = dR;
+                eleSubTrkIdx = ambGSF[i][j];
+            }
+        }
+        v[i] = eleSubTrkIdx;
+    }
+
+    return v;
+}
+
+
+ROOT::RVec<int> gsf::FindSubGSF_dRMinWithCuts(
+    const int nEle,
+    const ROOT::RVec<float>& eleSCEta,
+    const ROOT::RVec<ROOT::RVec<int>>& ambGSF, // branch added by the gsf::TrkEleAssociation
+    const ROOT::RVec<float>& gsfEta,
+    const ROOT::RVec<float>& gsfPhi,
+    const ROOT::RVec<int>& gsfCharge,
+    const ROOT::RVec<float>& gsfD0,
+    const ROOT::RVec<float>& gsfDz,
+    const ROOT::RVec<int>& gsfMissHits
+){
+    ROOT::RVec<int> v(nEle);
+    for (int i = 0; i < nEle; i++){
+        const int nGsfMatchToReco = ambGSF[i].size();
+        const int eleTrkIdx = ambGSF[i][0];
+        float tmp = 999.;
+        int eleSubTrkIdx = -1;
+        bool isEB = fabs(eleSCEta[i] < 1.479);
+        for (int j = 1; j < nGsfMatchToReco; j++){ // j = 0 is main gsf track
+            
+            if (gsfCharge[eleTrkIdx] * gsfCharge[ambGSF[i][j]] > 0)
+                continue;
+            
+            bool track_from_pv = (isEB && fabs(gsfD0[ambGSF[i][j]]) < 0.02 && fabs(gsfDz[ambGSF[i][j]]) < 0.1) || (!isEB && fabs(gsfD0[ambGSF[i][j]]) < 0.05 && fabs(gsfDz[ambGSF[i][j]]) < 0.2);
+            bool track_no_conv = gsfMissHits[ambGSF[i][j]] <= 0;
+            if (!track_from_pv || !track_no_conv)
                 continue;
             
             const float dR = ROOT::VecOps::DeltaR(gsfEta[eleTrkIdx], gsfEta[ambGSF[i][j]], gsfPhi[eleTrkIdx], gsfPhi[ambGSF[i][j]]);
